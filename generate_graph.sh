@@ -5,6 +5,7 @@
 #mount -t tmpfs none "$TMP"
 
 # fix things
+shopt -s expand_aliases
 alias bc="bc -l"
 
 intersect() {
@@ -105,7 +106,6 @@ generate_graph() {
         # connect every two closest nodes if they aren't connected
         if test "$(bc <<< "${wdm[$(( a * homes + b ))]} == $max")" = 0; then
 
-            echo "($a, $b) is a connection, testing" >&2
             # (indirectly) yet, or their distance would be shortened a lot by
             # the new connection.
             if test "$(bc <<< "4 * $distance < 3 * ${wdm[$(( a * homes + b ))]}")" == 0; then
@@ -172,4 +172,11 @@ generate_graph() {
 }
 
 generate_graph "$1"
+gnuplot <<HERE
+set term png
+set output '$2'
+plot "arcs" u 1:2:(\$3-\$1):(\$4-\$2) with vectors nohead notitle, \
+     "points" using 2:3:(.3) with circles fill solid notitle, \
+     "points" using 2:3:1 with labels notitle
+HERE
 
