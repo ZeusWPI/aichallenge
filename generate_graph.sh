@@ -8,17 +8,23 @@
 alias bc="bc -l"
 
 intersect() {
-    # http://stackoverflow.com/questions/4977491/determining-if-two-line-segments-intersect?lq=1
     local xa0="$1" ya0="$2" xa1="$3" ya1="$4" xb0="$5" yb0="$6" xb1="$7" yb1="$8"
-    local d=$(bc <<< "xb1 * ya1 - xa1 * yb1")
-    if test "$(bc <<< "$d == 0")" = 1; then
-        # parallel
-        true
+    local boa aob
+    if (( xa0 != xa1 )); then
+        local as=$(bc <<< "($ya0 - $ya1)/($xa0 - $xa1)")
+        local ao=$(bc <<< "$ya0 - $as*$xa0")
+        boa=$(bc <<< "($as*$xb0 + $ao - $yb0)*($as*$xb1 + $ao - $yb1) <= 0")
     else
-        local s=$(bc <<< " (  ($xa0 - $xb0)*$ya1 - ($ya0 - $yb0)*$xa1 )/$d")
-        local t=$(bc <<< "-( -($xa0 - $xb0)*$yb1 + ($ya0 - $yb0)*$xb1 )/$d")
-        return $(bc <<< "0 <= $s && $s <= 1 && 0 <= $t && $t <= 1")
+        boa=$(bc <<< "($xb0 - $xa0)*($xb1 - $xa0) <= 0")
     fi
+    if (( xb0 != xb1 )); then
+        local bs=$(bc <<< "($yb0 - $yb1)/($xb0 - $xb1)")
+        local bo=$(bc <<< "$yb0 - $bs*$xb0")
+        aob=$(bc <<< "($bs*$xa0 + $bo - $ya0)*($bs*$xa1 + $bo - $ya1) <= 0")
+    else
+        aob=$(bc <<< "($xa0 - $xb0)*($xa1 - $xb0) <= 0")
+    fi
+    echo $(bc <<< "$aob && $boa")
 }
 
 generate_graph() {
@@ -31,7 +37,6 @@ generate_graph() {
         # more than maximum indirect distance
 
     local i j
-    declare -a field  # TODO for debug printing
 
     # place homes at random places on the field. save some distances
     # between the homes.
@@ -39,7 +44,6 @@ generate_graph() {
     declare -a ys     # y (row) coords of the home points
     declare -a bd2m   # bird's distance squared matrix
     declare -a wdm   # walking distance squared matrix
-    echo -e "punt:\t(row,\tcol)"
     for (( i = 0; i < homes; i++ )); do
         while true; do
             local x="$(( RANDOM % cols ))"
@@ -59,10 +63,8 @@ generate_graph() {
         done
         xs["$i"]="$x"
         ys["$i"]="$y"
-        field["$(( y*cols + x ))"]=1
-        echo -e "$i:\t(${y},\t${x})"
-    done
-    echo
+        echo "$i $x -$y"
+    done > points
 
     for (( i = 0; i < homes; i++ )); do
         for (( j = 0; j < i; j++ )); do
@@ -76,23 +78,40 @@ generate_graph() {
     > mids
     > circles
     > perpends
+    local narcs=0
+    declare -a fa
+    declare -a ta
     for (( i = 0; i < homes; i++ )); do
         for (( j = 0; j < i; j++ )); do
             echo "$(( bd2m[i * homes + j] )) $i $j"
         done
     done | sort -n | while read distance2 a b; do
-        local distance="$(bc <<< "sqrt($distance2 + 0.0)")"
+        echo "considering $a $b" >&2
+        local distance="$(bc <<< "sqrt($distance2) ")"
         # skip intersecting segments
-        # TODO
+        local cuts=0
+        for (( i = 0; i < narcs && !cuts; i++ )); do
+            echo "    intersect $a $b with $((fa[i])) $((ta[i]))" >&2
+            if (( a == fa[i] || a == ta[i] || b == fa[i] || b == ta[i])); then
+                continue
+            fi
+            cuts=$(intersect $((xs[a])) $((ys[a])) $((xs[b])) $((ys[b])) $((xs[fa[i]])) $((ys[fa[i]])) $((xs[ta[i]])) $((ys[ta[i]])))
+        done
+        if test $cuts = 1; then
+            echo "    intersects with $((ta[i-1])) $((fa[i-1]))" >&2
+            continue
+        fi
 
         # connect every two closest nodes if they aren't connected
-        #if test "$(bc <<< "${wdm[$(( a * homes + b ))]} == $max")" = 0; then
+        if test "$(bc <<< "${wdm[$(( a * homes + b ))]} == $max")" = 0; then
+
             echo "($a, $b) is a connection, testing" >&2
             # (indirectly) yet, or their distance would be shortened a lot by
             # the new connection.
-            #if test "$(bc <<< "2 * $distance < 1 * ${wdm[$(( a * homes + b ))]}")" == 0; then
-            #    continue
-            #fi
+            if test "$(bc <<< "4 * $distance < 3 * ${wdm[$(( a * homes + b ))]}")" == 0; then
+                echo "    not enough of a shortcut" >&2
+                continue
+            fi
 
             # if the new connection passes too close to another home, skip
             # it.
@@ -116,14 +135,17 @@ generate_graph() {
                 too_close="$(bc <<< "$to_p1 && $to_p2")"
             done
             if test "$too_close" == 1; then
-                echo "skipping $a to $b for $i" >&2
+                echo "    too close to $i" >&2
                 continue
             fi
-        #fi
+        fi
 
         # connect these two, update walking matrix
         echo "$((xs[a])) $((-ys[a])) $((xs[b])) $((-ys[b]))"
-        echo "connected $a and $b" >&2
+        fa[$narcs]=$a
+        ta[$narcs]=$b
+        narcs=$((narcs + 1))
+        echo "    connected" >&2
         for (( i = 0; i < homes; i++ )); do
             local newd
             local bi="$((b * homes + i))"
@@ -142,21 +164,12 @@ generate_graph() {
                 fi
             fi
         done
-    done > data.txt
+    done > arcs
+
     #gnuplot:
     # plot "data.txt" with lines, "" with points 
 
-    echo -n "  "
-    for (( j = 0; j < cols; j++ )); do
-        echo -n " $(( j % 10 ))"
-    done
-    echo
-    for (( i = 0; i < rows; i++ )); do
-        echo -n " $(( i % 10 ))"
-        for (( j = 0; j < cols; j++ )); do
-            echo -n " $(( field[i*cols + j] + 0 ))" | tr '01' '-X'
-        done
-        echo
-    done
 }
+
+generate_graph "$1"
 
