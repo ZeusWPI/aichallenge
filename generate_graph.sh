@@ -8,6 +8,26 @@
 shopt -s expand_aliases
 alias bc="bc -l"
 
+intersect() {
+    local xa0="$1" ya0="$2" xa1="$3" ya1="$4" xb0="$5" yb0="$6" xb1="$7" yb1="$8"
+    local boa aob
+    if (( xa0 != xa1 )); then
+        local as=$(bc <<< "($ya0 - $ya1)/($xa0 - $xa1)")
+        local ao=$(bc <<< "$ya0 - $as*$xa0")
+        boa=$(bc <<< "($as*$xb0 + $ao - $yb0)*($as*$xb1 + $ao - $yb1) <= 0")
+    else
+        boa=$(bc <<< "($xb0 - $xa0)*($xb1 - $xa0) <= 0")
+    fi
+    if (( xb0 != xb1 )); then
+        local bs=$(bc <<< "($yb0 - $yb1)/($xb0 - $xb1)")
+        local bo=$(bc <<< "$yb0 - $bs*$xb0")
+        aob=$(bc <<< "($bs*$xa0 + $bo - $ya0)*($bs*$xa1 + $bo - $ya1) <= 0")
+    else
+        aob=$(bc <<< "($xa0 - $xb0)*($xa1 - $xb0) <= 0")
+    fi
+    echo $(bc <<< "$aob && $boa")
+}
+
 generate_graph() {
     local homes="$1"
 
@@ -71,30 +91,12 @@ generate_graph() {
         local distance="$(bc <<< "sqrt($distance2) ")"
         # skip intersecting segments
         local cuts=0
-        if (( xs[a] != xs[b] )); then
-            local as=$(bc <<< "($((ys[a])) - $((ys[b])))/($((xs[a])) - $((xs[b])))")
-            local ao=$(bc <<< "$((ys[a])) - $as*$((xs[a]))")
-        fi
         for (( i = 0; i < narcs && !cuts; i++ )); do
             echo "    intersect $a $b with $((fa[i])) $((ta[i]))" >&2
             if (( a == fa[i] || a == ta[i] || b == fa[i] || b == ta[i])); then
                 continue
             fi
-
-            local boa aob
-            if (( xs[a] != xs[b] )); then
-                boa=$(bc <<< "($as*$((xs[fa[i]])) + $ao - $((ys[fa[i]])))*($as*$((xs[ta[i]])) + $ao - $((ys[ta[i]]))) <= 0")
-            else
-                boa=$(bc <<< "($((xs[fa[i]])) - $((xs[a])))*($((xs[ta[i]])) - $((xs[a]))) <= 0")
-            fi
-            if (( xs[fa[i]] != xs[ta[i]] )); then
-                local bs=$(bc <<< "($((ys[fa[i]])) - $((ys[ta[i]])))/($((xs[fa[i]])) - $((xs[ta[i]])))")
-                local bo=$(bc <<< "$((ys[fa[i]])) - $bs*$((xs[fa[i]]))")
-                aob=$(bc <<< "($bs*$((xs[a])) + $bo - $((ys[a])))*($bs*$((xs[b])) + $bo - $((ys[b]))) <= 0")
-            else
-                aob=$(bc <<< "($((xs[a])) - $((xs[fa[i]])))*($((xs[b])) - $((xs[fa[i]]))) <= 0")
-            fi
-            cuts=$(bc <<< "$aob && $boa")
+            cuts=$(intersect $((xs[a])) $((ys[a])) $((xs[b])) $((ys[b])) $((xs[fa[i]])) $((ys[fa[i]])) $((xs[ta[i]])) $((ys[ta[i]])))
         done
         if test $cuts = 1; then
             echo "    intersects with $((ta[i-1])) $((fa[i-1]))" >&2
@@ -169,7 +171,6 @@ generate_graph() {
 
 }
 
-main() {
 generate_graph "$1"
 gnuplot <<HERE
 set term png
@@ -178,5 +179,4 @@ plot "arcs" u 1:2:(\$3-\$1):(\$4-\$2) with vectors nohead notitle, \
      "points" using 2:3:(.3) with circles fill solid notitle, \
      "points" using 2:3:1 with labels notitle
 HERE
-}
 
