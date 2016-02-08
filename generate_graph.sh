@@ -29,8 +29,16 @@ intersect() {
 }
 
 generate_graph() {
+    # uses:
+    # - homes: the number of nodes the graph should have
+    #
+    # overwrites:
+    # - xs: with the x coordinates of home $i, 0 < $i < $homes
+    # - ys: with the y coordinates of homes $i, 0 < $i < $homes
+    # - roads: with the number of edges drawn
+    # - te: with the beginning homes of edge $i, 0 < $i < $roads
+    # - fe: with the ending homes of edge $i, 0 < $i < $roads
     echo "Generating Graph" >&2
-    local homes="$1"
 
     # determine the field width and height
     local rows="$(( 2 * homes ))"
@@ -40,8 +48,6 @@ generate_graph() {
 
     # place homes at random places on the field. save some distances
     # between the homes.
-    declare -a xs     # x (col) coords of the home points
-    declare -a ys     # y (row) coords of the home points
     declare -a bd2m   # bird's distance squared matrix
     declare -a con    # are two points connected?
     for (( i = 0; i < homes; i++ )); do
@@ -74,11 +80,10 @@ generate_graph() {
         con["$(( i * homes + i ))"]=1
     done
 
-    # create a sorted queue of distances between homes
-    local narcs=0
-    declare -a fa
-    declare -a ta
+    # initializing the number of roads
+    roads=0
     for (( i = 0; i < homes; i++ )); do
+        # create a (sorted) queue of distances between homes
         for (( j = 0; j < i; j++ )); do
             echo "$(( bd2m[i * homes + j] )) $i $j"
         done
@@ -87,14 +92,14 @@ generate_graph() {
         local distance="$(bc <<< "sqrt($distance2) ")"
         # skip intersecting segments
         local cuts=0
-        for (( i = 0; i < narcs && !cuts; i++ )); do
-            if (( a == fa[i] || a == ta[i] || b == fa[i] || b == ta[i])); then
+        for (( i = 0; i < roads && !cuts; i++ )); do
+            if (( a == fe[i] || a == te[i] || b == fe[i] || b == te[i])); then
                 continue
             fi
-            cuts=$(intersect $((xs[a])) $((ys[a])) $((xs[b])) $((ys[b])) $((xs[fa[i]])) $((ys[fa[i]])) $((xs[ta[i]])) $((ys[ta[i]])))
+            cuts=$(intersect $((xs[a])) $((ys[a])) $((xs[b])) $((ys[b])) $((xs[fe[i]])) $((ys[fe[i]])) $((xs[te[i]])) $((ys[te[i]])))
         done
         if test $cuts = 1; then
-            echo "           intersects with $((ta[i-1])) to $((fa[i-1]))" >&2
+            echo "           intersects with $((te[i-1])) to $((fe[i-1]))" >&2
             continue
         fi
 
@@ -128,9 +133,9 @@ generate_graph() {
         fi
 
         # connect these two, update walking matrix
-        fa[$narcs]=$a
-        ta[$narcs]=$b
-        narcs=$((narcs + 1))
+        fe[$roads]=$a
+        te[$roads]=$b
+        roads=$((roads + 1))
         echo "    connected" >&2
         for (( i = 0; i < homes; i++ )); do
             local connected="$(( con[a*homes + i] || con[b*homes + i] ))"
@@ -147,7 +152,52 @@ generate_graph() {
 }
 
 main() {
-generate_graph "$1"
+    # Expects as parameters a list of player names zipped with the
+    # location of their bot executables.
+    declare -a players
+    declare -a botboxes
+    generate_players "$@"
+    local nplayers="${#players[@]}"
+
+    declare -a writeprocs
+    declare -a outputs
+    local i
+    for (( i = 0; i < nplayers; i++ )); do
+        echo "$i" > "${botboxes[$i]}/stdin" &
+
+        turnprocs[$i]="$!"
+    done
+
+    # TODO
+
+    declare -a xs
+    declare -a ys
+    local roads
+    declare -a fe
+    declare -a te
+    #generate_graph
+
+}
+
+generate_players() {
+    local n=0
+    while (( $# >= 2 )); do
+
+        players[$n]="$1"
+        botboxes[$n]="$(isolate --box-id="$n" --init)/box"
+        mkfifo "${botboxes[$n]}/stdin"
+        mkfifo "${botboxes[$n]}/stdout"
+        mkfifo "${botboxes[$n]}/stderr"
+        cp "$2" "${botboxes[$n]}/"
+        isolate --box-id="$n"                         \
+                --stdin="${botboxes[$n]}/stdin"   \
+                --stdout="${botboxes[$n]}/stdout" \
+                --stderr="${botboxes[$n]}/stderr" \
+                --processes=1                         \
+                --run "${2##*/}" > /dev/null 2>&1     &
+        shift 2
+        i="$((n + 1))"
+    done
 }
 
 plot() {
