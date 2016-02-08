@@ -31,6 +31,26 @@ In case of an army located in a node, the bot is told about the size of this
 army. For an army located on an edge, the bot is told about the direction and
 the position (as a ratio of the edge) of the army.
 
+## Protocol
+For clarity: comments and ellipses are not part of the protocol :-)
+
+    20 forts:
+    # fort xcoord ycoord owner armysize
+    boyard 10 20 felix 100
+    helsingor 20 10 ilion 200
+    nox 30 30 neutral 0
+    ...
+    10 roads:
+    # fort1 fort
+    boyard helsingor
+    helsingor nox
+    ...
+    50 marches:
+    # origin destination owner size position
+    boyard helsingor felix 100 0.5
+    helsingor boyard ilion 10 0.1
+    ...
+
 ## Internal loop
 
 After receiving new commands from the bots, the armies are moved in the following order:
