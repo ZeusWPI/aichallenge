@@ -59,7 +59,7 @@ After receiving new commands from the bots, the armies are moved in the followin
 - All (remaining) armies are moved the second half of their movement.
 - Colliding armies are resolved.
 
-Colluding armies behave as follows:
+Colliding armies behave as follows:
 - Armies of the same alliance ignore each other.
-- Armies of different alliance battle LIKE THIS BAM BAM BAM. TODO
+- Armies of different alliance annihilate each other. TODO
 
