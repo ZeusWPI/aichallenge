@@ -64,6 +64,14 @@ var parseData = function (text) {
     forts[road[1]].neighbours.push(road[0]);
   });
 
+  sections.marches.forEach(function (m) {
+    m.origin = forts[m.origin];
+    m.target = forts[m.target];
+    m.x = m.origin.x + (m.target.x - m.origin.x) * m.position;
+    m.y = m.origin.y + (m.target.y - m.origin.y) * m.position;
+    delete m.position;
+  })
+
   return {
     forts:   forts,
     marches: sections.marches
