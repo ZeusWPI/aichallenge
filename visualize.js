@@ -20,11 +20,12 @@ var parsers = {
   forts: function (string) {
     var words = string.split(/ +/);
     return {
-      name:     words[0],
-      x:        parseFloat(words[1]),
-      y:        parseFloat(words[2]),
-      owner:    words[3],
-      garrison: parseInt(words[4])
+      name:       words[0],
+      x:          parseFloat(words[1]),
+      y:          parseFloat(words[2]),
+      owner:      words[3],
+      garrison:   parseInt(words[4]),
+      neighbours: []
     };
   },
 
@@ -48,12 +49,25 @@ var parseData = function (text) {
   var sections = extractSections(text);
   var data = {};
   for (var section in parsers) {
-    data[section] = sections[section].map(function (line) {
-      console.log(line);
+    sections[section] = sections[section].map(function (line) {
       return parsers[section].apply(this, [line]);
     });
   }
-  return data;
+
+  var forts = {};
+  sections.forts.forEach(function (fort) {
+    forts[fort.name] = fort;
+  });
+
+  sections.roads.forEach(function (road) {
+    forts[road[0]].neighbours.push(road[1]);
+    forts[road[1]].neighbours.push(road[0]);
+  });
+
+  return {
+    forts:   forts,
+    marches: sections.marches
+  };
 };
 
 fs.readFile('sample.data', 'utf8', function (err, data) {
