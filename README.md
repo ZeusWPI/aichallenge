@@ -46,7 +46,7 @@ For clarity: comments and ellipses are not part of the protocol :-)
     helsingor nox
     ...
     50 marches:
-    # origin destination owner size position
+    # origin destination owner size progress
     boyard helsingor felix 100 0.5
     helsingor boyard ilion 10 0.1
     ...
