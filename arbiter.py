@@ -19,7 +19,7 @@ class Road:
         self.positions[march.pos()].remove(march)
 
     def marches(self):
-        chain(*self.positions.values())
+        return chain(*self.positions.values())
 
     def step(self):
         self.half_step()
@@ -67,7 +67,7 @@ class March:
         self.target = target
         self.size = size
         self.remaining_steps = origin.distance(target)
-        self.bucket().append(self)
+        self.road().add(self)
 
     def remove(self):
         self.road().remove(self)
