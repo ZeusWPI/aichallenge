@@ -6,7 +6,42 @@ MARCH_SPEED = 1
 class Game:
     def __init__(self):
         self.forts = {}
-        self.march_dict = UnorderedTupleDict(lambda x: [])
+        self.roads = UnorderedTupleDict(lambda x: Road())
+
+class Road:
+    def __init__(self):
+        self.positions = defaultdict(lambda x: [])
+
+    def add(self, march):
+        self.positions[march.pos()].append(march)
+
+    def remove(self, march):
+        self.positions[march.pos()].remove(march)
+
+    def marches(self):
+        chain(*self.positions.values())
+
+    def step(self):
+        self.half_step()
+        self.resolve_encounters()
+        self.half_step()
+        self.resolve_encounters()
+
+    def half_step(self):
+        # the list() call is needed to fixate the current buckets
+        for march in list(self.marches()):
+            self.remove(march)
+            march.remaining_steps -= 0.5
+            self.add(march)
+
+    def resolve_encounters(self):
+        for bucket in self.positions.values():
+            for m1 in bucket:
+                for m2 in bucket:
+                    m1.encounter(m2)
+                    if m1.size <= 0:
+                        break
+
 
 class Fort:
     def __init__(self, game, name, x, y):
@@ -32,6 +67,31 @@ class March:
         self.target = target
         self.size = size
         self.remaining_steps = origin.distance(target)
+        self.bucket().append(self)
+
+    def remove(self):
+        self.road().remove(self)
+
+    def kill_soldiers(self, num):
+        self.size -= num
+        if self.size <= 0:
+            self.remove()
+
+    def encounter(self, other):
+        if self.owner != other.owner:
+            tmp = other.size
+            other.kill_soldiers(self.size)
+            self.kill_soldiers(tmp)
+
+
+    def road(self):
+        self.game.roads[self.origin, self.target]
+
+    def pos(self):
+        if self.origin == min(self.origin, self.target):
+            return self.origin.distance(self.target) - self.remaining_steps
+        else:
+            return self.remaining_steps
 
 
 class UnorderedTupleDict(defaultdict):
