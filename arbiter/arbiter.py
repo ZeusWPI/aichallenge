@@ -1,16 +1,18 @@
 from itertools import chain, takewhile
 from collections import defaultdict
+import functools
+import math
 
 MARCH_SPEED = 1
 
 class Game:
     def __init__(self):
         self.forts = {}
-        self.roads = UnorderedTupleDict(lambda x: Road())
+        self.roads = UnorderedTupleDict(lambda: Road())
 
 class Road:
     def __init__(self):
-        self.positions = defaultdict(lambda x: [])
+        self.positions = defaultdict(lambda: [])
 
     def add(self, march):
         self.positions[march.pos()].append(march)
@@ -43,6 +45,7 @@ class Road:
                         break
 
 
+@functools.total_ordering
 class Fort:
     def __init__(self, game, name, x, y, owner, garrison):
         self.game = game
@@ -63,12 +66,22 @@ class Fort:
         dist = math.sqrt((self.x - neighbour.x) ** 2 + (self.y - neighbour.y) ** 2)
         return math.ceil(dist/MARCH_SPEED)
 
+    def __eq__(self, other):
+        self.name == other.name
+
+    def __lt__(self, other):
+        self.name < other.name
+
+    def __hash__(self):
+        return self.name.__hash__()
+
 
 class March:
-    def __init__(self, game, origin, target, size):
+    def __init__(self, game, origin, target, owner, size):
         self.game = game
         self.origin = origin
         self.target = target
+        self.owner = owner
         self.size = size
         self.remaining_steps = origin.distance(target)
         self.road().add(self)
@@ -89,7 +102,7 @@ class March:
 
 
     def road(self):
-        self.game.roads[self.origin, self.target]
+        return self.game.roads[self.origin, self.target]
 
     def pos(self):
         if self.origin == min(self.origin, self.target):
@@ -99,6 +112,8 @@ class March:
 
 
 class UnorderedTupleDict(defaultdict):
+    def __init__(self, *args):
+        defaultdict.__init__(self, *args)
 
     def unorder(self, key):
         return tuple(sorted(key))

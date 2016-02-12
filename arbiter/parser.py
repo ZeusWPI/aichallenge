@@ -14,11 +14,17 @@ class Parser:
         a, b = string.rstrip().split(' ')
         self.game.forts[a].build_road(self.game.forts[b])
 
+    def parse_march(self, string):
+        origin, target, owner, size, steps = string.rstrip().split(' ')
+        March(self.game, self.game.forts[origin], self.game.forts[target],
+              owner, int(size))
+
     def read_map(self):
         with open(self.path, 'r') as f:
             lines = f.readlines()
         lines = self.process_section(self.parse_fort, lines)
         lines = self.process_section(self.parse_road, lines)
+        self.process_section(self.parse_march, lines)
 
     def process_section(self, fun, lines):
         section_length = int(lines[0].split(' ')[0])
