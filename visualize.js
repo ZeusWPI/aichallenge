@@ -40,7 +40,7 @@ var parsers = {
       target:   words[1],
       owner:    words[2],
       size:     parseInt(words[3]),
-      progress: parseFloat(words[4])
+      remaining_steps: parseInt(words[4])
     };
   }
 };
@@ -67,9 +67,10 @@ var parseData = function (text) {
   sections.marches.forEach(function (m) {
     m.origin = forts[m.origin];
     m.target = forts[m.target];
-    m.x = m.origin.x + (m.target.x - m.origin.x) * m.progress
-    m.y = m.origin.y + (m.target.y - m.origin.y) * m.progress;
-    delete m.progress;
+    // TODO: update for steps
+    //m.x = m.origin.x + (m.target.x - m.origin.x) * m.progress
+    //m.y = m.origin.y + (m.target.y - m.origin.y) * m.progress;
+    //delete m.progress;
   })
 
   return {
