@@ -2,9 +2,22 @@ import sys
 from arbiter import *
 
 class Parser:
-    def __init__(self, path):
+    def process_section(self, fun, lines):
+        section_length = int(lines[0].split(' ')[0])
+        rest = lines[section_length+1:]
+        for line in lines[1:section_length+1]:
+            fun(line)
+        return rest
+
+    def parse(self, path):
+        with open(path, 'r') as f:
+            lines = f.readlines()
+        return self.process(lines)
+
+
+class MapParser(Parser):
+    def __init__(self):
         self.game = Game()
-        self.path = path
 
     def parse_fort(self, string):
         name, x, y, owner, garrison = string.rstrip().split(' ')
@@ -17,25 +30,27 @@ class Parser:
     def parse_march(self, string):
         origin, target, owner, size, steps = string.rstrip().split(' ')
         March(self.game, self.game.forts[origin], self.game.forts[target],
-              owner, int(size))
+              owner, int(size), int(steps))
 
-    def read_map(self):
-        with open(self.path, 'r') as f:
-            lines = f.readlines()
+    def read_map(self, lines):
         lines = self.process_section(self.parse_fort, lines)
         lines = self.process_section(self.parse_road, lines)
         self.process_section(self.parse_march, lines)
 
-    def process_section(self, fun, lines):
-        section_length = int(lines[0].split(' ')[0])
-        rest = lines[section_length+1:]
-        for line in lines[1:section_length+1]:
-            fun(line)
-        return rest
-
-    def next_section(self, lines):
-        return (section, lines)
-
-    def parse(self):
-        self.read_map()
+    def process(self, lines):
+        self.read_map(lines)
         return self.game
+
+class CommandParser(Parser):
+    def __init__(self, game, player):
+        self.game = game
+        self.player = player
+
+    def parse_command(self, string):
+        origin, target, size = string.rstrip().split(' ')
+        origin, target = self.game.forts[origin], self.game.forts[target]
+        if origin and origin.owner == self.player:
+            origin.dispatch(target, int(size))
+
+    def process(self, lines):
+        self.process_section(self.parse_command, lines)

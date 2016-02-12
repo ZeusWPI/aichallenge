@@ -2,17 +2,17 @@
 helsingor 0 0 bart 30
 stonefieldt 10 0 berdt 20
 boyardt 20 10 berdt 10
-rivendell 18 3 bart 50
+rivendel 18 3 bart 50
 hogwardts 10 10 berdt 8
 knox 30 30 neutral 0
 7 roads:
 helsingor stonefieldt
 stonefieldt hogwardts
 hogwardts boyardt
-rivendell knox
-rivendell hogwardts
-boyardt rivendell
+rivendel knox
+rivendel hogwardts
+boyardt rivendel
 hogwardts knox
 2 marches:
 helsingor stonefieldt bart 20 5
-hogwardts rivendell berdt 18 2
+hogwardts rivendel berdt 18 2

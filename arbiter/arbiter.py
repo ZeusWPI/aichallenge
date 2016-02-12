@@ -61,10 +61,20 @@ class Fort:
         self.neighbours.add(neighbour)
         neighbour.neighbours.add(self)
 
+    def dispatch(self, neighbour, size):
+        if neighbour in self.neighbours:
+            size = min(size, self.garrison)
+            steps = self.distance(neighbour)
+            March(self.game, self, neighbour, self.owner, size, steps)
+            self.garrison -= size
+
     def distance(self, neighbour):
         """ returns distance in steps """
         dist = math.sqrt((self.x - neighbour.x) ** 2 + (self.y - neighbour.y) ** 2)
         return math.ceil(dist/MARCH_SPEED)
+
+    def __repr__(self):
+        return self.name
 
     def __eq__(self, other):
         self.name == other.name
@@ -77,7 +87,7 @@ class Fort:
 
 
 class March:
-    def __init__(self, game, origin, target, owner, size):
+    def __init__(self, game, origin, target, owner, size, steps):
         self.game = game
         self.origin = origin
         self.target = target
