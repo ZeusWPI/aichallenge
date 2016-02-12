@@ -44,15 +44,19 @@ class Road:
 
 
 class Fort:
-    def __init__(self, game, name, x, y):
+    def __init__(self, game, name, x, y, owner, garrison):
         self.game = game
         self.name = name
         self.x = x
         self.y = y
-        self.neighbours = Set()
-        self.owner = None
-        self.garrison = 0
-        self.forts[self.name] = self
+        self.neighbours = set()
+        self.owner = owner
+        self.garrison = garrison
+        game.forts[name] = self
+
+    def build_road(self, neighbour):
+        self.neighbours.add(neighbour)
+        neighbour.neighbours.add(self)
 
     def distance(self, neighbour):
         """ returns distance in steps """
@@ -104,4 +108,3 @@ class UnorderedTupleDict(defaultdict):
 
     def __setitem__(self, key, value):
         return super().__setitem__(self.unorder(key), value)
-
