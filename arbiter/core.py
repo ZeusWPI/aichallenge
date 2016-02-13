@@ -14,6 +14,22 @@ class Game:
         self.players = DefaultDict(lambda name: Player(self, name))
         self.roads = UnorderedTupleDefaultDict(Road)
 
+    def play(self):
+        while not self.winner():
+            self.step()
+            self.remove_losers()
+
+    def winner(self):
+        if len(self.players) > 1:
+            return None
+        for player in self.players.values():
+            return player
+
+    def remove_losers(self):
+        for player in list(self.players.values()):
+            if player.is_defeated():
+                del self.players[player.name]
+
     def step(self):
         for road in self.roads.values():
             road.step()
@@ -26,16 +42,17 @@ class Player:
         self.game = game
         self.name = name
         self.forts = set()
+        self.marches = set()
         game.players[name] = self
 
     def capture(self, fort):
         if fort.owner:
-            fort.owner.surrender(fort)
+            fort.owner.forts.remove(fort)
         self.forts.add(fort)
         fort.owner = self
 
-    def surrender(self, fort):
-        self.forts.remove(fort)
+    def is_defeated(self):
+        return (not self.forts) and (not self.marches)
 
 
 class Road:
@@ -145,9 +162,11 @@ class March:
         self.size = size
         self.remaining_steps = steps
         self.road().add(self)
+        self.owner.marches.add(self)
 
     def remove(self):
         self.road().remove(self)
+        self.owner.marches.remove(self)
 
     def kill_soldiers(self, num):
         self.size -= num
