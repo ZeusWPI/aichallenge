@@ -61,9 +61,6 @@ class Fort:
         self.neighbours.add(neighbour)
         neighbour.neighbours.add(self)
 
-    def roads(self):
-        return set((unorder((self, n)) for n in self.neighbours))
-
     def dispatch(self, neighbour, size):
         if neighbour in self.neighbours:
             size = min(size, self.garrison)
@@ -96,7 +93,7 @@ class March:
         self.target = target
         self.owner = owner
         self.size = size
-        self.remaining_steps = origin.distance(target)
+        self.remaining_steps = steps
         self.road().add(self)
 
     def remove(self):
