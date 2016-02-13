@@ -1,5 +1,6 @@
 import sys
-from arbiter import *
+from arbiter import Game, Fort, March
+from itertools import chain
 
 class Parser:
     def process_section(self, fun, lines):
@@ -54,3 +55,30 @@ class CommandParser(Parser):
 
     def process(self, lines):
         self.process_section(self.parse_command, lines)
+
+def show_section(items, name, fun):
+    header = "{} {}:".format(len(items), name)
+    body = (fun(item) for item in items)
+    return '\n'.join([header, *body])
+
+def show_fort(fort):
+    return "{} {} {} {} {}".format(
+            fort.name, fort.x, fort.y, fort.owner, fort.garrison)
+
+def show_road(road):
+    return "{} {}".format(*road)
+
+def show_march(march):
+    return "{} {} {} {} {}".format(
+            march.origin, march.target, march.owner,
+            march.size, march.remaining_steps)
+
+def show_visible(game, forts):
+    visible_forts = set.union(*(fort.neighbours for fort in forts))
+    roads = set.union(*(fort.roads() for fort in forts))
+    marches = list(chain(*(game.roads[road].marches() for road in roads)))
+    return '\n'.join([
+        show_section(visible_forts, 'forts', show_fort),
+        show_section(roads, 'roads', show_road),
+        show_section(marches, 'marches', show_march)
+        ])

@@ -61,6 +61,9 @@ class Fort:
         self.neighbours.add(neighbour)
         neighbour.neighbours.add(self)
 
+    def roads(self):
+        return set((unorder((self, n)) for n in self.neighbours))
+
     def dispatch(self, neighbour, size):
         if neighbour in self.neighbours:
             size = min(size, self.garrison)
@@ -77,10 +80,10 @@ class Fort:
         return self.name
 
     def __eq__(self, other):
-        self.name == other.name
+        return self.name == other.name
 
     def __lt__(self, other):
-        self.name < other.name
+        return self.name < other.name
 
     def __hash__(self):
         return self.name.__hash__()
@@ -120,13 +123,12 @@ class March:
         else:
             return self.remaining_steps
 
+def unorder(tup):
+    return tuple(sorted(tup))
 
 class UnorderedTupleDict(defaultdict):
-    def unorder(self, key):
-        return tuple(sorted(key))
-
     def __getitem__(self, key):
-        return super().__getitem__(self.unorder(key))
+        return super().__getitem__(unorder(key))
 
     def __setitem__(self, key, value):
-        return super().__setitem__(self.unorder(key), value)
+        return super().__setitem__(unorder(key), value)
