@@ -1,7 +1,8 @@
 import sys
 from itertools import chain
+from math import ceil
 
-from arbiter import Game, Fort, March, unorder
+from core import Game, Fort, March, unorder
 
 
 def read_section(handle):
@@ -69,7 +70,7 @@ def show_road(road):
 def show_march(march):
     return "{} {} {} {} {}".format(
             march.origin, march.target, march.owner,
-            march.size, march.remaining_steps)
+            march.size, ceil(march.remaining_steps))
 
 
 def show_visible(game, forts):

@@ -12,12 +12,16 @@ class Game:
         self.forts = {}
         self.roads = UnorderedTupleDefaultDict(Road)
 
+    def step(self):
+        for road in self.roads.values():
+            road.step()
+
 
 class Road:
-    def __init__(self, endpoints):
+    def __init__(self, ends):
         self.positions = defaultdict(lambda: [])
-        self.endpoints = endpoints
-        self.length = endpoints[0].distance(endpoints[1])
+        self.start, self.end = ends
+        self.length = self.start.distance(self.end)
 
     def add(self, march):
         self.positions[march.pos()].append(march)
@@ -33,6 +37,7 @@ class Road:
         self.resolve_encounters()
         self.half_step()
         self.resolve_encounters()
+        self.resolve_arrivals()
 
     def half_step(self):
         # the list() call is needed to fixate the current buckets
@@ -49,6 +54,10 @@ class Road:
                     if m1.size <= 0:
                         break
 
+    def resolve_arrivals(self):
+        for march in chain(self.positions[0], self.positions[self.length]):
+            march.arrive()
+
 
 @functools.total_ordering
 class Fort:
@@ -62,16 +71,25 @@ class Fort:
         self.garrison = garrison
         game.forts[name] = self
 
-    def build_road(self, neighbour):
-        self.neighbours.add(neighbour)
-        neighbour.neighbours.add(self)
-
     def dispatch(self, neighbour, size):
         if neighbour in self.neighbours:
             size = min(size, self.garrison)
             steps = self.distance(neighbour)
             March(self.game, self, neighbour, self.owner, size, steps)
             self.garrison -= size
+
+    def reinforce(self, march):
+        self.garrison += march.size
+        march.remove()
+
+    def besiege(self, march):
+        tmp = self.garrison
+        self.garrison -= march.size
+        march.kill_soldiers(tmp)
+        if self.garrison < 0:
+            self.garrison = 0
+            self.owner = march.owner
+            self.reinforce(march)
 
     def distance(self, neighbour):
         """ returns distance in steps """
@@ -115,13 +133,18 @@ class March:
             other.kill_soldiers(self.size)
             self.kill_soldiers(tmp)
 
+    def arrive(self):
+        if self.owner == self.target.owner:
+            self.target.reinforce(self)
+        else:
+            self.target.besiege(self)
 
     def road(self):
         return self.game.roads[self.origin, self.target]
 
     def pos(self):
         if self.origin == min(self.origin, self.target):
-            return self.origin.distance(self.target) - self.remaining_steps
+            return self.road().length - self.remaining_steps
         else:
             return self.remaining_steps
 
