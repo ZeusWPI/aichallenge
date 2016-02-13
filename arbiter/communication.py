@@ -42,11 +42,13 @@ def read_game(handle):
     return game
 
 
-def parse_command(self, string):
-    origin, target, size = string.rstrip().split(' ')
-    origin, target = self.game.forts[origin], self.game.forts[target]
-    if origin and origin.owner == self.player:
-        origin.dispatch(target, int(size))
+def parse_command(game, player, string):
+    origin, target, size = string.split(' ')
+    if game.forts[origin] and game.forts[origin].owner == player:
+        origin.dispatch(game.forts[target], int(size))
+
+def read_commands(game, player, handle):
+    read_sections(handle, lambda line: parse_command(game, player, line))
 
 
 def show_section(items, name, fun):
