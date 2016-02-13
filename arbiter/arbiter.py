@@ -122,9 +122,6 @@ class March:
 
 
 class UnorderedTupleDict(defaultdict):
-    def __init__(self, *args):
-        defaultdict.__init__(self, *args)
-
     def unorder(self, key):
         return tuple(sorted(key))
 
