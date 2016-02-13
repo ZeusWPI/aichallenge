@@ -15,6 +15,8 @@ class Game:
     def step(self):
         for road in self.roads.values():
             road.step()
+        for fort in self.forts.values():
+            fort.step()
 
 
 class Road:
@@ -90,6 +92,9 @@ class Fort:
             self.garrison = 0
             self.owner = march.owner
             self.reinforce(march)
+
+    def step(self):
+        self.garrison += 1
 
     def distance(self, neighbour):
         """ returns distance in steps """
