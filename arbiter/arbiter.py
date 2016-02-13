@@ -3,16 +3,21 @@ from collections import defaultdict
 import functools
 import math
 
+
 MARCH_SPEED = 1
+
 
 class Game:
     def __init__(self):
         self.forts = {}
-        self.roads = UnorderedTupleDict(lambda: Road())
+        self.roads = UnorderedTupleDefaultDict(Road)
+
 
 class Road:
-    def __init__(self):
+    def __init__(self, endpoints):
         self.positions = defaultdict(lambda: [])
+        self.endpoints = endpoints
+        self.length = endpoints[0].distance(endpoints[1])
 
     def add(self, march):
         self.positions[march.pos()].append(march)
@@ -124,9 +129,16 @@ def unorder(tup):
     return tuple(sorted(tup))
 
 
-class UnorderedTupleDict(defaultdict):
+class UnorderedTupleDefaultDict(dict):
+    def __init__(self, factory):
+        self.factory = factory
+
     def __getitem__(self, key):
         return super().__getitem__(unorder(key))
 
     def __setitem__(self, key, value):
         return super().__setitem__(unorder(key), value)
+
+    def __missing__(self, key):
+        self[key] = self.factory(key)
+        return self[key]
