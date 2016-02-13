@@ -2,7 +2,7 @@ import sys
 from itertools import chain
 from math import ceil
 
-from core import Game, Fort, March, unorder
+from core import Game, Fort, March, unorder, NO_PLAYER_NAME
 
 
 def read_section(handle):
@@ -16,10 +16,16 @@ def read_sections(handle, *parsers):
         for line in read_section(handle):
             parser(line)
 
+def parse_player(game, string):
+    if string == NO_PLAYER_NAME:
+        return None
+    return game.players[string]
+
 
 def parse_fort(game, string):
     name, x, y, owner, garrison = string.split(' ')
-    Fort(game, name, float(x), float(y), owner, int(garrison))
+    Fort(game, name, float(x), float(y),
+            parse_player(game, owner), int(garrison))
 
 
 def parse_road(game, string):
@@ -31,7 +37,7 @@ def parse_road(game, string):
 def parse_march(game, string):
     origin, target, owner, size, steps = string.split(' ')
     March(game, game.forts[origin], game.forts[target],
-            owner, int(size), int(steps))
+            parse_player(game, owner), int(size), int(steps))
 
 
 def read_game(handle):
@@ -48,8 +54,15 @@ def parse_command(game, player, string):
     if game.forts[origin] and game.forts[origin].owner == player:
         origin.dispatch(game.forts[target], int(size))
 
+
 def read_commands(game, player, handle):
     read_sections(handle, lambda line: parse_command(game, player, line))
+
+
+def show_player(player):
+    if player:
+        return player.name
+    return NO_PLAYER_NAME
 
 
 def show_section(items, name, fun):
@@ -60,7 +73,7 @@ def show_section(items, name, fun):
 
 def show_fort(fort):
     return "{} {} {} {} {}".format(
-            fort.name, fort.x, fort.y, fort.owner, fort.garrison)
+            fort.name, fort.x, fort.y, show_player(fort.owner), fort.garrison)
 
 
 def show_road(road):
@@ -69,7 +82,7 @@ def show_road(road):
 
 def show_march(march):
     return "{} {} {} {} {}".format(
-            march.origin, march.target, march.owner,
+            march.origin, march.target, show_player(march.owner),
             march.size, ceil(march.remaining_steps))
 
 

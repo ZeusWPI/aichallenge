@@ -1,15 +1,17 @@
-from itertools import chain, takewhile
+from itertools import chain
 from collections import defaultdict
 import functools
 import math
 
 
 MARCH_SPEED = 1
+NO_PLAYER_NAME = 'neutral'
 
 
 class Game:
     def __init__(self):
         self.forts = {}
+        self.players = DefaultDict(lambda name: Player(self, name))
         self.roads = UnorderedTupleDefaultDict(Road)
 
     def step(self):
@@ -17,6 +19,23 @@ class Game:
             road.step()
         for fort in self.forts.values():
             fort.step()
+
+
+class Player:
+    def __init__(self, game, name):
+        self.game = game
+        self.name = name
+        self.forts = set()
+        game.players[name] = self
+
+    def capture(self, fort):
+        if fort.owner:
+            fort.owner.surrender(fort)
+        self.forts.add(fort)
+        fort.owner = self
+
+    def surrender(self, fort):
+        self.forts.remove(fort)
 
 
 class Road:
@@ -72,6 +91,8 @@ class Fort:
         self.owner = owner
         self.garrison = garrison
         game.forts[name] = self
+        if owner:
+            owner.forts.add(self)
 
     def dispatch(self, neighbour, size):
         if neighbour in self.neighbours:
@@ -81,6 +102,8 @@ class Fort:
             self.garrison -= size
 
     def reinforce(self, march):
+        if self.garrison < 0:
+            self.garrison = 0
         self.garrison += march.size
         march.remove()
 
@@ -89,8 +112,7 @@ class Fort:
         self.garrison -= march.size
         march.kill_soldiers(tmp)
         if self.garrison < 0:
-            self.garrison = 0
-            self.owner = march.owner
+            march.owner.capture(self)
             self.reinforce(march)
 
     def step(self):
@@ -157,16 +179,18 @@ def unorder(tup):
     return tuple(sorted(tup))
 
 
-class UnorderedTupleDefaultDict(dict):
+class DefaultDict(dict):
     def __init__(self, factory):
         self.factory = factory
 
+    def __missing__(self, key):
+        self[key] = self.factory(key)
+        return self[key]
+
+
+class UnorderedTupleDefaultDict(DefaultDict):
     def __getitem__(self, key):
         return super().__getitem__(unorder(key))
 
     def __setitem__(self, key, value):
         return super().__setitem__(unorder(key), value)
-
-    def __missing__(self, key):
-        self[key] = self.factory(key)
-        return self[key]
