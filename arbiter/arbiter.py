@@ -25,7 +25,7 @@ def read_sections(handle, *parsers):
 
 def parse_fort(game, string):
     name, x, y, owner, garrison = string.split(' ')
-    Fort(game, name, float(x), float(y),
+    Fort(game, name, int(x), int(y),
             game.players.get(owner), int(garrison))
 
 
