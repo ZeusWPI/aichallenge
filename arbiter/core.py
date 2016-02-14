@@ -5,13 +5,11 @@ import math
 
 
 MARCH_SPEED = 1
-NO_PLAYER_NAME = 'neutral'
-
 
 class Game:
     def __init__(self):
         self.forts = {}
-        self.players = DefaultDict(lambda name: Player(self, name))
+        self.players = {}
         self.roads = UnorderedTupleDefaultDict(Road)
 
     def play(self):

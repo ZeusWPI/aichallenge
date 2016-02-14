@@ -2,7 +2,10 @@ import sys
 from itertools import chain
 from math import ceil
 
-from core import Game, Fort, March, unorder, NO_PLAYER_NAME
+from core import Game, Fort, March, unorder
+
+
+NO_PLAYER_NAME = 'neutral'
 
 
 def read_section(handle):
@@ -16,16 +19,11 @@ def read_sections(handle, *parsers):
         for line in read_section(handle):
             parser(line)
 
-def parse_player(game, string):
-    if string == NO_PLAYER_NAME:
-        return None
-    return game.players[string]
-
 
 def parse_fort(game, string):
     name, x, y, owner, garrison = string.split(' ')
     Fort(game, name, float(x), float(y),
-            parse_player(game, owner), int(garrison))
+            game.players.get(owner), int(garrison))
 
 
 def parse_road(game, string):
@@ -37,16 +35,14 @@ def parse_road(game, string):
 def parse_march(game, string):
     origin, target, owner, size, steps = string.split(' ')
     March(game, game.forts[origin], game.forts[target],
-            parse_player(game, owner), int(size), int(steps))
+            game.players.get(owner), int(size), int(steps))
 
 
-def read_game(handle):
-    game = Game()
+def read_map(game, handle):
     read_sections(handle,
             lambda line: parse_fort(game, line),
             lambda line: parse_road(game, line),
             lambda line: parse_march(game, line))
-    return game
 
 
 def parse_command(game, player, string):
