@@ -26,7 +26,7 @@ def read_sections(handle, *parsers):
 def parse_fort(game, string):
     name, x, y, owner, garrison = string.split(' ')
     Fort(game, name, int(x), int(y),
-            game.players.get(owner), int(garrison))
+         game.players.get(owner), int(garrison))
 
 
 def parse_road(game, string):
@@ -38,14 +38,14 @@ def parse_road(game, string):
 def parse_march(game, string):
     origin, target, owner, size, steps = string.split(' ')
     March(game, game.forts[origin], game.forts[target],
-            game.players.get(owner), int(size), int(steps))
+          game.players.get(owner), int(size), int(steps))
 
 
 def read_map(game, handle):
     read_sections(handle,
-            lambda line: parse_fort(game, line),
-            lambda line: parse_road(game, line),
-            lambda line: parse_march(game, line))
+                  lambda line: parse_fort(game, line),
+                  lambda line: parse_road(game, line),
+                  lambda line: parse_march(game, line))
 
 
 def parse_command(game, player, string):
@@ -72,7 +72,7 @@ def show_section(items, name, formatter):
 
 def show_fort(fort):
     return "{} {} {} {} {}".format(
-            fort.name, fort.x, fort.y, show_player(fort.owner), fort.garrison)
+        fort.name, fort.x, fort.y, show_player(fort.owner), fort.garrison)
 
 
 def show_road(road):
@@ -81,8 +81,8 @@ def show_road(road):
 
 def show_march(march):
     return "{} {} {} {} {}".format(
-            march.origin, march.target, show_player(march.owner),
-            march.size, ceil(march.remaining_steps))
+        march.origin, march.target, show_player(march.owner),
+        march.size, ceil(march.remaining_steps))
 
 
 def show_visible(game, forts):
@@ -113,6 +113,7 @@ class UnorderedTupleDefaultDict(dict):
 
     def __setitem__(self, key, value):
         return super().__setitem__(unorder(key), value)
+
 
 @total_ordering
 class Fort:
@@ -213,7 +214,6 @@ class Road:
             march.arrive()
 
 
-
 class March:
     def __init__(self, game, origin, target, owner, size, steps):
         self.game = game
@@ -264,7 +264,7 @@ class Player:
         self.marches = set()
         game.players[name] = self
         self.process = Popen(cmd, stdin=PIPE, stdout=PIPE,
-                           universal_newlines=True)
+                             universal_newlines=True)
 
     def capture(self, fort):
         if fort.owner:
@@ -282,8 +282,6 @@ class Player:
 
     def read_commands(self):
         read_commands(self.game, self, self.process.stdout)
-
-
 
 
 class Game:
@@ -314,7 +312,6 @@ class Game:
             player.send_state()
         for player in self.players.values():
             player.read_commands()
-
 
     def step(self):
         for road in self.roads.values():
