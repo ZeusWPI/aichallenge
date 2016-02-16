@@ -87,7 +87,7 @@ def show_march(tup):
         march.size, pos)
 
 
-def show_visible(game, forts):
+def show_visible(forts):
     roads = set(road for fort in forts for road in fort.roads.values())
     forts = set(chain(*(road.headed_to.keys() for road in roads)))
     marches = list(chain(*(road.marches() for road in roads)))
@@ -171,7 +171,6 @@ class Fort:
         self.roads = {}
         self.owner = owner
         self.garrison = garrison
-        game.forts[name] = self
         if owner:
             owner.forts.add(self)
 
@@ -250,19 +249,23 @@ class Player:
         return (not self.forts) and (not self.marches)
 
     def send_state(self):
-        self.process.stdin.write(show_visible(self.game, self.forts))
+        self.process.stdin.write(show_visible(self.forts))
         self.process.stdin.write('\n')
         self.process.stdin.flush()
 
-    def read_commands(self):
-        read_commands(self.game, self, self.process.stdout)
+    def read_commands(self, game):
+        read_commands(game, self, self.process.stdout)
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, players, map_file):
         self.forts = {}
         self.roads = []
         self.players = {}
+        for player in players:
+            self.players[player.name] = player
+        with open(map_file, 'r') as f:
+            read_map(self, f)
 
     def play(self):
         while not self.winner():
@@ -285,7 +288,7 @@ class Game:
         for player in self.players.values():
             player.send_state()
         for player in self.players.values():
-            player.read_commands()
+            player.read_commands(self)
 
     def step(self):
         for road in self.roads:
@@ -294,14 +297,12 @@ class Game:
             fort.resolve_siege()
 
 
-game = Game()
-game.players['procrat'] = Player('procrat', ['./procrat', 'test2'])
-game.players['iasoon'] = Player('iasoon', ['./procrat', 'test1'])
+players = [
+    Player('procrat', ['./procrat', 'test2']),
+    Player('iasoon', ['./procrat', 'test1'])
+    ]
 
-with open(sys.argv[1], 'r') as handle:
-    read_map(game, handle)
+game = Game(players, sys.argv[1])
 
-game.step()
-game.step()
-game.step()
-print(show_visible(game, game.forts.values()))
+game.play()
+print(show_visible(game.forts.values()))
