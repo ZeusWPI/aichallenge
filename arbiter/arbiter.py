@@ -25,8 +25,8 @@ def read_sections(handle, *parsers):
 
 def parse_fort(game, string):
     name, x, y, owner, garrison = string.split(' ')
-    Fort(game, name, int(x), int(y),
-         game.players.get(owner), int(garrison))
+    game.forts[name] = Fort(name, int(x), int(y), game.players.get(owner),
+                                  int(garrison))
 
 
 def parse_road(game, string):
@@ -159,8 +159,7 @@ def build_road(game, fort1, fort2):
 
 
 class Fort:
-    def __init__(self, game, name, x, y, owner, garrison):
-        self.game = game
+    def __init__(self, name, x, y, owner, garrison):
         self.name = name
         self.x = x
         self.y = y
@@ -208,12 +207,10 @@ class March:
         return str(self.size)
 
 class Player:
-    def __init__(self, game, name, cmd):
-        self.game = game
+    def __init__(self, name, cmd):
         self.name = name
         self.forts = set()
         self.marches = set()
-        game.players[name] = self
         self.process = Popen(cmd, stdin=PIPE, stdout=PIPE,
                              universal_newlines=True)
 
@@ -270,8 +267,8 @@ class Game:
 
 
 game = Game()
-Player(game, 'procrat', ['./procrat', 'test2'])
-Player(game, 'iasoon', ['./procrat', 'test1'])
+game.players['procrat'] = Player('procrat', ['./procrat', 'test2'])
+game.players['iasoon'] = Player('iasoon', ['./procrat', 'test1'])
 
 with open(sys.argv[1], 'r') as handle:
     read_map(game, handle)
