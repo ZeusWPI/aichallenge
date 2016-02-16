@@ -81,7 +81,7 @@ def show_road(road):
 
 
 def show_march(tup):
-    pos, origin, target, march = tup
+    origin, target, pos, march = tup
     return "{} {} {} {} {}".format(
         origin, target, show_player(march.owner),
         march.size, pos)
