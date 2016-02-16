@@ -143,6 +143,11 @@ class Road:
                     army(index, fort).die()
                     self.headed_to[fort][index] = None
 
+    def fetch_arriving(self, fort):
+        march = self.headed_to[fort][0]
+        self.headed_to[fort][0] = None
+        return march
+
     def marches(self):
         endpoints = list(self.headed_to.keys())
         for destination, origin in [endpoints, reversed(endpoints)]:
@@ -178,8 +183,29 @@ class Fort:
             self.garrison -= size
 
     def step(self):
+        self.resolve_siege()
         if self.owner:
             self.garrison += 1
+
+    def resolve_siege(self):
+        forces = defaultdict(lambda: 0)
+        forces[self.owner] = self.garrison
+        for road in self.roads.values():
+            march = road.fetch_arriving(self)
+            if march:
+                forces[march.owner] += march.size
+                march.die()
+
+        largest_force = lambda: max(forces.keys(), key=lambda k: forces[k])
+
+        winner = largest_force()
+        winner.capture(self)
+        self.garrison = forces[winner]
+        del forces[winner]
+        if forces:
+            runner_up = largest_force()
+            self.garrison -= forces[runner_up]
+
 
     def distance(self, neighbour):
         """ returns distance in steps """
@@ -264,6 +290,8 @@ class Game:
     def step(self):
         for road in self.roads:
             road.step()
+        for fort in self.forts.values():
+            fort.resolve_siege()
 
 
 game = Game()
