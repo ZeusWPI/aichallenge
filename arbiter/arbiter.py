@@ -5,6 +5,7 @@ from collections import defaultdict
 from math import ceil, sqrt
 from functools import total_ordering
 from subprocess import Popen, PIPE
+import json
 import sys
 
 MARCH_SPEED = 1
@@ -258,14 +259,20 @@ class Player:
 
 
 class Game:
-    def __init__(self, players, map_file):
+    def __init__(self, configfile):
+        with open(configfile, 'r') as f:
+            config = json.load(f)
+
+        self.players = {}
+        for name, cmd in config['players'].items():
+            self.players[name] = Player(name, cmd)
+
         self.forts = {}
         self.roads = []
-        self.players = {}
-        for player in players:
-            self.players[player.name] = player
-        with open(map_file, 'r') as f:
+        with open(config['mapfile'], 'r') as f:
             read_map(self, f)
+
+        self.logfile = open(config['logfile'], 'w')
 
     def play(self):
         while not self.winner():
@@ -295,14 +302,10 @@ class Game:
             road.step()
         for fort in self.forts.values():
             fort.resolve_siege()
+        self.logfile.write(show_visible(self.forts.values()))
+        self.logfile.write('\n')
 
 
-players = [
-    Player('procrat', ['./procrat', 'test2']),
-    Player('iasoon', ['./procrat', 'test1'])
-    ]
-
-game = Game(players, sys.argv[1])
+game = Game(sys.argv[1])
 
 game.play()
-print(show_visible(game.forts.values()))

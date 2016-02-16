@@ -1,0 +1,8 @@
+{
+    "players": {
+        "procrat": "./procrat",
+        "iasoon": "./iasoon"
+    },
+    "mapfile": "test.data",
+    "logfile": "log"
+}
