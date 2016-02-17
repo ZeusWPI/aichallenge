@@ -1,19 +1,22 @@
 <head>
   <link rel="stylesheet", href="{{url_for('static', filename='style.css')}}">
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
   <script type="text/javascript" src="http://code.jquery.com/jquery-2.2.0.min.js">
   </script>
   <script type="text/javascript" src="{{url_for('static', filename='script.js')}}">
   </script>
 </head>
 
-<header>
-  <div class="header-banner">
+<div id="container">
+  <img class="header-banner" src="{{url_for('static', filename='header.jpg')}}"/>
+  <div id="outer">
+    <div id="inner">
+      <nav>
+        {{toc|safe}}
+      </nav>
+      <div class="content">
+        {{content|safe}}
+      </div>
+    </div>
   </div>
-  <nav>
-    <ul>
-      <li>hoi</li>
-      <li>test</li>
-      <li>123</li>
-    </ul>
-  </nav>
-</header>
+</div>
