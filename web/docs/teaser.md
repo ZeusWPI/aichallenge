@@ -5,7 +5,7 @@ very own programming game. Now, we would like to share. Welcome to Badass Battle
 Bots.
 
 The objective of the game is to write a computer program that will take on other
-competitor's programs in a grand battle for honour, glory and world domination.
+competitors' programs in a grand battle for honour, glory and world domination.
 Sounds exciting? You bet it is!
 
 We are working hard to create a game that is exciting yet very simple, so that
