@@ -81,6 +81,8 @@ nav .toc ul ul {
     margin: auto;
     padding: 0 45;
     font-size: 12pt;
+    text-align: justify;
+    text-justify: inter-word;
 }
 
 .content h1 {
