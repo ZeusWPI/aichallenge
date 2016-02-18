@@ -1,85 +1,74 @@
 fs = require('fs');
 
-var extractSections = function (text) {
-  var lines = text.trim().split("\n"),
-      start = 0,
-      obj = {};
-
-  while (start < lines.length) {
-    var header = lines[start].split(/ +/);
-    var key = header[1].replace(":", "");
-    var length = parseInt(header[0]);
-    obj[key] = lines.slice(start + 1, start + length + 1);
-    start += length + 1;
+var takeSection = function (lines) {
+  var header = lines.shift().split(/ +/);
+  var length = parseInt(header[0]);
+  var section = []
+  for (var i = 0; i < length; i++) {
+    section.push(lines.shift());
   }
-
-  return obj;
+  return section;
 };
 
-var parsers = {
-  forts: function (string) {
-    var words = string.split(/ +/);
-    return {
-      name:       words[0],
-      x:          parseFloat(words[1]),
-      y:          parseFloat(words[2]),
-      owner:      words[3],
-      garrison:   parseInt(words[4]),
-      neighbours: []
-    };
-  },
-
-  roads: function (string) {
-    return string.split(/ +/);
-  },
-
-  marches: function (string) {
-    var words = string.split(/ +/);
-    return {
-      origin:   words[0],
-      target:   words[1],
-      owner:    words[2],
-      size:     parseInt(words[3]),
-      remaining_steps: parseInt(words[4])
-    };
-  }
+var parseFort = function (string) {
+  var words = string.split(/ +/);
+  return {
+    name:       words[0],
+    x:          parseInt(words[1]),
+    y:          parseInt(words[2]),
+    owner:      words[3],
+    garrison:   parseInt(words[4]),
+    neighbours: []
+  };
 };
 
-var parseData = function (text) {
-  var sections = extractSections(text);
-  var data = {};
-  for (var section in parsers) {
-    sections[section] = sections[section].map(function (line) {
-      return parsers[section].apply(this, [line]);
-    });
-  }
+var parseRoad = function (string) {
+  return string.split(/ +/);
+};
 
-  var forts = {};
-  sections.forts.forEach(function (fort) {
-    forts[fort.name] = fort;
+var parseMarch = function (string) {
+  var words = string.split(/ +/);
+  return {
+    origin: words[0],
+    target: words[1],
+    owner:  words[2],
+    size:   parseInt(words[3]),
+    steps:  parseInt(words[4])
+  };
+};
+
+var steps = function(a, b) {
+  return Math.ceil(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+};
+
+var parseData = function (lines) {
+  var forts = takeSection(lines).map(parseFort);
+  var roads = takeSection(lines).map(parseRoad);
+  var marches = takeSection(lines).map(parseMarch);
+
+  var fortmap = {};
+  forts.forEach(function (fort) {
+    fortmap[fort.name] = fort;
   });
 
-  sections.roads.forEach(function (road) {
-    forts[road[0]].neighbours.push(road[1]);
-    forts[road[1]].neighbours.push(road[0]);
+
+  roads.forEach(function (road) {
+    fortmap[road[0]].neighbours.push(fortmap[road[1]]);
+    fortmap[road[1]].neighbours.push(fortmap[road[0]]);
   });
 
-  sections.marches.forEach(function (m) {
-    m.origin = forts[m.origin];
-    m.target = forts[m.target];
-    // TODO: update for steps
-    //m.x = m.origin.x + (m.target.x - m.origin.x) * m.progress
-    //m.y = m.origin.y + (m.target.y - m.origin.y) * m.progress;
-    //delete m.progress;
+  marches.forEach(function (m) {
+    m.origin = fortmap[m.origin];
+    m.target = fortmap[m.target];
   })
 
   return {
-    forts:   forts,
-    marches: sections.marches
+    forts:   fortmap,
+    marches: marches
   };
 };
 
 fs.readFile('sample.data', 'utf8', function (err, data) {
   if (err) { return console.log(err); }
-  console.log(parseData(data));
+  console.log(parseData(data.split('\n')));
 });
