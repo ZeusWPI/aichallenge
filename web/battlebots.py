@@ -9,7 +9,7 @@ app = Flask(__name__)
 @app.route('/battlebots')
 @app.route('/')
 def landing_page():
-    return docs('lorin_ipsum')
+    return docs('teaser')
 
 @app.route('/docs/<name>')
 def docs(name):
