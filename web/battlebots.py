@@ -5,8 +5,6 @@ from markdown import Markdown
 
 app = Flask(__name__)
 
-@app.route('/battlebots/')
-@app.route('/battlebots')
 @app.route('/')
 def landing_page():
     return docs('teaser')
