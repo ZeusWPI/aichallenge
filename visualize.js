@@ -37,7 +37,7 @@ var parseMarch = function (string) {
   };
 };
 
-var steps = function(a, b) {
+var distance = function(a, b) {
   return Math.ceil(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
 };
 
@@ -51,7 +51,6 @@ var parseData = function (lines) {
     fortmap[fort.name] = fort;
   });
 
-
   roads.forEach(function (road) {
     fortmap[road[0]].neighbours.push(fortmap[road[1]]);
     fortmap[road[1]].neighbours.push(fortmap[road[0]]);
@@ -60,6 +59,10 @@ var parseData = function (lines) {
   marches.forEach(function (m) {
     m.origin = fortmap[m.origin];
     m.target = fortmap[m.target];
+    var progress = m.steps / distance(m.origin, m.target);
+    m.x = progress * (m.target.x - m.origin.x) + m.origin.x;
+    m.y = progress * (m.target.y - m.origin.y) + m.origin.y;
+
   })
 
   return {
@@ -70,5 +73,6 @@ var parseData = function (lines) {
 
 fs.readFile('sample.data', 'utf8', function (err, data) {
   if (err) { return console.log(err); }
-  console.log(parseData(data.split('\n')));
+  var state = parseData(data.split('\n'));
+  console.log(state);
 });
