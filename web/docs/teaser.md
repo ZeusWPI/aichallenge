@@ -14,7 +14,7 @@ anyone with minimal coding skills can participate.
 So, what can you expect? There will be a series of codenights where we kindly
 invite you to exchange strategies with your peers, get some assistance when
 you are stuck, trash-talk your opponents, or compete in a preliminary tournament
-to show your strength. We will top this off with a grand tournament. where you
+to show your strength. We will top this off with a grand tournament, where you
 will see the action unfold before your eyes. There will be prizes.
 
 
