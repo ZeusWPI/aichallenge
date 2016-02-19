@@ -63,3 +63,40 @@ Colliding armies behave as follows:
 - Armies of the same alliance ignore each other.
 - Armies of different alliance annihilate each other. TODO
 
+
+## How it all fits together
+
+
+    +---------------+
+    |               |
+    |   +-------+   |
+    |   |       |   |
+    |   |  Bot  |   |
+    |   |       |   |
+    |   +-------+   |                                   +-----------------+
+    |               |                                   |                 |
+    |    Sandbox    |                                   |     Website     |
+    |               |                                   |                 |
+    +---------+-----+                                   +------+----------+
+            ^                                                  |
+            |                                                  |
+            |                                                  v
+    +-------+-----+           +-------------+           +------+--------+
+    |             |           |             |           |               |
+    |   Arbiter   +<----------+    Ranker   +---------->+   Datastore   |
+    |             |           |             |           |               |
+    +-------+-----+           +-------------+           +---------------+
+            |
+            |
+            v
+    +---------+-----+
+    |               |
+    |    Sandbox    |
+    |               |
+    |   +-------+   |
+    |   |       |   |
+    |   |  Bot  |   |
+    |   |       |   |
+    |   +-------+   |
+    |               |
+    +---------------+
