@@ -3,7 +3,6 @@
 from itertools import chain
 from collections import defaultdict
 from math import ceil, sqrt
-from functools import total_ordering
 from subprocess import Popen, PIPE
 import json
 import sys
@@ -27,7 +26,7 @@ def read_sections(handle, *parsers):
 def parse_fort(game, string):
     name, x, y, owner, garrison = string.split(' ')
     game.forts[name] = Fort(name, int(x), int(y), game.players.get(owner),
-                                  int(garrison))
+                            int(garrison))
 
 
 def parse_road(game, string):
@@ -96,15 +95,15 @@ def show_visible(forts):
         show_section(forts, 'forts', show_fort),
         show_section(roads, 'roads', show_road),
         show_section(marches, 'marches', show_march)
-        ])
+    ])
 
 
 class Road:
     def __init__(self, fort1, fort2):
         self.length = fort1.distance(fort2)
         self.headed_to = {
-                fort1: [None]*(self.length*2+1),
-                fort2: [None]*(self.length*2+1),
+            fort1: [None] * (self.length * 2 + 1),
+            fort2: [None] * (self.length * 2 + 1),
         }
 
     def march(self, destination, owner, size, steps=None):
@@ -121,8 +120,8 @@ class Road:
 
     def half_step(self):
         for marches in self.headed_to.values():
-            for i in range(len(marches)-1):
-                marches[i] = marches[i+1]
+            for i in range(len(marches) - 1):
+                marches[i] = marches[i + 1]
             marches[-1] = None
         self.resolve_encounters()
 
@@ -130,8 +129,8 @@ class Road:
         army = lambda ind, fort: self.headed_to[fort][ind]
 
         fort1, fort2 = self.headed_to.keys()
-        for i in range(2*self.length+1):
-            positions = [(i, fort1), (-i-1, fort2)]
+        for i in range(2 * self.length + 1):
+            positions = [(i, fort1), (-i - 1, fort2)]
             armies = [army(*pos) for pos in positions]
             if not all(armies):
                 continue
@@ -154,7 +153,7 @@ class Road:
         for destination, origin in [endpoints, reversed(endpoints)]:
             for steps, march in enumerate(self.headed_to[destination]):
                 if march:
-                    yield (origin, destination, ceil(steps/2), march)
+                    yield (origin, destination, ceil(steps / 2), march)
 
 
 def build_road(game, fort1, fort2):
@@ -206,11 +205,10 @@ class Fort:
             runner_up = largest_force()
             self.garrison -= forces[runner_up]
 
-
     def distance(self, neighbour):
         """ returns distance in steps """
         dist = sqrt((self.x - neighbour.x) ** 2 + (self.y - neighbour.y) ** 2)
-        return ceil(dist/MARCH_SPEED)
+        return ceil(dist / MARCH_SPEED)
 
     def __repr__(self):
         return self.name
@@ -231,6 +229,7 @@ class March:
 
     def __repr__(self):
         return str(self.size)
+
 
 class Player:
     def __init__(self, name, cmd):
