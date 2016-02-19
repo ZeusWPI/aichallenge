@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE KigDocument>
+<KigDocument CompatibilityVersion="0.7.0" axes="1" Version="1.0" grid="1">
+ <CoordinateSystem>Euclidean</CoordinateSystem>
+ <Hierarchy>
+  <Data type="string" id="1">def calc( ap, bp ):
+    a = ap.coordinate()
+    b = bp.coordinate()
+    m = (a + b)/2
+    p1 = Point(Coordinate(
+        m.x - (b.y - a.y)/2,
+        m.y + (b.x - a.x)/2
+    ))
+    return p1</Data>
+  <Object type="PythonCompileType" id="2">
+   <Parent id="1"/>
+  </Object>
+  <Data type="string" id="3">def calc( ap, bp ):
+    a = ap.coordinate()
+    b = bp.coordinate()
+    m = (a + b)/2
+    p2 = Point(Coordinate(
+        m.x + (b.y - a.y)/2,
+        m.y - (b.x - a.x)/2
+    ))
+    return p2</Data>
+  <Object type="PythonCompileType" id="4">
+   <Parent id="3"/>
+  </Object>
+  <Data type="double" id="5">38.0615</Data>
+  <Data type="double" id="6">0.0411064</Data>
+  <Data type="double" id="7">8.79429</Data>
+  <Data type="double" id="8">-0.0510802</Data>
+  <Data type="double" id="9">34.3571</Data>
+  <Object type="FixedPoint" id="10">
+   <Parent id="9"/>
+   <Parent id="7"/>
+  </Object>
+  <Data type="double" id="11">18</Data>
+  <Data type="double" id="12">12</Data>
+  <Data type="int" id="13">0</Data>
+  <Data type="string" id="14">a</Data>
+  <Data type="string" id="15">b</Data>
+  <Data type="double" id="16">0.0282799</Data>
+  <Data type="double" id="17">-0.0549436</Data>
+  <Data type="int" id="18">0</Data>
+  <Data type="string" id="19">m</Data>
+  <Data type="double" id="20">14.2288</Data>
+  <Object type="FixedPoint" id="21">
+   <Parent id="11"/>
+   <Parent id="12"/>
+  </Object>
+  <Data type="double" id="22">20.0539</Data>
+  <Data type="double" id="23">14.2185</Data>
+  <Object type="FixedPoint" id="24">
+   <Parent id="23"/>
+   <Parent id="20"/>
+  </Object>
+  <Object type="RelativePoint" id="25">
+   <Parent id="6"/>
+   <Parent id="8"/>
+   <Parent id="24"/>
+  </Object>
+  <Object type="Label" id="26">
+   <Parent id="13"/>
+   <Parent id="25"/>
+   <Parent id="14"/>
+  </Object>
+  <Data type="int" id="27">-1</Data>
+  <Data type="double" id="28">23.3838</Data>
+  <Object type="FixedPoint" id="29">
+   <Parent id="28"/>
+   <Parent id="22"/>
+  </Object>
+  <Object type="SegmentAB" id="30">
+   <Parent id="24"/>
+   <Parent id="29"/>
+  </Object>
+  <Property which="mid-point" id="31">
+   <Parent id="30"/>
+  </Property>
+  <Object type="CircleBCP" id="32">
+   <Parent id="31"/>
+   <Parent id="29"/>
+  </Object>
+  <Object type="LineAB" id="33">
+   <Parent id="24"/>
+   <Parent id="29"/>
+  </Object>
+  <Data type="double" id="34">-0.0247705</Data>
+  <Object type="RelativePoint" id="35">
+   <Parent id="16"/>
+   <Parent id="17"/>
+   <Parent id="29"/>
+  </Object>
+  <Object type="Label" id="36">
+   <Parent id="18"/>
+   <Parent id="35"/>
+   <Parent id="15"/>
+  </Object>
+  <Data type="int" id="37">1</Data>
+  <Data type="int" id="38">0</Data>
+  <Data type="double" id="39">-0.0641517</Data>
+  <Object type="RelativePoint" id="40">
+   <Parent id="39"/>
+   <Parent id="34"/>
+   <Parent id="31"/>
+  </Object>
+  <Object type="Label" id="41">
+   <Parent id="38"/>
+   <Parent id="40"/>
+   <Parent id="19"/>
+  </Object>
+  <Object type="LinePerpend" id="42">
+   <Parent id="33"/>
+   <Parent id="31"/>
+  </Object>
+  <Object type="ConicLineIntersection" id="43">
+   <Parent id="32"/>
+   <Parent id="42"/>
+   <Parent id="27"/>
+  </Object>
+  <Object type="ConicLineIntersection" id="44">
+   <Parent id="32"/>
+   <Parent id="42"/>
+   <Parent id="37"/>
+  </Object>
+  <Object type="CircleBCP" id="45">
+   <Parent id="44"/>
+   <Parent id="29"/>
+  </Object>
+  <Object type="CircleBCP" id="46">
+   <Parent id="43"/>
+   <Parent id="24"/>
+  </Object>
+  <Data type="double" id="47">13.2904</Data>
+  <Object type="FixedPoint" id="48">
+   <Parent id="5"/>
+   <Parent id="47"/>
+  </Object>
+  <Object type="PythonExecuteType" id="49">
+   <Parent id="4"/>
+   <Parent id="48"/>
+   <Parent id="10"/>
+  </Object>
+  <Object type="CircleBCP" id="50">
+   <Parent id="49"/>
+   <Parent id="10"/>
+  </Object>
+  <Object type="PythonExecuteType" id="51">
+   <Parent id="2"/>
+   <Parent id="48"/>
+   <Parent id="10"/>
+  </Object>
+  <Object type="CircleBCP" id="52">
+   <Parent id="51"/>
+   <Parent id="48"/>
+  </Object>
+ </Hierarchy>
+ <View>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="48"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="32"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="46"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="10"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="31"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="43"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="21"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="42"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="24"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="45"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="44"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="41"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="36"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="29"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="33"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="26"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="51"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="50"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="49"/>
+  <Draw color="#0000ff" shown="true" namecalcer="none" style="SolidLine" width="-1" point-style="Round" font="Sans Serif,9,-1,5,50,0,0,0,0,0" object="52"/>
+ </View>
+</KigDocument>
