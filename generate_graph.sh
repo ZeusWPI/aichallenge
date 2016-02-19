@@ -158,7 +158,7 @@ generate_graph() {
     local playernames="$(names | head -$players)"
     echo "$playernames"
 
-    local homes="$(( 10 + players * players ))"
+    local homes="$(( 10 + players * players + RANDOM%(2 * wanderlust) + wanderlust ))"
     echo "$homes forts:"
     # determine the field width and height
     local rows="$(( 2 * homes ))"
@@ -270,5 +270,6 @@ generate_graph() {
 }
 
 players="$1"
+wanderlust="$2"
 generate_graph
 
