@@ -1,6 +1,5 @@
 # Algemeen
 - Posters ophangen
-    - Technicum (2)
     - S5 (1)
     - S25 (2)
     - Dat ander gebouw van de wiskunde (2)
