@@ -1,3 +1,22 @@
+## Rules
+
+The playing field consists of a planar graph, where nodes are forts and edges
+are roads. The goal of the game is to defeat your opponents by capturing all
+their forts and defeating all their armies.
+
+Each fort has its own garrison. These soldiers can be sent to march over a road
+towards another fort. When two hostile armies meet, they will fight. Fights will
+be resolved by subtracting army sizes. When armies arrive at a fort, they will
+reinforce the garrison if it is friendly, or fight it when it is hostile. When
+multiple armies arrive at a fort, they will be grouped by player. Then, the size
+of the smallest army will be subtracted from all armies, until only one army
+remains. This army will then capture the fort. When all armies are defeated, the
+original owner will remain in control of the fort.
+
+The game is turn-based, and turns happen simultaneously. Each turn, each player
+will be told the map state. He may then command his soldiers. Soldiers
+garrisoned in a fort may be issued to march to another fort. Marching armies
+cannot be commanded.
 
 ## Description of internal state
 
@@ -62,7 +81,6 @@ After receiving new commands from the bots, the armies are moved in the followin
 Colliding armies behave as follows:
 - Armies of the same alliance ignore each other.
 - Armies of different alliance annihilate each other. TODO
-
 
 ## How it all fits together
 
