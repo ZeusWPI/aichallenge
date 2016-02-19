@@ -198,9 +198,9 @@ class Fort:
 
 
     def resolve_siege(self):
-        forces = fetch_armies()
+        forces = self.fetch_armies()
         def largest_force():
-            reutrn max(forces.keys(), key=lambda k: forces[k])
+            return max(forces.keys(), key=lambda k: forces[k])
         winner = largest_force()
         self.garrison = forces[winner]
         del forces[winner]
