@@ -28,9 +28,124 @@ intersect() {
     echo $(bc <<< "$aob && $boa")
 }
 
+names() {
+    sort -R <<HERE
+miou
+miaou
+miauw
+meow
+mraaaaaw
+purrr
+prrrrrrrr
+GSHSHSHSHSHSHSS
+mraaAAW?
+HERE
+}
+
+forts() {
+    sort -R <<HERE
+aberwyvern
+alnwick
+amon-sul
+anvard
+arundel
+ashford
+banefort
+barad-dur
+beaumaris
+belvoir
+blandings
+blarney
+bowsers-castle
+boyard
+bran
+caernarfon
+caerphilly
+cair-paravel
+caladan
+camelot
+carcasonne
+carignano
+castamere
+casterly-rock
+castle-aaaaaaaaarrrggh
+castle-black
+castlevania
+chambord
+conway
+deepwood-mottle
+disney-castle
+dol-gulder
+dover
+dragonstone
+dreadfort
+duckula
+eilean-donan
+eyrie
+floors
+foix
+gaillard
+glagnorra
+gormenghast
+grayskull
+greyguard
+greywater-watch
+grimm
+harrenhal
+helsingor
+highgarden
+highpoint
+hogwarts
+hornburg
+hyrule-castle
+ironrath
+isengard
+karhold
+katz-kastle
+krak-des-chevaliers
+last-hearth
+marlinspike
+minas-morgul
+moat-cailin
+montaillou
+montsegur
+neuschwanstein
+nightfort
+nox
+otranto
+pyke
+redfort
+red-keep
+riverrun
+runestone
+sant-angelo
+sao-jorge
+seagard
+skyreach
+starfall
+stokeworth
+storms-end
+summerhall
+sunspear
+the-citadel
+the-dark-tower
+tintagel
+ton-towers
+torquilstone
+torrhens-square
+trim
+twins
+urquhart
+versailles
+windsor
+winterfell
+wolfenstein
+HERE
+}
+
 generate_graph() {
     # uses:
-    # - homes: the number of nodes the graph should have
+    # - players: the number of nodes the graph should have
     #
     # overwrites:
     # - xs: with the x coordinates of home $i, 0 < $i < $homes
@@ -38,8 +153,13 @@ generate_graph() {
     # - roads: with the number of edges drawn
     # - te: with the beginning homes of edge $i, 0 < $i < $roads
     # - fe: with the ending homes of edge $i, 0 < $i < $roads
-    echo "Generating Graph" >&2
 
+    echo "$players players:"
+    local playernames="$(names | head -$players)"
+    echo "$playernames"
+
+    local homes="$(( 10 + players * players ))"
+    echo "$homes forts:"
     # determine the field width and height
     local rows="$(( 2 * homes ))"
     local cols="$(( 3 * rows / 2 ))"
@@ -48,6 +168,9 @@ generate_graph() {
 
     # place homes at random places on the field. save some distances
     # between the homes.
+    declare -a xs
+    declare -a ys
+    declare -a fortnames
     declare -a bd2m   # bird's distance squared matrix
     declare -a con    # are two points connected?
     for (( i = 0; i < homes; i++ )); do
@@ -69,8 +192,11 @@ generate_graph() {
         done
         xs["$i"]="$x"
         ys["$i"]="$y"
-        echo "adding point $i: $x $y"
-    done
+        local fort player armysize
+        read fort player armysize
+        fortnames["$i"]="$fort"
+        echo "$fort $x $y ${player:-neutral} ${armysize:-0}"
+    done < <(echo "$playernames" | sed 's/$/\t100/' | paste <(forts) -)
 
     for (( i = 0; i < homes; i++ )); do
         for (( j = 0; j < i; j++ )); do
@@ -81,7 +207,9 @@ generate_graph() {
     done
 
     # initializing the number of roads
-    roads=0
+    local roads=0
+    declare -a te
+    declare -a fe
     for (( i = 0; i < homes; i++ )); do
         # create a (sorted) queue of distances between homes
         for (( j = 0; j < i; j++ )); do
@@ -137,6 +265,7 @@ generate_graph() {
         te[$roads]=$b
         roads=$((roads + 1))
         echo "    connected" >&2
+        echo "${fortnames[$a]} ${fortnames[$b]}"
         for (( i = 0; i < homes; i++ )); do
             local connected="$(( con[a*homes + i] || con[b*homes + i] ))"
             con[$(( a*homes + i ))]="$connected"
@@ -144,73 +273,10 @@ generate_graph() {
             con[$(( b*homes + i ))]="$connected"
             con[$(( i*homes + b ))]="$connected"
         done
-    done
-
-    #gnuplot:
-    # plot "data.txt" with lines, "" with points 
+    done | sort -r | tee >(wc -l | sed 's/$/ roads:/') | tac
 
 }
 
-main() {
-    # Expects as parameters a list of player names zipped with the
-    # location of their bot executables.
-    declare -a players
-    declare -a botboxes
-    generate_players "$@"
-    local nplayers="${#players[@]}"
+players="$1"
+generate_graph
 
-    declare -a writeprocs
-    declare -a outputs
-    local i
-    for (( i = 0; i < nplayers; i++ )); do
-        echo "$i" > "${botboxes[$i]}/stdin" &
-
-        turnprocs[$i]="$!"
-    done
-
-    # TODO
-
-    declare -a xs
-    declare -a ys
-    local roads
-    declare -a fe
-    declare -a te
-    #generate_graph
-
-}
-
-generate_players() {
-    local n=0
-    while (( $# >= 2 )); do
-
-        players[$n]="$1"
-        botboxes[$n]="$(isolate --box-id="$n" --init)/box"
-        mkfifo "${botboxes[$n]}/stdin"
-        mkfifo "${botboxes[$n]}/stdout"
-        mkfifo "${botboxes[$n]}/stderr"
-        cp "$2" "${botboxes[$n]}/"
-        isolate --box-id="$n"                         \
-                --stdin="${botboxes[$n]}/stdin"   \
-                --stdout="${botboxes[$n]}/stdout" \
-                --stderr="${botboxes[$n]}/stderr" \
-                --processes=1                         \
-                --run "${2##*/}" > /dev/null 2>&1     &
-        shift 2
-        i="$((n + 1))"
-    done
-}
-
-plot() {
-gnuplot <<HERE
-set term png size 3000,3000
-set output '$1'
-plot \
-     "arcs" using 1:2:(\$3-\$1):(\$4-\$2) with vectors nohead notitle, \
-     "points" using 2:3:(0.3) with circles fill solid notitle, \
-     "points" using 2:3:1 with labels notitle
-HERE
-}
-
-     #"perpends" using 1:2:(\$3-\$1):(\$4-\$2) with vectors nohead notitle, \
-     #"circles" with circles notitle
-     #"mids" with points notitle, \
