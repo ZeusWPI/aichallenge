@@ -216,7 +216,6 @@ generate_graph() {
             echo "$(( bd2m[i * homes + j] )) $i $j"
         done
     done | sort -n | while read distance2 a b; do
-        echo -n "considering connecting $a and $b" >&2
         local distance="$(bc <<< "sqrt($distance2) ")"
         # skip intersecting segments
         local cuts=0
@@ -227,14 +226,11 @@ generate_graph() {
             cuts=$(intersect $((xs[a])) $((ys[a])) $((xs[b])) $((ys[b])) $((xs[fe[i]])) $((ys[fe[i]])) $((xs[te[i]])) $((ys[te[i]])))
         done
         if test $cuts = 1; then
-            echo "           intersects with $((te[i-1])) to $((fe[i-1]))" >&2
             continue
         fi
 
         # connect every two closest nodes if they aren't connected
         if (( con[a * homes + b] )); then
-            echo -n "    old" >&2
-
             # if the new connection passes too close to another home, skip
             # it.
             local too_close=0
@@ -253,18 +249,14 @@ generate_graph() {
                 too_close="$(bc <<< "$to_p1 && $to_p2")"
             done
             if test "$too_close" == 1; then
-                echo "    too close to point $((i - 1))" >&2
                 continue
             fi
-        else
-            echo -n "    new" >&2
         fi
 
         # connect these two, update walking matrix
         fe[$roads]=$a
         te[$roads]=$b
         roads=$((roads + 1))
-        echo "    connected" >&2
         echo "${fortnames[$a]} ${fortnames[$b]}"
         for (( i = 0; i < homes; i++ )); do
             local connected="$(( con[a*homes + i] || con[b*homes + i] ))"
