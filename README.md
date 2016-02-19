@@ -6,7 +6,8 @@ their forts and defeating all their armies.
 
 Each fort has its own garrison. These soldiers can be sent to march over a road
 towards another fort. When two hostile armies meet, they will fight. Fights will
-be resolved by subtracting army sizes. When armies arrive at a fort, they will
+be resolved by substracting the smaller army from the larger, of which the
+(optional) remainder marches on. When armies arrive at a fort, they will
 reinforce the garrison if it is friendly, or fight it when it is hostile. When
 multiple armies arrive at a fort, they will be grouped by player. Then, the size
 of the smallest army will be subtracted from all armies, until only one army
