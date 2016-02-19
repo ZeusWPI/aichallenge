@@ -186,7 +186,7 @@ class Fort:
         if self.owner:
             self.garrison += 1
 
-    def resolve_siege(self):
+    def fetch_armies(self):
         forces = defaultdict(lambda: 0)
         forces[self.owner] = self.garrison
         for road in self.roads.values():
@@ -194,16 +194,21 @@ class Fort:
             if march:
                 forces[march.owner] += march.size
                 march.die()
+        return forces
 
-        largest_force = lambda: max(forces.keys(), key=lambda k: forces[k])
 
+    def resolve_siege(self):
+        forces = fetch_armies()
+        def largest_force():
+            reutrn max(forces.keys(), key=lambda k: forces[k])
         winner = largest_force()
-        winner.capture(self)
         self.garrison = forces[winner]
         del forces[winner]
         if forces:
             runner_up = largest_force()
             self.garrison -= forces[runner_up]
+        if self.garrison > 0:
+            winner.capture(self)
 
     def distance(self, neighbour):
         """ returns distance in steps """
