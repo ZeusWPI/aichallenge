@@ -1,8 +1,4 @@
 # Algemeen
-- Posters ophangen
-    - S5 (1)
-    - S25 (2)
-    - Dat ander gebouw van de wiskunde (2)
 - Sandboxing
 - Visualisator
 - Ranker
