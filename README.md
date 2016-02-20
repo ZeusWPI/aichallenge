@@ -12,8 +12,8 @@ reinforce the garrison if it is friendly, or fight it when it is hostile. When
 multiple armies arrive at a fort, they will be grouped by player. Then, the size
 of the smallest army will be subtracted from all armies, until only one army
 remains. This army will then capture the fort. When all armies are defeated, the
-original owner will remain in control of the fort. At the end of the turn, all
-armies at forts get an extra soldier.
+original owner will remain in control of the fort. At the end of each turn, the
+garrison of forts controlled by a player is increased by one.
 
 The game is turn-based, and turns happen simultaneously. Each turn, each player
 will be told the map state. He may then command his soldiers. Soldiers
