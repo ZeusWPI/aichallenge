@@ -20,6 +20,8 @@ will be told the map state. He may then command his soldiers. Soldiers
 garrisoned in a fort may be issued to march to another fort. Marching armies
 cannot be commanded.
 
+At the beginning of the game, each player owns one fort with a hundred soldiers.
+
 ## Description of internal state
 
 The internal state consists of players (and their bots processes) and the
