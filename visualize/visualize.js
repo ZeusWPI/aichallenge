@@ -85,6 +85,13 @@ var draw = function(data){
   var xmax = d3.max(data.forts, function(f) { return f.x });
   var ymax = d3.max(data.forts, function(f) { return f.y });
 
+  var players = d3.set(
+    data.forts.map(function(f) {return f.owner}),
+    function(f) {return f}
+  ).values();
+
+  var playercolor = d3.scale.category10().domain(players);
+
   var fig = d3.select("#visualisation")
       .append("svg")
       .attr("viewBox", viewbox(0, 0, xmax, ymax, 2));
@@ -106,7 +113,8 @@ var draw = function(data){
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
   fortGroups.append("circle")
-      .attr("r", 0.5);
+      .attr("r", 0.5)
+      .attr("fill", function(d) {return playercolor(d.owner)});
 
   fortGroups.append("text")
       .text(function(d) {return d.garrison})
