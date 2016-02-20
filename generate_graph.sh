@@ -10,14 +10,14 @@ alias bc="bc -l"
 
 intersect() {
     bc <<<"
-        xa0 = "$1"; ya0 = "$2"; xa1 = "$3"; ya1 = "$4";
-        xb0 = "$5"; yb0 = "$6"; xb1 = "$7"; yb1 = "$8";
+        xa0 = $1; ya0 = $2; xa1 = $3; ya1 = $4;
+        xb0 = $5; yb0 = $6; xb1 = $7; yb1 = $8;
         if (xa0 != xa1) {
             as = (ya0 - ya1) / (xa0 - xa1);
             ao = ya0 - as*xa0;
             boa = ((as*xb0 + ao - yb0) * (as*xb1 + ao - yb1) <= 0);
         } else {
-        boa = ((xb0 - xa0) * (xb1 - xa0) <= 0);
+            boa = ((xb0 - xa0) * (xb1 - xa0) <= 0);
         }
         if (xb0 != xb1) {
             bs = (yb0 - yb1) / (xb0 - xb1);
@@ -235,21 +235,26 @@ generate_graph() {
         if (( con[a * homes + b] )); then
             # if the new connection passes too close to another home, skip
             # it.
-            local too_close=0
-            local xm="$(bc <<< "$(( xs[a] + xs[b] )) / 2")"
-            local ym="$(bc <<< "$(( ys[a] + ys[b] )) / 2")"
-            local xp1="$(bc <<< "$xm - $(( ys[b] - ys[a] )) / 2")"
-            local yp1="$(bc <<< "$ym + $(( xs[b] - xs[a] )) / 2")"
-            local xp2="$(bc <<< "$xm + $(( ys[b] - ys[a] )) / 2")"
-            local yp2="$(bc <<< "$ym - $(( xs[b] - xs[a] )) / 2")"
-            local r="$(bc <<< "sqrt($(( bd2m[a * homes + b] )) / 2)")"
-            for (( i = 0; i < homes && !too_close; i++ )); do
-                if (( i == a || i == b )); then continue; fi
-                # other home should be "in between" a and b
-                local to_p1="$(bc <<< "(${xs[$i]} - $xp1)^2 + (${ys[$i]} - $yp1)^2 < $(( bd2m[a * homes + b] )) / 2")"
-                local to_p2="$(bc <<< "(${xs[$i]} - $xp2)^2 + (${ys[$i]} - $yp2)^2 < $(( bd2m[a * homes + b] )) / 2")"
-                too_close="$(bc <<< "$to_p1 && $to_p2")"
-            done
+            local too_close="$(bc <<<"
+                too_close = 0;
+                xm = $((xs[a] + xs[b])) / 2;
+                ym = $((ys[a] + ys[b])) / 2;
+                xp1 = xm - $((ys[b] - ys[a])) / 2;
+                yp1 = ym + $((xs[b] - xs[a])) / 2;
+                xp2 = xm + $((ys[b] - ys[a])) / 2;
+                yp2 = ym - $((xs[b] - xs[a])) / 2;
+                r = sqrt($((bd2m[a * homes + b])) / 2);
+                for ( i = 0 ; i < homes && !too_close ; i++) {
+                    if (i == a || i == b) {
+                        continue;
+                    }
+                    /* other home should be in between a and b */
+                    to_p1 = ((${xs[$i]} - xp1)^2 + (${ys[$i]} - yp1)^2 < $((bd2m[a * homes + b])) / 2);
+                    to_p2 = ((${xs[$i]} - xp2)^2 + (${ys[$i]} - yp2)^2 < $((bd2m[a * homes + b])) / 2);
+                    too_close = to_p1 && to_p2;
+                }
+                too_close
+            ")"
             if test "$too_close" == 1; then
                 continue
             fi
