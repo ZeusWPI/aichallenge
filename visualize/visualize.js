@@ -50,8 +50,8 @@ var parseData = function (lines) {
   });
 
   roads.forEach(function (road) {
-    fortmap[road[0]].neighbours.push(fortmap[road[1]]);
-    fortmap[road[1]].neighbours.push(fortmap[road[0]]);
+    road[0] = fortmap[road[0]];
+    road[1] = fortmap[road[1]];
   });
 
   marches.forEach(function (m) {
@@ -64,17 +64,10 @@ var parseData = function (lines) {
   })
 
   return {
-    forts:   fortmap,
+    forts:   d3.values(fortmap),
+    roads:   roads,
     marches: marches
   };
-};
-
-var values = function(obj){
-  vals = [];
-  for (var key in obj) {
-    vals.push(obj[key]);
-  }
-  return vals;
 };
 
 var viewbox = function(xmin, ymin, xmax, ymax, edge){
@@ -85,21 +78,29 @@ var viewbox = function(xmin, ymin, xmax, ymax, edge){
 }
 
 var draw = function(data){
-  var forts = values(data.forts);
-  var xmax = d3.max(forts, function(f) { return f.x });
-  var ymax = d3.max(forts, function(f) { return f.y });
+  var xmax = d3.max(data.forts, function(f) { return f.x });
+  var ymax = d3.max(data.forts, function(f) { return f.y });
 
   var fig = d3.select("#visualisation")
       .append("svg")
       .attr("viewBox", viewbox(0, 0, xmax, ymax, 2));
 
+  fig.selectAll("line")
+      .data(data.roads)
+      .enter().append("line")
+      .attr("stroke-width", 0.1)
+      .attr("stroke", "gray")
+      .attr("x1", function(d) {return d[0].x})
+      .attr("y1", function(d) {return d[0].y})
+      .attr("x2", function(d) {return d[1].x})
+      .attr("y2", function(d) {return d[1].y});
+
   fig.selectAll("circle")
-      .data(values(forts))
+      .data(data.forts)
       .enter().append("circle")
-      .attr("r", 1)
+      .attr("r", 0.5)
       .attr("cx", function(d) { return d.x })
       .attr("cy", function(d) { return d.y });
-
 }
 
 
