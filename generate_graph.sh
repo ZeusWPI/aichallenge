@@ -156,10 +156,6 @@ generate_graph() {
     # - te: with the beginning homes of edge $i, 0 < $i < $roads
     # - fe: with the ending homes of edge $i, 0 < $i < $roads
 
-    echo "$players players:"
-    local playernames="$(names | head -$players)"
-    echo "$playernames"
-
     local homes="$(( 10 + players * players + RANDOM%(2 * wanderlust + 1) - wanderlust ))"
     echo "$homes forts:"
     # determine the field width and height
@@ -276,7 +272,18 @@ generate_graph() {
 
 }
 
-players="$1"
-wanderlust="$2"
+wanderlust="$1"
+players="$2"
+if [ -z "$players" ]; then
+    # expect players on stdin
+    playernames="$(cat)"
+    players="$(echo "$playernames" | wc -l)"
+else
+    # generate players
+    playernames="$(names | head -$players)"
+fi
+echo "$players players:"
+echo "$playernames"
+
 generate_graph
 
