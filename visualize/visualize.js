@@ -77,6 +77,10 @@ var viewbox = function(xmin, ymin, xmax, ymax, edge){
   }).join(' ');
 }
 
+var translate = function(x, y){
+  return "translate("+x+","+y+")";
+}
+
 var draw = function(data){
   var xmax = d3.max(data.forts, function(f) { return f.x });
   var ymax = d3.max(data.forts, function(f) { return f.y });
@@ -95,12 +99,21 @@ var draw = function(data){
       .attr("x2", function(d) {return d[1].x})
       .attr("y2", function(d) {return d[1].y});
 
-  fig.selectAll("circle")
+
+  var fortGroups = fig.selectAll("g")
       .data(data.forts)
-      .enter().append("circle")
-      .attr("r", 0.5)
-      .attr("cx", function(d) { return d.x })
-      .attr("cy", function(d) { return d.y });
+      .enter().append("g")
+      .attr("transform", function(d) {return translate(d.x, d.y)});
+
+  fortGroups.append("circle")
+      .attr("r", 0.5);
+
+  fortGroups.append("text")
+      .text(function(d) {return d.garrison})
+      .attr("font-size", "0.3pt")
+      .attr("fill", "#fff")
+      .attr("dy", 0.15)
+      .attr("text-anchor", "middle");
 }
 
 
