@@ -37,12 +37,6 @@ var parseMarch = function (string) {
   };
 };
 
-var distance = function(a, b) {
-  return Math.ceil(
-    Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
-  );
-};
-
 var parseData = function (lines) {
   var forts = takeSection(lines).map(parseFort);
   var roads = takeSection(lines).map(parseRoad);
@@ -61,11 +55,20 @@ var parseData = function (lines) {
   marches.forEach(function (m) {
     m.origin = fortmap[m.origin];
     m.target = fortmap[m.target];
-    var dist = distance(m.origin, m.target);
-    var xspeed = (m.target.x - m.origin.x - 2*FORT_RADIUS)/dist;
-    var yspeed = (m.target.y - m.origin.y - 2*FORT_RADIUS)/dist;
-    m.x = m.target.x - FORT_RADIUS - xspeed * m.steps;
-    m.y = m.target.y - FORT_RADIUS - yspeed * m.steps;
+    var dx = m.target.x - m.origin.x;
+    var dy = m.target.y - m.origin.y;
+    var alpha = Math.atan2(dy, dx);
+    var x_step = Math.cos(alpha);
+    var y_step = Math.sin(alpha);
+    var dist = Math.ceil(dx / x_step);
+
+    var dx_real = dx - 2 * FORT_RADIUS * x_step;
+    var dy_real = dy - 2 * FORT_RADIUS * y_step;
+
+    var k = (dx_real/(dist-1)) / x_step;
+    m.x = m.target.x - x_step * (FORT_RADIUS + k * (m.steps-0.5));
+    m.y = m.target.y - y_step * (FORT_RADIUS + k * (m.steps-0.5));
+    m.step_size = k;
   });
 
   return {
@@ -118,7 +121,7 @@ var draw = function(data){
   fig.selectAll("circle")
       .data(data.marches)
       .enter().append("circle")
-      .attr("r", 0.5)
+      .attr("r", function(d) {return d.step_size/2})
       .attr("cx", function(d) {return d.x})
       .attr("cy", function(d) {return d.y})
       .attr("fill", function(d) {return playercolor(d.owner)});
@@ -134,10 +137,10 @@ var draw = function(data){
 
   fortGroups.append("text")
       .text(function(d) {return d.garrison})
-      .attr("font-size", ".8px")
+      .attr("font-size", FORT_RADIUS)
       .attr("fill", "#fff")
       .attr("text-anchor", "middle")
-      .attr("dy", ".3em");
+      .attr("dy", .4*FORT_RADIUS);
 }
 
 
