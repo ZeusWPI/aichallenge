@@ -36,7 +36,9 @@ var parseMarch = function (string) {
 };
 
 var distance = function(a, b) {
-  return Math.ceil(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+  return Math.ceil(
+    Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))
+  );
 };
 
 var parseData = function (lines) {
