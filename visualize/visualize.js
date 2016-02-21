@@ -62,10 +62,9 @@ var parseData = function (lines) {
     var y_step = Math.sin(alpha);
     var dist = Math.ceil(dx / x_step);
 
-    var dx_real = dx - 2 * FORT_RADIUS * x_step;
-    var dy_real = dy - 2 * FORT_RADIUS * y_step;
+    var dx_gates = dx - 2 * FORT_RADIUS * x_step;
 
-    var k = (dx_real/(dist-1)) / x_step;
+    var k = (dx_gates/(dist-1)) / x_step;
     m.x = m.target.x - x_step * (FORT_RADIUS + k * (m.steps-0.5));
     m.y = m.target.y - y_step * (FORT_RADIUS + k * (m.steps-0.5));
     m.step_size = k;
@@ -116,19 +115,28 @@ var draw = function(data){
       .attr("x2", function(d) {return d[1].x})
       .attr("y2", function(d) {return d[1].y});
 
-  console.log(data.marches);
 
-  fig.selectAll("circle")
+  var marchGroups = fig.selectAll(".march")
       .data(data.marches)
-      .enter().append("circle")
+      .enter().append("g")
+      .attr("class", "march")
+      .attr("transform", function(d) {return translate(d.x, d.y)});
+
+  marchGroups.append("circle")
       .attr("r", function(d) {return d.step_size/2})
-      .attr("cx", function(d) {return d.x})
-      .attr("cy", function(d) {return d.y})
       .attr("fill", function(d) {return playercolor(d.owner)});
 
-  var fortGroups = fig.selectAll("g")
+  marchGroups.append("text")
+      .text(function(d) {return d.size})
+      .attr("font-size", function(d) {return .8*d.step_size})
+      .attr("fill", "#fff")
+      .attr("text-anchor", "middle");
+
+
+  var fortGroups = fig.selectAll(".fort")
       .data(data.forts)
       .enter().append("g")
+      .attr("class", "fort")
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
   fortGroups.append("circle")
@@ -137,10 +145,9 @@ var draw = function(data){
 
   fortGroups.append("text")
       .text(function(d) {return d.garrison})
-      .attr("font-size", FORT_RADIUS)
+      .attr("font-size", .9 * FORT_RADIUS)
       .attr("fill", "#fff")
-      .attr("text-anchor", "middle")
-      .attr("dy", .4*FORT_RADIUS);
+      .attr("text-anchor", "middle");
 }
 
 
