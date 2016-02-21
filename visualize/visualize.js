@@ -1,3 +1,5 @@
+var FORT_RADIUS = 1;
+
 var takeSection = function (lines) {
   var header = lines.shift().split(/ +/);
   var length = parseInt(header[0]);
@@ -59,11 +61,12 @@ var parseData = function (lines) {
   marches.forEach(function (m) {
     m.origin = fortmap[m.origin];
     m.target = fortmap[m.target];
-    var progress = 1 - m.steps / (distance(m.origin, m.target) - 1);
-    m.x = progress * (m.target.x - m.origin.x) + m.origin.x;
-    m.y = progress * (m.target.y - m.origin.y) + m.origin.y;
-
-  })
+    var dist = distance(m.origin, m.target);
+    var xspeed = (m.target.x - m.origin.x - 2*FORT_RADIUS)/dist;
+    var yspeed = (m.target.y - m.origin.y - 2*FORT_RADIUS)/dist;
+    m.x = m.target.x - FORT_RADIUS - xspeed * m.steps;
+    m.y = m.target.y - FORT_RADIUS - yspeed * m.steps;
+  });
 
   return {
     forts:   d3.values(fortmap),
@@ -92,6 +95,8 @@ var draw = function(data){
     function(f) {return f}
   ).values();
 
+
+
   var playercolor = d3.scale.category10().domain(players);
 
   var fig = d3.select("#visualisation")
@@ -113,7 +118,7 @@ var draw = function(data){
   fig.selectAll("circle")
       .data(data.marches)
       .enter().append("circle")
-      .attr("r", 0.25)
+      .attr("r", 0.5)
       .attr("cx", function(d) {return d.x})
       .attr("cy", function(d) {return d.y})
       .attr("fill", function(d) {return playercolor(d.owner)});
@@ -124,15 +129,15 @@ var draw = function(data){
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
   fortGroups.append("circle")
-      .attr("r", 0.5)
+      .attr("r", FORT_RADIUS)
       .attr("fill", function(d) {return playercolor(d.owner)});
 
   fortGroups.append("text")
       .text(function(d) {return d.garrison})
-      .attr("font-size", "0.3pt")
+      .attr("font-size", ".8px")
       .attr("fill", "#fff")
-      .attr("dy", 0.15)
-      .attr("text-anchor", "middle");
+      .attr("text-anchor", "middle")
+      .attr("dy", ".3em");
 }
 
 
