@@ -57,7 +57,7 @@ var parseData = function (lines) {
   marches.forEach(function (m) {
     m.origin = fortmap[m.origin];
     m.target = fortmap[m.target];
-    var progress = m.steps / distance(m.origin, m.target);
+    var progress = 1 - m.steps / (distance(m.origin, m.target) - 1);
     m.x = progress * (m.target.x - m.origin.x) + m.origin.x;
     m.y = progress * (m.target.y - m.origin.y) + m.origin.y;
 
@@ -106,6 +106,15 @@ var draw = function(data){
       .attr("x2", function(d) {return d[1].x})
       .attr("y2", function(d) {return d[1].y});
 
+  console.log(data.marches);
+
+  fig.selectAll("circle")
+      .data(data.marches)
+      .enter().append("circle")
+      .attr("r", 0.25)
+      .attr("cx", function(d) {return d.x})
+      .attr("cy", function(d) {return d.y})
+      .attr("fill", function(d) {return playercolor(d.owner)});
 
   var fortGroups = fig.selectAll("g")
       .data(data.forts)
