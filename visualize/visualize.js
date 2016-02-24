@@ -79,7 +79,7 @@ var parseData = function (lines) {
 
 var viewbox = function(xmin, ymin, xmax, ymax, edge){
   edge = edge || 0;
-  return [xmin-edge, ymin-edge, xmax+edge, ymax+edge].map(function(n){
+  return [xmin-edge, ymin-edge, xmax+2*edge, ymax+2*edge].map(function(n){
     return n.toString();
   }).join(' ');
 }
@@ -103,7 +103,8 @@ var draw = function(data){
 
   var fig = d3.select("#visualisation")
       .append("svg")
-      .attr("viewBox", viewbox(0, 0, xmax, ymax, 2));
+      .attr("viewBox", viewbox(0, 0, xmax, ymax, 2))
+      .attr("width", "100%");
 
   fig.selectAll("line")
       .data(data.roads)
