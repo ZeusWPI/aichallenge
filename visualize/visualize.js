@@ -1,4 +1,5 @@
 var FORT_RADIUS = 1;
+var CURRENT_STEP = 0;
 
 var takeSection = function (lines) {
   var header = lines.shift().split(/ +/);
@@ -162,8 +163,12 @@ var draw = function(data){
 
 
 $.get('../sample.data', function(dump){
-  var lines = dump.split('\n');
-  lines.pop(); // remove final empty line
+  var raw = dump.split('\n'), lines = [];
+  raw.forEach(function(val){
+    if(! /^(#.*)?$/.test(val)){
+      lines.push(val);
+    }
+  });
   var steps = [];
   while (lines.length > 0) {
     steps.push(parseData(lines));
