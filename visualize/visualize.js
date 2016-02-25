@@ -124,17 +124,22 @@ var draw = function(data){
       .attr("x2", function(d) {return d[1].x})
       .attr("y2", function(d) {return d[1].y});
 
+  console.log(data.marches);
+
 
   var marches = fig.selectAll(".march")
       .data(data.marches, function(d) {return d.id})
-      .enter().append("g")
-      .attr("class", "march");
 
-  marches.append("circle")
+  marches.exit().remove();
+
+  var newMarches = marches.enter().append("g")
+    .attr("class", "march");
+
+  newMarches.append("circle")
       .attr("r", function(d) {return d.step_size/2})
       .attr("fill", function(d) {return playercolor(d.owner)});
 
-  marches.append("text")
+  newMarches.append("text")
       .text(function(d) {return d.size})
       .attr("font-size", function(d) {return .8*d.step_size})
       .attr("fill", "#fff")
