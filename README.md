@@ -64,7 +64,7 @@ For clarity: comments and ellipses are not part of the protocol :-)
     nox 30 30 neutral 0
     ...
     10 roads:
-    # fort1 fort
+    # fort1 fort2
     boyard helsingor
     helsingor nox
     ...
