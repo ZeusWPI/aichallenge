@@ -10,6 +10,10 @@ $(document).ready(function() {
     var new_val = $(slider).val();
 
     $('#control-label').val(new_val);
+    $('[data-step]').prop('disabled', function() {
+      step_val = parseInt(new_val) + parseInt($(this).data('step'));
+      return step_val < parseInt($(slider).attr('min')) || step_val > parseInt($(slider).attr('max'));
+    });
   }
 
   $(slider).bind('input', update_inputs);

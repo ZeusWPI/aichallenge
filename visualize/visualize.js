@@ -169,5 +169,6 @@ $.get('../sample.data', function(dump){
     steps.push(parseData(lines));
   }
   visualize(steps);
+  $('#control-slider').attr('min', 0);
   $('#control-slider').attr('max', steps.length);
 });
