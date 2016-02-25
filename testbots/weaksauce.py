@@ -98,7 +98,17 @@ class Game:
             handle(Game.parse_road)
             handle(Game.parse_march)
             mind.play()
-            print("Turn read")
+            print(mind.orders())
+
+
+class Command:
+    def __init__(self, origin, destination, garrison):
+        self.origin = origin
+        self.destination = destination
+        self.garrison = garrison
+
+    def __str__(self):
+        return "{} {} {}".format(self.origin.name, self.destination.name, self.garrison)
 
 
 class Mind:
@@ -106,8 +116,9 @@ class Mind:
         self.name = name
         self.player = None
         self.turn = 0
-        self.forts = {}            # {name: fort(Fort)}
+        self.commands = set()
         self.marches = {}          # {destination(Fort): march(March)}
+        self.forts = {}            # {name: fort(Fort)}
         self.fort_safety = {}      # {fort(Fort): 0|1}
         self.fort_threatened = {}  # {fort(Fort): 0|1}
 
@@ -115,6 +126,10 @@ class Mind:
         self.__collect_data()
         self.__defend_borders()
         # TODO
+
+    def orders(self):
+        return "{} marches:\n".format(len(self.orders())) + \
+               '\n'.join(str(command) for command in self.commands)
 
     def __collect_data(self):
         self.player = Game.players[self.name]
@@ -125,16 +140,16 @@ class Mind:
     def __defend_borders(self):
         for safe_fort in (fort for fort, safe in self.fort_safety.items() if safe):
             half = floor(safe_fort.garrison / 2)
-            neighbour_num = len(safe_fort.neighbours)
-            amount = floor(neighbour_num)
+            amount = floor(half / len(safe_fort.neighbours))
             for neighbour in safe_fort.neighbours.values():
-                # TODO
-                pass
+                self.commands.add(Command(safe_fort, neighbour, amount))
 
     def __in_safety(self, my_fort):
         return all(fort.owner == self.player for fort in my_fort.neighbours.values())
 
     def __threatened(self, my_fort):
         return any(fort.owner != self.player for fort in my_fort.incoming_marches.values())
+
+
 Game.start()
 
