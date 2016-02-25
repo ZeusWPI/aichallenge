@@ -4,7 +4,7 @@ var takeSection = function (lines) {
   console.log("taking section from length" + lines.length);
   var header = lines.shift().split(/ +/);
   var length = parseInt(header[0]);
-  var section = []
+  var section = [];
   for (var i = 0; i < length; i++) {
     section.push(lines.shift());
   }
@@ -83,11 +83,11 @@ var viewbox = function(xmin, ymin, xmax, ymax, edge){
   return [xmin-edge, ymin-edge, xmax+2*edge, ymax+2*edge].map(function(n){
     return n.toString();
   }).join(' ');
-}
+};
 
 var translate = function(x, y){
   return "translate("+x+","+y+")";
-}
+};
 
 var draw = function(data){
   var xmax = d3.max(data.forts, function(f) { return f.x });
@@ -150,10 +150,10 @@ var draw = function(data){
       .attr("font-size", .9 * FORT_RADIUS)
       .attr("fill", "#fff")
       .attr("text-anchor", "middle");
-}
+};
 
 
-$.get('../map.data', function(dump){
+$.get('../sample.data', function(dump){
   var lines = dump.split('\n');
   lines.pop(); // remove final empty line
   var steps = [];
