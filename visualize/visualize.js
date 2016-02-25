@@ -1,4 +1,5 @@
 var FORT_RADIUS = 1;
+var CURRENT_STEP = 0;
 
 var takeSection = function (lines) {
   var header = lines.shift().split(/ +/);
@@ -37,7 +38,7 @@ var parseMarch = function (string) {
   };
 };
 
-var parseData = function (lines) {
+var parseData = function (lines, turn) {
   var forts = takeSection(lines).map(parseFort);
   var roads = takeSection(lines).map(parseRoad);
   var marches = takeSection(lines).map(parseMarch);
@@ -68,6 +69,8 @@ var parseData = function (lines) {
     m.x = m.target.x - x_step * (FORT_RADIUS + k * (m.steps-0.5));
     m.y = m.target.y - y_step * (FORT_RADIUS + k * (m.steps-0.5));
     m.step_size = k;
+
+    m.id = [m.origin.name, m.target.name, turn + m.steps - dist].join(' ');
   });
 
   return {
@@ -109,7 +112,7 @@ var draw = function(data){
 
   var fig = d3.select("#visualisation")
       .attr("viewBox", viewbox(0, 0, xmax, ymax, 2))
-      .attr("width", "100%");
+      .attr("height", "75%");
 
   fig.selectAll("line")
       .data(data.roads)
@@ -121,17 +124,22 @@ var draw = function(data){
       .attr("x2", function(d) {return d[1].x})
       .attr("y2", function(d) {return d[1].y});
 
+  console.log(data.marches);
+
 
   var marches = fig.selectAll(".march")
-      .data(data.marches)
-      .enter().append("g")
-      .attr("class", "march");
+      .data(data.marches, function(d) {return d.id})
 
-  marches.append("circle")
+  marches.exit().remove();
+
+  var newMarches = marches.enter().append("g")
+    .attr("class", "march");
+
+  newMarches.append("circle")
       .attr("r", function(d) {return d.step_size/2})
       .attr("fill", function(d) {return playercolor(d.owner)});
 
-  marches.append("text")
+  newMarches.append("text")
       .text(function(d) {return d.size})
       .attr("font-size", function(d) {return .8*d.step_size})
       .attr("fill", "#fff")
@@ -139,34 +147,43 @@ var draw = function(data){
       .attr("text-anchor", "middle");
 
   fig.selectAll(".march")
-      .data(data.marches)
+      .data(data.marches, function(d) {return d.id})
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
-  var fortGroups = fig.selectAll(".fort")
+  var newForts = fig.selectAll(".fort")
       .data(data.forts)
       .enter().append("g")
       .attr("class", "fort")
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
-  fortGroups.append("circle")
-      .attr("r", FORT_RADIUS)
-      .attr("fill", function(d) {return playercolor(d.owner)});
-
-  fortGroups.append("text")
-      .text(function(d) {return d.garrison})
+  newForts.append("circle")
+      .attr("r", FORT_RADIUS);
+  newForts.append("text")
       .attr("font-size", .9 * FORT_RADIUS)
       .attr("fill", "#fff")
       .attr("dy","0.3em")
       .attr("text-anchor", "middle");
+
+  var fortGroups = fig.selectAll(".fort");
+
+  fortGroups.select("circle")
+      .attr("fill", function(d) {return playercolor(d.owner)});
+
+  fortGroups.select("text")
+      .text(function(d) {return d.garrison});
 };
 
 
 $.get('../sample.data', function(dump){
-  var lines = dump.split('\n');
-  lines.pop(); // remove final empty line
+  var raw = dump.split('\n'), lines = [];
+  raw.forEach(function(val){
+    if(! /^(#.*)?$/.test(val)){
+      lines.push(val);
+    }
+  });
   var steps = [];
   while (lines.length > 0) {
-    steps.push(parseData(lines));
+    steps.push(parseData(lines, steps.length));
   }
   visualize(steps);
   $('#control-slider').attr('min', 0);
