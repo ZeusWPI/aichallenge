@@ -44,15 +44,15 @@ class Fort:
 
 class March:
     def __init__(self, origin, destination, owner, size, remaining_steps):
-            self.origin = Game.forts[origin]
-            self.destination = Game.forts[destination]
-            self.owner = Game.players[owner]
-            self.size = size
-            self.remaining_steps = remaining_steps
+        self.origin = Game.forts[origin]
+        self.destination = Game.forts[destination]
+        self.owner = Game.players[owner]
+        self.size = size
+        self.remaining_steps = remaining_steps
 
-            self.owner.marches.add(self)
-            self.origin.outgoing_marches[destination] = self.destination
-            self.destination.incoming_marches[origin] = self.origin
+        self.owner.marches.add(self)
+        self.origin.outgoing_marches[destination] = self.destination
+        self.destination.incoming_marches[origin] = self.origin
 
 
 class Game:
