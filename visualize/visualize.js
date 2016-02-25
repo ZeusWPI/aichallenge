@@ -112,7 +112,7 @@ var draw = function(data){
 
   var fig = d3.select("#visualisation")
       .attr("viewBox", viewbox(0, 0, xmax, ymax, 2))
-      .attr("width", "100%");
+      .attr("height", "75%");
 
   fig.selectAll("line")
       .data(data.roads)
