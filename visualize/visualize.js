@@ -37,7 +37,7 @@ var parseMarch = function (string) {
   };
 };
 
-var parseData = function (lines) {
+var parseData = function (lines, turn) {
   var forts = takeSection(lines).map(parseFort);
   var roads = takeSection(lines).map(parseRoad);
   var marches = takeSection(lines).map(parseMarch);
@@ -68,6 +68,8 @@ var parseData = function (lines) {
     m.x = m.target.x - x_step * (FORT_RADIUS + k * (m.steps-0.5));
     m.y = m.target.y - y_step * (FORT_RADIUS + k * (m.steps-0.5));
     m.step_size = k;
+
+    m.id = [m.origin.name, m.target.name, turn + m.steps - dist].join(' ');
   });
 
   return {
@@ -123,7 +125,7 @@ var draw = function(data){
 
 
   var marches = fig.selectAll(".march")
-      .data(data.marches)
+      .data(data.marches, function(d) {return d.id})
       .enter().append("g")
       .attr("class", "march");
 
@@ -139,7 +141,7 @@ var draw = function(data){
       .attr("text-anchor", "middle");
 
   fig.selectAll(".march")
-      .data(data.marches)
+      .data(data.marches, function(d) {return d.id})
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
   var fortGroups = fig.selectAll(".fort")
@@ -166,7 +168,7 @@ $.get('../sample.data', function(dump){
   lines.pop(); // remove final empty line
   var steps = [];
   while (lines.length > 0) {
-    steps.push(parseData(lines));
+    steps.push(parseData(lines, steps.length));
   }
   visualize(steps);
 });
