@@ -125,21 +125,25 @@ var draw = function(data){
       .attr("y2", function(d) {return d[1].y});
 
 
-  var marches = fig.selectAll(".march")
+  var newMarches = fig.selectAll(".march")
       .data(data.marches, function(d) {return d.id})
       .enter().append("g")
       .attr("class", "march");
 
-  marches.append("circle")
+  newMarches.append("circle")
       .attr("r", function(d) {return d.step_size/2})
       .attr("fill", function(d) {return playercolor(d.owner)});
 
-  marches.append("text")
-      .text(function(d) {return d.size})
-      .attr("font-size", function(d) {return .8*d.step_size})
-      .attr("fill", "#fff")
-      .attr("dy","0.3em")
-      .attr("text-anchor", "middle");
+  newMarches.append("text")
+    .attr("font-size", function(d) {return .8*d.step_size})
+    .attr("fill", "#fff")
+    .attr("dy","0.3em")
+    .attr("text-anchor", "middle");
+
+  var marches = fig.selectAll(".march");
+
+  marches.select("text")
+    .text(function(d) {return d.size});
 
   fig.selectAll(".march")
       .data(data.marches, function(d) {return d.id})
@@ -161,6 +165,7 @@ var draw = function(data){
       .attr("fill", "#fff")
       .attr("dy","0.3em")
       .attr("text-anchor", "middle");
+
 };
 
 
