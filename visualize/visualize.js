@@ -1,6 +1,7 @@
 var FORT_RADIUS = 1;
 
 var takeSection = function (lines) {
+  console.log("taking section from length" + lines.length);
   var header = lines.shift().split(/ +/);
   var length = parseInt(header[0]);
   var section = []
@@ -153,6 +154,11 @@ var draw = function(data){
 
 
 $.get('../map.data', function(dump){
-  var data = parseData(dump.split('\n'));
-  draw(data);
+  var lines = dump.split('\n');
+  lines.pop(); // remove final empty line
+  var steps = [];
+  while (lines.length > 0) {
+    steps.push(parseData(lines));
+  }
+  draw(steps[1]);
 });
