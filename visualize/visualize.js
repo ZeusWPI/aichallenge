@@ -1,7 +1,6 @@
 var FORT_RADIUS = 1;
 
 var takeSection = function (lines) {
-  console.log("taking section from length" + lines.length);
   var header = lines.shift().split(/ +/);
   var length = parseInt(header[0]);
   var section = [];
@@ -89,6 +88,14 @@ var translate = function(x, y){
   return "translate("+x+","+y+")";
 };
 
+var visualize = function(steps){
+  var drawstep = function(i) {
+    draw(steps[i]);
+    d3.select("#next-step").on("click", function(){ drawstep(i+1); });
+  };
+  drawstep(0);
+};
+
 var draw = function(data){
   var xmax = d3.max(data.forts, function(f) { return f.x });
   var ymax = d3.max(data.forts, function(f) { return f.y });
@@ -98,12 +105,9 @@ var draw = function(data){
     function(f) {return f}
   ).values();
 
-
-
   var playercolor = d3.scale.category10().domain(players);
 
   var fig = d3.select("#visualisation")
-      .append("svg")
       .attr("viewBox", viewbox(0, 0, xmax, ymax, 2))
       .attr("width", "100%");
 
@@ -118,22 +122,24 @@ var draw = function(data){
       .attr("y2", function(d) {return d[1].y});
 
 
-  var marchGroups = fig.selectAll(".march")
+  var marches = fig.selectAll(".march")
       .data(data.marches)
       .enter().append("g")
-      .attr("class", "march")
-      .attr("transform", function(d) {return translate(d.x, d.y)});
+      .attr("class", "march");
 
-  marchGroups.append("circle")
+  marches.append("circle")
       .attr("r", function(d) {return d.step_size/2})
       .attr("fill", function(d) {return playercolor(d.owner)});
 
-  marchGroups.append("text")
+  marches.append("text")
       .text(function(d) {return d.size})
       .attr("font-size", function(d) {return .8*d.step_size})
       .attr("fill", "#fff")
       .attr("text-anchor", "middle");
 
+  fig.selectAll(".march")
+      .data(data.marches)
+      .attr("transform", function(d) {return translate(d.x, d.y)});
 
   var fortGroups = fig.selectAll(".fort")
       .data(data.forts)
@@ -160,5 +166,5 @@ $.get('../sample.data', function(dump){
   while (lines.length > 0) {
     steps.push(parseData(lines));
   }
-  draw(steps[1]);
+  visualize(steps);
 });
