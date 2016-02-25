@@ -135,6 +135,7 @@ var draw = function(data){
       .text(function(d) {return d.size})
       .attr("font-size", function(d) {return .8*d.step_size})
       .attr("fill", "#fff")
+      .attr("dy","0.3em")
       .attr("text-anchor", "middle");
 
   fig.selectAll(".march")
@@ -155,6 +156,7 @@ var draw = function(data){
       .text(function(d) {return d.garrison})
       .attr("font-size", .9 * FORT_RADIUS)
       .attr("fill", "#fff")
+      .attr("dy","0.3em")
       .attr("text-anchor", "middle");
 };
 
