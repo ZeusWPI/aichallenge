@@ -150,22 +150,27 @@ var draw = function(data){
       .data(data.marches, function(d) {return d.id})
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
-  var fortGroups = fig.selectAll(".fort")
+  var newForts = fig.selectAll(".fort")
       .data(data.forts)
       .enter().append("g")
       .attr("class", "fort")
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
-  fortGroups.append("circle")
-      .attr("r", FORT_RADIUS)
-      .attr("fill", function(d) {return playercolor(d.owner)});
-
-  fortGroups.append("text")
-      .text(function(d) {return d.garrison})
+  newForts.append("circle")
+      .attr("r", FORT_RADIUS);
+  newForts.append("text")
       .attr("font-size", .9 * FORT_RADIUS)
       .attr("fill", "#fff")
       .attr("dy","0.3em")
       .attr("text-anchor", "middle");
+
+  var fortGroups = fig.selectAll(".fort");
+
+  fortGroups.select("circle")
+      .attr("fill", function(d) {return playercolor(d.owner)});
+
+  fortGroups.select("text")
+      .text(function(d) {return d.garrison});
 };
 
 
