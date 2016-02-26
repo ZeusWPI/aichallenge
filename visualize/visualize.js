@@ -152,29 +152,34 @@ var draw = function(game, step){
       .attr("x2", function(d) {return d[1].x})
       .attr("y2", function(d) {return d[1].y});
 
+  // MARCHES
+
   var marches = fig.selectAll(".march")
       .data(data.marches, function(d) {return d.id})
 
   marches.exit().remove();
 
   var newMarches = marches.enter().append("g")
-    .attr("class", "march");
+    .attr("class", "march")
+    .attr("transform", function(d) {return translate(d.x, d.y)});
 
   newMarches.append("circle")
       .attr("r", function(d) {return d.step_size/2})
       .attr("fill", function(d) {return game.getPlayerColor(d.owner)});
 
   newMarches.append("text")
-    .attr("font-size", function(d) {return .8*d.step_size})
-    .attr("fill", "#fff")
-    .attr("dy","0.3em")
-    .attr("text-anchor", "middle");
+      .attr("font-size", function(d) {return .8*d.step_size})
+      .attr("fill", "#fff")
+      .attr("dy","0.3em")
+      .attr("text-anchor", "middle")
+      .text(function(d) {return d.size});
 
   marches.select("text")
-    .text(function(d) {return d.size});
+      .transition()
+      .text(function(d) {return d.size});
 
-  fig.selectAll(".march")
-      .data(data.marches, function(d) {return d.id})
+  marches.data(data.marches, function(d) {return d.id})
+      .transition()
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
   var newForts = fig.selectAll(".fort")
