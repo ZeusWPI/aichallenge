@@ -101,7 +101,7 @@ class Game:
             handle(Game.parse_road)
             handle(Game.parse_march)
             mind.play()
-            print(mind.orders())
+            print(mind.orders(), end="")
 
 
 class Command:
