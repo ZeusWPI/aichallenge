@@ -128,6 +128,30 @@ Game.prototype.getPlayerColor = function(name){
   return color;
 }
 
+var drawLegend = function(game){
+  var entryHeight = 20;
+  var entrySpacing = 10;
+  var fig = d3.select("#legend");
+  var newEntries = fig.selectAll(".legend-entry")
+      .data(Object.keys(game.playerColors, function(d){return d}))
+      .enter().append('g')
+      .attr('class', 'legend-entry')
+      .attr('transform', function(d, i){
+        return translate(0, i * entryHeight);
+      })
+
+  newEntries.append('circle')
+      .attr('cy', 8)
+      .attr('cx', 8)
+      .attr('r', 8)
+      .attr('fill', function(d) {return game.getPlayerColor(d)});
+
+  newEntries.append('text')
+      .attr('x', 20)
+      .attr('y', 12)
+      .text(function(d) {return d});
+}
+
 var draw = function(game, step){
   var data = game.steps[step];
   var xmin = d3.min(data.forts, function(f) { return f.x });
@@ -139,8 +163,7 @@ var draw = function(game, step){
   }
 
   var fig = d3.select("#visualisation")
-      .attr("viewBox", viewbox(xmin, ymin, xmax, ymax, 2))
-      .attr("height", "75%");
+      .attr("viewBox", viewbox(xmin, ymin, xmax, ymax, 2));
 
   fig.selectAll("line")
       .data(data.roads)
@@ -184,7 +207,6 @@ var draw = function(game, step){
   marches.exit()
       .transition()
       .attr("transform", function(d) {
-        console.log(d.steps);
         if (d.steps == 1) {
           return translate(d.target.x, d.target.y)
         }
@@ -215,6 +237,8 @@ var draw = function(game, step){
 
   fortGroups.select("text")
       .text(function(d) {return d.garrison});
+
+  drawLegend(game);
 };
 
 

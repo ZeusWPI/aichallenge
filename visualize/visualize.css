@@ -1,4 +1,11 @@
-#content {
-    width: 80%;
-    margin: auto;
+#svgs {
+    height: 80%;
+}
+#visualisation {
+    width: 90%;
+    float: left;
+}
+#legend {
+    width: 100;
+    float: right;
 }
