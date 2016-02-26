@@ -1,7 +1,7 @@
 {
     "players": {
-        "bart": "./yesbot",
-        "berdt": "./yesbot"
+        "bart": "./yesbot.sh",
+        "berdt": "./yesbot.sh"
     },
     "mapfile": "test.input",
     "logfile": "sample.data"
