@@ -190,7 +190,7 @@ var draw = function(data){
 };
 
 
-$.get('../sample.data', function(dump){
+$.get('../arbiter/sample.data', function(dump){
   var raw = dump.split('\n'), lines = [];
   raw.forEach(function(val){
     if(! /^(#.*)?$/.test(val)){

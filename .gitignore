@@ -1,4 +1,5 @@
 # IntelliJ files
 .idea/*
 *.iml
+*.data
 **/__pycache__

@@ -1,0 +1,19 @@
+6 forts:
+helsingor 0 0 bart 30
+stonefieldt 10 0 berdt 20
+boyardt 20 10 berdt 10
+rivendel 18 3 bart 50
+hogwardts 10 10 berdt 8
+knox 30 30 neutral 0
+7 roads:
+stonefieldt helsingor
+stonefieldt hogwardts
+hogwardts boyardt
+rivendel knox
+rivendel hogwardts
+boyardt rivendel
+hogwardts knox
+3 marches:
+stonefieldt helsingor berdt 10 8
+helsingor stonefieldt bart 40 6
+hogwardts rivendel berdt 18 1
