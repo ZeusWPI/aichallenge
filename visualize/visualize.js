@@ -255,8 +255,9 @@ var draw = function(game, step){
 };
 
 
-$.get('../arbiter/sample.data', function(dump){
-  var raw = dump.split('\n'), lines = [];
+
+var visualizeLog = function(log){
+  var raw = log.split('\n'), lines = [];
   raw.forEach(function(val){
     if(! /^(#.*)?$/.test(val)){
       lines.push(val);
@@ -267,4 +268,17 @@ $.get('../arbiter/sample.data', function(dump){
     steps.push(parseData(lines, steps.length));
   }
   visualize(new Game(steps));
+}
+
+$(document).ready(function(){
+  var reader = new FileReader();
+  reader.onload = function(e){
+    visualizeLog(e.target.result);
+  };
+  reader.onerror = function(e){
+    alert("could not open file");
+  }
+  $("#file-chooser").change(function(e){
+    reader.readAsText(e.target.files[0]);
+  });
 });
