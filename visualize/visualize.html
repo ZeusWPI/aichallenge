@@ -1,8 +1,22 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
 <script type="text/javascript" src="visualize.js"></script>
+<script type="text/javascript" src="controls.js"></script>
 <link rel="stylesheet" type="text/css" href="visualize.css"/>
 <div id="content">
   <svg id ="visualisation"/>
   <button id="next-step">step</button>
+
+  <div id="controls">
+    <input type="range" id="control-slider"  />
+    <input type="number" id="control-label" />
+    <div id="steps">
+      <button data-step="-10">-10</button>
+      <button data-step="-5">-5</button>
+      <button data-step="-1">-1</button>
+      <button data-step="1">1</button>
+      <button data-step="5">5</button>
+      <button data-step="10">10</button>
+    </div>
+  </div>
 </div>
