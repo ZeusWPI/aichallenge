@@ -122,3 +122,10 @@ Colliding armies behave as follows:
     |   +-------+   |
     |               |
     +---------------+
+
+## How to generate test files
+Run the following:
+```
+cd arbiter
+python arbiter.py test.json
+```

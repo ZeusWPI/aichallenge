@@ -1,7 +1,7 @@
-var FORT_RADIUS = 1;
-var NEUTRAL_NAME = "neutral";
-var NEUTRAL_COLOR = "#7f7f7f";
-var PLAYER_COLORS = [
+FORT_RADIUS = 1;
+NEUTRAL_NAME = "neutral";
+NEUTRAL_COLOR = "#7f7f7f";
+PLAYER_COLORS = [
   "#1f77b4",
   "#ff7f0e",
   "#2ca02c",
@@ -103,31 +103,39 @@ var translate = function(x, y){
   return "translate("+x+","+y+")";
 };
 
-var visualize = function(steps){
+var visualize = function(game){
   $('#control-slider').on('change', function(e) {
-    draw(steps[(parseInt(e.target.value))]);
+    draw(game, parseInt(e.target.value));
   });
   $('#control-slider').attr('min', 0);
-  $('#control-slider').attr('max', steps.length-1);
-  draw(steps[0]);
+  $('#control-slider').attr('max', game.steps.length-1);
+  draw(game, 0);
 };
 
-var draw = function(data){
+Game = function(steps) {
+  this.steps = steps;
+  this.playerColors = {};
+  this.playerColors[NEUTRAL_NAME] = NEUTRAL_COLOR;
+};
+
+Game.prototype.getPlayerColor = function(name){
+  var color = this.playerColors[name];
+  if (color === undefined) {
+    var num = Object.keys(this.playerColors).length - 1;
+    this.playerColors[name] = PLAYER_COLORS[num];
+    color = PLAYER_COLORS[num];
+  }
+  return color;
+}
+
+var draw = function(game, step){
+  var data = game.steps[step];
   var xmin = d3.min(data.forts, function(f) { return f.x });
   var ymin = d3.min(data.forts, function(f) { return f.y });
   var xmax = d3.max(data.forts, function(f) { return f.x });
   var ymax = d3.max(data.forts, function(f) { return f.y });
 
-  var players = d3.set(
-    data.forts.map(function(f) {return f.owner}),
-    function(f) {return f}
-  ).values();
-
   var playercolor = function(name) {
-    if (name == NEUTRAL_NAME){
-      return NEUTRAL_COLOR;
-    }
-    return PLAYER_COLORS[players.indexOf(name)];
   }
 
   var fig = d3.select("#visualisation")
@@ -144,30 +152,47 @@ var draw = function(data){
       .attr("x2", function(d) {return d[1].x})
       .attr("y2", function(d) {return d[1].y});
 
+  // MARCHES
+
   var marches = fig.selectAll(".march")
       .data(data.marches, function(d) {return d.id})
 
-  marches.exit().remove();
-
   var newMarches = marches.enter().append("g")
-    .attr("class", "march");
+    .attr("class", "march")
+    .attr("transform", function(d) {return translate(d.x, d.y)});
 
   newMarches.append("circle")
       .attr("r", function(d) {return d.step_size/2})
-      .attr("fill", function(d) {return playercolor(d.owner)});
+      .attr("fill", function(d) {return game.getPlayerColor(d.owner)});
 
   newMarches.append("text")
-    .attr("font-size", function(d) {return .8*d.step_size})
-    .attr("fill", "#fff")
-    .attr("dy","0.3em")
-    .attr("text-anchor", "middle");
+      .attr("font-size", function(d) {return .8*d.step_size})
+      .attr("fill", "#fff")
+      .attr("dy","0.3em")
+      .attr("text-anchor", "middle")
+      .text(function(d) {return d.size});
 
   marches.select("text")
-    .text(function(d) {return d.size});
+      .transition()
+      .text(function(d) {return d.size});
 
-  fig.selectAll(".march")
-      .data(data.marches, function(d) {return d.id})
-      .attr("transform", function(d) {return translate(d.x, d.y)});
+  marches.data(data.marches, function(d) {return d.id})
+      .transition()
+      .attr("transform", function(d) {return translate(d.x, d.y)})
+      .style("opacity", 1);
+
+  marches.exit()
+      .transition()
+      .attr("transform", function(d) {
+        console.log(d.steps);
+        if (d.steps == 1) {
+          return translate(d.target.x, d.target.y)
+        }
+        return translate(d.x, d.y);
+      })
+      .style("opacity", 0)
+      .remove();
+
 
   var newForts = fig.selectAll(".fort")
       .data(data.forts)
@@ -186,7 +211,7 @@ var draw = function(data){
   var fortGroups = fig.selectAll(".fort");
 
   fortGroups.select("circle")
-      .attr("fill", function(d) {return playercolor(d.owner)});
+      .attr("fill", function(d) {return game.getPlayerColor(d.owner)});
 
   fortGroups.select("text")
       .text(function(d) {return d.garrison});
@@ -204,5 +229,5 @@ $.get('../arbiter/sample.data', function(dump){
   while (lines.length > 0) {
     steps.push(parseData(lines, steps.length));
   }
-  visualize(steps);
+  visualize(new Game(steps));
 });

@@ -9,7 +9,7 @@ import sys
 
 MARCH_SPEED = 1
 NO_PLAYER_NAME = 'neutral'
-MAX_STEPS = 25
+
 
 def read_section(handle):
     header = handle.readline()
@@ -66,7 +66,7 @@ def show_player(player):
 
 
 def show_section(items, name, formatter):
-    header = "{} {}:".format(len(items), name)
+    header = "{} {}:".format(str(len(items)), name)
     body = (formatter(item) for item in items)
     return '\n'.join([header, *body])
 
@@ -196,9 +196,9 @@ class Fort:
                 march.die()
         return forces
 
-
     def resolve_siege(self):
         forces = self.fetch_armies()
+
         def largest_force():
             return max(forces.keys(), key=lambda k: forces[k])
         winner = largest_force()
@@ -241,7 +241,7 @@ class Player:
         self.name = name
         self.forts = set()
         self.marches = set()
-        self.process = Popen(cmd, stdin=PIPE, stdout=PIPE,
+        self.process = Popen([cmd, name], stdin=PIPE, stdout=PIPE,
                              universal_newlines=True)
 
     def capture(self, fort):
@@ -266,7 +266,7 @@ class Game:
     def __init__(self, configfile):
         with open(configfile, 'r') as f:
             config = json.load(f)
-
+        self.maxsteps = config['max_steps']
         self.players = {}
         for name, cmd in config['players'].items():
             self.players[name] = Player(name, cmd)
@@ -280,13 +280,18 @@ class Game:
 
     def play(self):
         steps = 0
-        self.logfile.write(show_visible(self.forts.values()))
-        self.logfile.write('\n')
-        while steps < MAX_STEPS and not self.winner():
+        while steps < self.maxsteps and not self.winner():
+            self.log(steps)
             self.get_commands()
             self.step()
             self.remove_losers()
             steps += 1
+        self.log(steps)
+
+    def log(self, step):
+            self.logfile.writelines(["# STEP: " + str(step) + "\n",
+                                    show_visible(self.forts.values()) + "\n",
+                                    "\n"])
 
     def winner(self):
         if len(self.players) > 1:
@@ -306,13 +311,10 @@ class Game:
             player.read_commands(self)
 
     def step(self):
-        self.logfile.write(show_visible(self.forts.values()))
-        self.logfile.write('\n')
         for road in self.roads:
             road.step()
         for fort in self.forts.values():
             fort.resolve_siege()
-
 
 
 game = Game(sys.argv[1])
