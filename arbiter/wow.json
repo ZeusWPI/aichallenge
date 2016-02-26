@@ -1,0 +1,9 @@
+{
+    "players": {
+        "testrobot": "../testbots/testrobot.py",
+        "yesbot": "../testbots/yesbot.sh"
+    },
+    "mapfile": "map.input",
+    "logfile": "sample.data",
+    "max_steps": 200
+}
