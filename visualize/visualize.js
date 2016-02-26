@@ -1,5 +1,17 @@
 var FORT_RADIUS = 1;
-var CURRENT_STEP = 0;
+var NEUTRAL_NAME = "neutral";
+var NEUTRAL_COLOR = "#7f7f7f";
+var PLAYER_COLORS = [
+  "#1f77b4",
+  "#ff7f0e",
+  "#2ca02c",
+  "#d62728",
+  "#9467bd",
+  "#8c564b",
+  "#e377c2",
+  "#bcbd22",
+  "#17becf"
+];
 
 var takeSection = function (lines) {
   var header = lines.shift().split(/ +/);
@@ -108,7 +120,12 @@ var draw = function(data){
     function(f) {return f}
   ).values();
 
-  var playercolor = d3.scale.category10().domain(players);
+  var playercolor = function(name) {
+    if (name == NEUTRAL_NAME){
+      return NEUTRAL_COLOR;
+    }
+    return PLAYER_COLORS[players.indexOf(name)];
+  }
 
   var fig = d3.select("#visualisation")
       .attr("viewBox", viewbox(0, 0, xmax, ymax, 2))
