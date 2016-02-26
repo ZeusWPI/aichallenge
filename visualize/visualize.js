@@ -104,11 +104,13 @@ var translate = function(x, y){
 };
 
 var visualize = function(steps){
-  var drawstep = function(i) {
-    draw(steps[i]);
-    d3.select("#next-step").on("click", function(){ drawstep(i+1); });
+  var drawStep = function(turn) {
+    draw(steps[turn]);
   };
-  drawstep(0);
+  $('#control-slider').on('change', function(e) {
+    drawStep(parseInt(e.target.value));
+  });
+  drawStep(0);
 };
 
 var draw = function(data){
