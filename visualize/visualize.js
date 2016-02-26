@@ -104,13 +104,12 @@ var translate = function(x, y){
 };
 
 var visualize = function(steps){
-  var drawStep = function(turn) {
-    draw(steps[turn]);
-  };
   $('#control-slider').on('change', function(e) {
-    drawStep(parseInt(e.target.value));
+    draw(steps[(parseInt(e.target.value))]);
   });
-  drawStep(0);
+  $('#control-slider').attr('min', 0);
+  $('#control-slider').attr('max', steps.length-1);
+  draw(steps[0]);
 };
 
 var draw = function(data){
@@ -204,6 +203,4 @@ $.get('../sample.data', function(dump){
     steps.push(parseData(lines, steps.length));
   }
   visualize(steps);
-  $('#control-slider').attr('min', 0);
-  $('#control-slider').attr('max', steps.length);
 });
