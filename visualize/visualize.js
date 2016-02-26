@@ -159,7 +159,6 @@ var draw = function(game, step){
   var ymax = d3.max(data.forts, function(f) { return f.y });
 
   var speed = parseInt($("#speed-slider").val());
-  console.log(speed);
 
   var fig = d3.select("#visualisation")
       .attr("viewBox", viewbox(xmin, ymin, xmax, ymax, 2));
@@ -182,6 +181,7 @@ var draw = function(game, step){
   var newMarches = marches.enter().append("g")
     .attr("class", "march");
 
+  // animate new marches
   newMarches .style("opacity", 0)
     .attr("transform", function(d) {return translate(d.origin.x, d.origin.y)})
     .transition()
@@ -215,6 +215,7 @@ var draw = function(game, step){
       .transition()
       .duration(speed)
       .attr("transform", function(d) {
+        // arriving marches
         if (d.steps == 1) {
           return translate(d.target.x, d.target.y)
         }
@@ -231,7 +232,9 @@ var draw = function(game, step){
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
   newForts.append("circle")
-      .attr("r", FORT_RADIUS);
+      .attr("r", FORT_RADIUS)
+      .attr("fill", function(d) {return game.getPlayerColor(d.owner)});
+
   newForts.append("text")
       .attr("font-size", .9 * FORT_RADIUS)
       .attr("fill", "#fff")
@@ -241,6 +244,8 @@ var draw = function(game, step){
   var fortGroups = fig.selectAll(".fort");
 
   fortGroups.select("circle")
+      .transition()
+      .duration(speed)
       .attr("fill", function(d) {return game.getPlayerColor(d.owner)});
 
   fortGroups.select("text")
