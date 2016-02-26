@@ -1,11 +1,13 @@
-#svgs {
-    height: 80%;
-}
-#visualisation {
-    width: 90%;
-    float: left;
-}
 #legend {
     width: 100;
-    float: right;
+    position: absolute;
+    right: 0px;
+    top: 25px;
+}
+
+#controls {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
 }
