@@ -1,7 +1,7 @@
-var FORT_RADIUS = 1;
-var NEUTRAL_NAME = "neutral";
-var NEUTRAL_COLOR = "#7f7f7f";
-var PLAYER_COLORS = [
+FORT_RADIUS = 1;
+NEUTRAL_NAME = "neutral";
+NEUTRAL_COLOR = "#7f7f7f";
+PLAYER_COLORS = [
   "#1f77b4",
   "#ff7f0e",
   "#2ca02c",
