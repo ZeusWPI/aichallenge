@@ -1,5 +1,3 @@
-#! /usr/bin/python3
-
 from math import ceil, floor, sqrt
 from collections import defaultdict
 import sys
@@ -141,7 +139,7 @@ class Mind:
 
     def orders(self) -> str:
         amount = "{} marches:\n".format(len(self.commands))
-        commands = '\n'.join(str(command) for command in self.commands)
+        commands = '\n'.join(str(command) for command in self.commands) + '\n'
         return amount + commands
 
     def __collect_data(self):
