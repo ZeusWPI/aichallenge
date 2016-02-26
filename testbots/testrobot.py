@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 from math import ceil, floor, sqrt
 from collections import defaultdict
 import sys
@@ -101,7 +103,7 @@ class Game:
             handle(Game.parse_road)
             handle(Game.parse_march)
             mind.play()
-            print(mind.orders(), end="")
+            print(mind.orders())
 
 
 class Command:
@@ -138,10 +140,9 @@ class Mind:
         # TODO
 
     def orders(self) -> str:
-        amount = "{} marches:\n".format(len(self.commands))
-        commands = '\n'.join(str(command) for command in self.commands)
-        commands += '\n' if commands not '' else ''
-        return amount + commands
+        amount = "{} marches:".format(len(self.commands))
+        commands = (str(command) for command in self.commands)
+        return '\n'.join([amount, *commands])
 
     def __collect_data(self):
         self.player = Game.players[self.name]
