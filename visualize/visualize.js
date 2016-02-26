@@ -157,8 +157,6 @@ var draw = function(game, step){
   var marches = fig.selectAll(".march")
       .data(data.marches, function(d) {return d.id})
 
-  marches.exit().remove();
-
   var newMarches = marches.enter().append("g")
     .attr("class", "march")
     .attr("transform", function(d) {return translate(d.x, d.y)});
@@ -180,7 +178,21 @@ var draw = function(game, step){
 
   marches.data(data.marches, function(d) {return d.id})
       .transition()
-      .attr("transform", function(d) {return translate(d.x, d.y)});
+      .attr("transform", function(d) {return translate(d.x, d.y)})
+      .style("opacity", 1);
+
+  marches.exit()
+      .transition()
+      .attr("transform", function(d) {
+        console.log(d.steps);
+        if (d.steps == 1) {
+          return translate(d.target.x, d.target.y)
+        }
+        return translate(d.x, d.y);
+      })
+      .style("opacity", 0)
+      .remove();
+
 
   var newForts = fig.selectAll(".fort")
       .data(data.forts)
