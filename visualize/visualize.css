@@ -1,5 +1,11 @@
+#visualisation {
+    margin-right: 100px;
+    margin-bottom: 200px;
+    max-height: 100%;
+}
+
 #legend {
-    width: 100;
+    width: 100px;
     position: absolute;
     right: 0px;
     top: 25px;
@@ -10,4 +16,10 @@
     bottom: 0px;
     left: 0px;
     right: 0px;
+}
+
+#file-chooser {
+    position: absolute;
+    left: 0px;
+    top: 0px;
 }
