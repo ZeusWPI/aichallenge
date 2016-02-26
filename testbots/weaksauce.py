@@ -1,4 +1,5 @@
 from math import ceil, floor, sqrt
+from collections import defaultdict
 import sys
 
 MARCH_SPEED = 1
@@ -9,7 +10,7 @@ class Player:
     def __init__(self, name):
         self.name = name
         self.marches = set()
-        self.forts = {}  # {name: fort(Fort)}
+        self.forts = set()
 
 
 class Fort:
@@ -17,13 +18,13 @@ class Fort:
         self.name = name
         self.x = int(x)
         self.y = int(y)
-        self.neighbours = {}  # {name: fort(Fort)}
-        self.owner = Game.players[owner]
         self.garrison = int(garrison)
+        self.owner = Game.players[owner]
 
-        self.incoming = {}  # {name: origin(Fort)}
-        self.outgoing = {}  # {name: destination(Fort)}
-        Game.players[owner].forts[name] = self
+        self.neighbours = set()
+        self.incoming = {}
+        self.outgoing = {}
+        Game.players[owner].forts.add(self)
 
     def distance(self, neighbour):
         """ returns distance in steps"""
@@ -31,15 +32,17 @@ class Fort:
         return ceil(dist / MARCH_SPEED)
 
     def update(self, name, x, y, owner, garrison):
+        self.incoming = {}
+        self.outgoing = {}
         self.name = name
         self.x = int(x)
         self.y = int(y)
         self.garrison = int(garrison)
         self.owner = Game.players[owner]
-        Game.players[owner].forts[name] = self
+        Game.players[owner].forts.add(self)
 
     def add_neighbour(self, neighbour):
-        self.neighbours[neighbour.name] = neighbour
+        self.neighbours.add(neighbour)
 
 
 class March:
@@ -56,9 +59,9 @@ class March:
 
 
 class Game:
-    players = {}  # {name: player(Player)}
     forts = {}  # {name: fort(Fort)}
-    marches = set()  # (march(March))
+    players = {}  #
+    marches = set()
 
     @staticmethod
     def parse_fort(line):
@@ -80,8 +83,8 @@ class Game:
     @staticmethod
     def parse_march(line):
         owner_name = line[2]
-        if owner_name not in Game.players.keys():
-            Game.players[owner_name] = Player(owner_name)
+        if owner_name not in Game.players:
+            Game.players[owner_name]= Player(owner_name)
 
         Game.marches.add(March(*line))
 
@@ -122,11 +125,12 @@ class Mind:
         self.player = None
         self.turn = 0
         self.commands = set()
-        self.marches = {}  # {destination(Fort): march(March)}
-        self.forts = {}  # {name: fort(Fort)}
-        self.territory = {}  # {fort(Fort): False|True}
-        self.under_attack = {}  # {fort(Fort): False|True}
-        self.targets = {}  # {enemy: set(mine)}
+        self.forts = set()
+        self.territory = set()
+        self.borders = set()
+        self.under_attack = set()
+        self.marches = {}
+        self.targets = defaultdict(set)
 
     def play(self):
         self.__collect_data()
@@ -134,31 +138,32 @@ class Mind:
         self.__attack()
         # TODO
 
-    def orders(self):
-        return "{} marches:\n".format(len(self.orders())) + \
-               '\n'.join(str(command) for command in self.commands)
+    def orders(self) -> str:
+        amount = "{} marches:\n".format(len(self.commands))
+        commands = '\n'.join(str(command) for command in self.commands)
+        return amount + commands
 
     def __collect_data(self):
         self.player = Game.players[self.name]
         self.forts = self.player.forts
         self.marches = self.player.marches
-        self.territory = {f for f in self.forts.values() if self.__in_safety(f)}
-        self.borders = {f for f in self.forts.values() if not self.__in_safety(f)}
-        self.under_attack = {f for f in self.forts.values() if self.__threatened(f)}
+        self.territory = set(f for f in self.forts if self.__in_safety(f))
+        self.borders = set(f for f in self.forts if not self.__in_safety(f))
+        self.under_attack = set(f for f in self.forts if self.__threatened(f))
 
-        self.targets = {}
-        for mine in self.forts.values():
-            for tar in mine.neighbours.values():
+        self.targets = defaultdict(set)
+        for mine in self.forts:
+            for tar in mine.neighbours:
                 if tar.owner is not self.player:
-                    tmp = self.targets.get(tar, set()) | set(mine)
-                    self.targets.update((tar, tmp))
+                    tmp = self.targets[tar].union([mine])
+                    self.targets.update([(tar, tmp)])
 
     def __attack(self):
         def pressure(f, t):
             return f.garrison / 2 - t.garrison - f.distance(t)
 
         _max = (5, None)
-        for target, prongs in self.targets.values():
+        for target, prongs in self.targets.items():
             diff = sum(pressure(fort, target) for fort in prongs)
             if diff > _max[0]:
                 _max = (diff, target)
@@ -169,21 +174,21 @@ class Mind:
                 self.__apply_command(prong, target, prong.garrison / 2)
 
     def __defend_borders(self):
-        for safe_fort in (f for f, safe in self.territory.items() if safe):
+        for safe_fort in (fort for fort in self.territory):
             half = floor(safe_fort.garrison / 2)
             amount = floor(half / len(safe_fort.neighbours))
-            for neighbour in safe_fort.neighbours.values():
+            for neighbour in safe_fort.neighbours:
                 self.__apply_command(safe_fort, neighbour, amount)
 
     def __apply_command(self, origin, destination, amount):
-        self.forts[origin].garrison -= amount
+        origin.garrison -= amount
         self.commands.add(Command(origin, destination, amount))
 
     def __in_safety(self, my_fort):
-        return all(n.owner == self.player for n in my_fort.neighbours.values())
+        return all(n.owner == self.player for n in my_fort.neighbours)
 
     def __threatened(self, my_fort):
-        return any(e.owner != self.player for e in my_fort.incoming.values())
+        return any(t.owner != self.player for t in my_fort.incoming.values())
 
 
 Game.start()
