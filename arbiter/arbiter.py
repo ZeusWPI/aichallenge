@@ -314,7 +314,7 @@ class Game:
         for road in self.roads:
             road.step()
         for fort in self.forts.values():
-            fort.resolve_siege()
+            fort.step()
 
 
 game = Game(sys.argv[1])
