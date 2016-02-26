@@ -1,8 +1,9 @@
 {
     "players": {
-        "procrat": "./procrat",
-        "iasoon": "./iasoon"
+        "bart": "./yesbot.sh",
+        "berdt": "./yesbot.sh"
     },
-    "mapfile": "test.data",
-    "logfile": "log"
+    "mapfile": "test.input",
+    "logfile": "sample.data",
+    "max_steps": 25
 }

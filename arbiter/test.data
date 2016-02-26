@@ -1,8 +1,0 @@
-2 forts:
-rivendel 0 0 iasoon 10
-helsingor 0 3 procrat 10
-1 road:
-rivendel helsingor
-2 marches:
-rivendel helsingor iasoon 10 3
-helsingor rivendel procrat 30 3

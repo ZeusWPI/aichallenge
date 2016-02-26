@@ -1,9 +1,22 @@
-var FORT_RADIUS = 1;
+FORT_RADIUS = 1;
+NEUTRAL_NAME = "neutral";
+NEUTRAL_COLOR = "#7f7f7f";
+PLAYER_COLORS = [
+  "#1f77b4",
+  "#ff7f0e",
+  "#2ca02c",
+  "#d62728",
+  "#9467bd",
+  "#8c564b",
+  "#e377c2",
+  "#bcbd22",
+  "#17becf"
+];
 
 var takeSection = function (lines) {
   var header = lines.shift().split(/ +/);
   var length = parseInt(header[0]);
-  var section = []
+  var section = [];
   for (var i = 0; i < length; i++) {
     section.push(lines.shift());
   }
@@ -37,7 +50,7 @@ var parseMarch = function (string) {
   };
 };
 
-var parseData = function (lines) {
+var parseData = function (lines, turn) {
   var forts = takeSection(lines).map(parseFort);
   var roads = takeSection(lines).map(parseRoad);
   var marches = takeSection(lines).map(parseMarch);
@@ -68,6 +81,8 @@ var parseData = function (lines) {
     m.x = m.target.x - x_step * (FORT_RADIUS + k * (m.steps-0.5));
     m.y = m.target.y - y_step * (FORT_RADIUS + k * (m.steps-0.5));
     m.step_size = k;
+
+    m.id = [m.origin.name, m.target.name, turn + m.steps - dist].join(' ');
   });
 
   return {
@@ -79,31 +94,53 @@ var parseData = function (lines) {
 
 var viewbox = function(xmin, ymin, xmax, ymax, edge){
   edge = edge || 0;
-  return [xmin-edge, ymin-edge, xmax+edge, ymax+edge].map(function(n){
+  return [xmin-edge, ymin-edge, xmax+2*edge, ymax+2*edge].map(function(n){
     return n.toString();
   }).join(' ');
-}
+};
 
 var translate = function(x, y){
   return "translate("+x+","+y+")";
+};
+
+var visualize = function(game){
+  $('#control-slider').on('change', function(e) {
+    draw(game, parseInt(e.target.value));
+  });
+  $('#control-slider').attr('min', 0);
+  $('#control-slider').attr('max', game.steps.length-1);
+  draw(game, 0);
+};
+
+Game = function(steps) {
+  this.steps = steps;
+  this.playerColors = {};
+  this.playerColors[NEUTRAL_NAME] = NEUTRAL_COLOR;
+};
+
+Game.prototype.getPlayerColor = function(name){
+  var color = this.playerColors[name];
+  if (color === undefined) {
+    var num = Object.keys(this.playerColors).length - 1;
+    this.playerColors[name] = PLAYER_COLORS[num];
+    color = PLAYER_COLORS[num];
+  }
+  return color;
 }
 
-var draw = function(data){
+var draw = function(game, step){
+  var data = game.steps[step];
+  var xmin = d3.min(data.forts, function(f) { return f.x });
+  var ymin = d3.min(data.forts, function(f) { return f.y });
   var xmax = d3.max(data.forts, function(f) { return f.x });
   var ymax = d3.max(data.forts, function(f) { return f.y });
 
-  var players = d3.set(
-    data.forts.map(function(f) {return f.owner}),
-    function(f) {return f}
-  ).values();
-
-
-
-  var playercolor = d3.scale.category10().domain(players);
+  var playercolor = function(name) {
+  }
 
   var fig = d3.select("#visualisation")
-      .append("svg")
-      .attr("viewBox", viewbox(0, 0, xmax, ymax, 2));
+      .attr("viewBox", viewbox(xmin, ymin, xmax, ymax, 2))
+      .attr("height", "75%");
 
   fig.selectAll("line")
       .data(data.roads)
@@ -115,43 +152,65 @@ var draw = function(data){
       .attr("x2", function(d) {return d[1].x})
       .attr("y2", function(d) {return d[1].y});
 
+  var marches = fig.selectAll(".march")
+      .data(data.marches, function(d) {return d.id})
 
-  var marchGroups = fig.selectAll(".march")
-      .data(data.marches)
-      .enter().append("g")
-      .attr("class", "march")
+  marches.exit().remove();
+
+  var newMarches = marches.enter().append("g")
+    .attr("class", "march");
+
+  newMarches.append("circle")
+      .attr("r", function(d) {return d.step_size/2})
+      .attr("fill", function(d) {return game.getPlayerColor(d.owner)});
+
+  newMarches.append("text")
+    .attr("font-size", function(d) {return .8*d.step_size})
+    .attr("fill", "#fff")
+    .attr("dy","0.3em")
+    .attr("text-anchor", "middle");
+
+  marches.select("text")
+    .text(function(d) {return d.size});
+
+  fig.selectAll(".march")
+      .data(data.marches, function(d) {return d.id})
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
-  marchGroups.append("circle")
-      .attr("r", function(d) {return d.step_size/2})
-      .attr("fill", function(d) {return playercolor(d.owner)});
-
-  marchGroups.append("text")
-      .text(function(d) {return d.size})
-      .attr("font-size", function(d) {return .8*d.step_size})
-      .attr("fill", "#fff")
-      .attr("text-anchor", "middle");
-
-
-  var fortGroups = fig.selectAll(".fort")
+  var newForts = fig.selectAll(".fort")
       .data(data.forts)
       .enter().append("g")
       .attr("class", "fort")
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
-  fortGroups.append("circle")
-      .attr("r", FORT_RADIUS)
-      .attr("fill", function(d) {return playercolor(d.owner)});
-
-  fortGroups.append("text")
-      .text(function(d) {return d.garrison})
+  newForts.append("circle")
+      .attr("r", FORT_RADIUS);
+  newForts.append("text")
       .attr("font-size", .9 * FORT_RADIUS)
       .attr("fill", "#fff")
+      .attr("dy","0.3em")
       .attr("text-anchor", "middle");
-}
+
+  var fortGroups = fig.selectAll(".fort");
+
+  fortGroups.select("circle")
+      .attr("fill", function(d) {return game.getPlayerColor(d.owner)});
+
+  fortGroups.select("text")
+      .text(function(d) {return d.garrison});
+};
 
 
-$.get('../map.data', function(dump){
-  var data = parseData(dump.split('\n'));
-  draw(data);
+$.get('../arbiter/sample.data', function(dump){
+  var raw = dump.split('\n'), lines = [];
+  raw.forEach(function(val){
+    if(! /^(#.*)?$/.test(val)){
+      lines.push(val);
+    }
+  });
+  var steps = [];
+  while (lines.length > 0) {
+    steps.push(parseData(lines, steps.length));
+  }
+  visualize(new Game(steps));
 });

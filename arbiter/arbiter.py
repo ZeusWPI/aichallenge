@@ -66,7 +66,7 @@ def show_player(player):
 
 
 def show_section(items, name, formatter):
-    header = "{} {}:".format(len(items), name)
+    header = "{} {}:".format(str(len(items)), name)
     body = (formatter(item) for item in items)
     return '\n'.join([header, *body])
 
@@ -196,9 +196,9 @@ class Fort:
                 march.die()
         return forces
 
-
     def resolve_siege(self):
         forces = self.fetch_armies()
+
         def largest_force():
             return max(forces.keys(), key=lambda k: forces[k])
         winner = largest_force()
@@ -266,7 +266,7 @@ class Game:
     def __init__(self, configfile):
         with open(configfile, 'r') as f:
             config = json.load(f)
-
+        self.maxsteps = config['max_steps']
         self.players = {}
         for name, cmd in config['players'].items():
             self.players[name] = Player(name, cmd)
@@ -279,10 +279,19 @@ class Game:
         self.logfile = open(config['logfile'], 'w')
 
     def play(self):
-        while not self.winner():
+        steps = 0
+        while steps < self.maxsteps and not self.winner():
+            self.log(steps)
             self.get_commands()
             self.step()
             self.remove_losers()
+            steps += 1
+        self.log(steps)
+
+    def log(self, step):
+            self.logfile.writelines(["# STEP: " + str(step) + "\n",
+                                    show_visible(self.forts.values()) + "\n",
+                                    "\n"])
 
     def winner(self):
         if len(self.players) > 1:
@@ -306,8 +315,6 @@ class Game:
             road.step()
         for fort in self.forts.values():
             fort.resolve_siege()
-        self.logfile.write(show_visible(self.forts.values()))
-        self.logfile.write('\n')
 
 
 game = Game(sys.argv[1])
