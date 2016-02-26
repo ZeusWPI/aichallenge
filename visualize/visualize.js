@@ -113,6 +113,8 @@ var visualize = function(steps){
 };
 
 var draw = function(data){
+  var xmin = d3.min(data.forts, function(f) { return f.x });
+  var ymin = d3.min(data.forts, function(f) { return f.y });
   var xmax = d3.max(data.forts, function(f) { return f.x });
   var ymax = d3.max(data.forts, function(f) { return f.y });
 
@@ -129,7 +131,7 @@ var draw = function(data){
   }
 
   var fig = d3.select("#visualisation")
-      .attr("viewBox", viewbox(0, 0, xmax, ymax, 2))
+      .attr("viewBox", viewbox(xmin, ymin, xmax, ymax, 2))
       .attr("height", "75%");
 
   fig.selectAll("line")
