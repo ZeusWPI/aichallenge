@@ -9,7 +9,7 @@ import sys
 
 MARCH_SPEED = 1
 NO_PLAYER_NAME = 'neutral'
-
+MAX_STEPS = 25
 
 def read_section(handle):
     header = handle.readline()
@@ -279,10 +279,14 @@ class Game:
         self.logfile = open(config['logfile'], 'w')
 
     def play(self):
-        while not self.winner():
+        steps = 0
+        self.logfile.write(show_visible(self.forts.values()))
+        self.logfile.write('\n')
+        while steps < MAX_STEPS and not self.winner():
             self.get_commands()
             self.step()
             self.remove_losers()
+            steps += 1
 
     def winner(self):
         if len(self.players) > 1:
@@ -302,12 +306,13 @@ class Game:
             player.read_commands(self)
 
     def step(self):
+        self.logfile.write(show_visible(self.forts.values()))
+        self.logfile.write('\n')
         for road in self.roads:
             road.step()
         for fort in self.forts.values():
             fort.resolve_siege()
-        self.logfile.write(show_visible(self.forts.values()))
-        self.logfile.write('\n')
+
 
 
 game = Game(sys.argv[1])

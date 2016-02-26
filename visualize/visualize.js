@@ -1,5 +1,17 @@
 var FORT_RADIUS = 1;
-var CURRENT_STEP = 0;
+var NEUTRAL_NAME = "neutral";
+var NEUTRAL_COLOR = "#7f7f7f";
+var PLAYER_COLORS = [
+  "#1f77b4",
+  "#ff7f0e",
+  "#2ca02c",
+  "#d62728",
+  "#9467bd",
+  "#8c564b",
+  "#e377c2",
+  "#bcbd22",
+  "#17becf"
+];
 
 var takeSection = function (lines) {
   var header = lines.shift().split(/ +/);
@@ -92,14 +104,17 @@ var translate = function(x, y){
 };
 
 var visualize = function(steps){
-  var drawstep = function(i) {
-    draw(steps[i]);
-    d3.select("#next-step").on("click", function(){ drawstep(i+1); });
-  };
-  drawstep(0);
+  $('#control-slider').on('change', function(e) {
+    draw(steps[(parseInt(e.target.value))]);
+  });
+  $('#control-slider').attr('min', 0);
+  $('#control-slider').attr('max', steps.length-1);
+  draw(steps[0]);
 };
 
 var draw = function(data){
+  var xmin = d3.min(data.forts, function(f) { return f.x });
+  var ymin = d3.min(data.forts, function(f) { return f.y });
   var xmax = d3.max(data.forts, function(f) { return f.x });
   var ymax = d3.max(data.forts, function(f) { return f.y });
 
@@ -108,10 +123,15 @@ var draw = function(data){
     function(f) {return f}
   ).values();
 
-  var playercolor = d3.scale.category10().domain(players);
+  var playercolor = function(name) {
+    if (name == NEUTRAL_NAME){
+      return NEUTRAL_COLOR;
+    }
+    return PLAYER_COLORS[players.indexOf(name)];
+  }
 
   var fig = d3.select("#visualisation")
-      .attr("viewBox", viewbox(0, 0, xmax, ymax, 2))
+      .attr("viewBox", viewbox(xmin, ymin, xmax, ymax, 2))
       .attr("height", "75%");
 
   fig.selectAll("line")
@@ -123,9 +143,6 @@ var draw = function(data){
       .attr("y1", function(d) {return d[0].y})
       .attr("x2", function(d) {return d[1].x})
       .attr("y2", function(d) {return d[1].y});
-
-  console.log(data.marches);
-
 
   var marches = fig.selectAll(".march")
       .data(data.marches, function(d) {return d.id})
@@ -140,11 +157,13 @@ var draw = function(data){
       .attr("fill", function(d) {return playercolor(d.owner)});
 
   newMarches.append("text")
-      .text(function(d) {return d.size})
-      .attr("font-size", function(d) {return .8*d.step_size})
-      .attr("fill", "#fff")
-      .attr("dy","0.3em")
-      .attr("text-anchor", "middle");
+    .attr("font-size", function(d) {return .8*d.step_size})
+    .attr("fill", "#fff")
+    .attr("dy","0.3em")
+    .attr("text-anchor", "middle");
+
+  marches.select("text")
+    .text(function(d) {return d.size});
 
   fig.selectAll(".march")
       .data(data.marches, function(d) {return d.id})
@@ -174,7 +193,7 @@ var draw = function(data){
 };
 
 
-$.get('../sample.data', function(dump){
+$.get('../arbiter/sample.data', function(dump){
   var raw = dump.split('\n'), lines = [];
   raw.forEach(function(val){
     if(! /^(#.*)?$/.test(val)){
@@ -186,6 +205,4 @@ $.get('../sample.data', function(dump){
     steps.push(parseData(lines, steps.length));
   }
   visualize(steps);
-  $('#control-slider').attr('min', 0);
-  $('#control-slider').attr('max', steps.length);
 });
