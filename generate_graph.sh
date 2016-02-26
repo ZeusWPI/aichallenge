@@ -282,8 +282,5 @@ else
     # generate players
     playernames="$(names | head -$players)"
 fi
-echo "$players players:"
-echo "$playernames"
-
 generate_graph
-
+echo "0 marches:"
