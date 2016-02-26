@@ -172,7 +172,7 @@ class Mind:
         if _max[1] is not None:
             target = _max[1]
             for prong in self.targets[target]:
-                self.__apply_command(prong, target, prong.garrison / 2)
+                self.__apply_command(prong, target, prong.garrison // 2)
 
     def __defend_borders(self):
         for safe_fort in (fort for fort in self.territory):
