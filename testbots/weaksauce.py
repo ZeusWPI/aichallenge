@@ -21,8 +21,8 @@ class Fort:
         self.owner = Game.players[owner]
         self.garrison = int(garrison)
 
-        self.incoming_marches = {}  # {name: origin(Fort)}
-        self.outgoing_marches = {}  # {name: destination(Fort)}
+        self.incoming = {}  # {name: origin(Fort)}
+        self.outgoing = {}  # {name: destination(Fort)}
         Game.players[owner].forts[name] = self
 
     def distance(self, neighbour):
@@ -51,13 +51,13 @@ class March:
         self.remaining_steps = remaining_steps
 
         self.owner.marches.add(self)
-        self.origin.outgoing_marches[destination] = self.destination
-        self.destination.incoming_marches[origin] = self.origin
+        self.origin.outgoing[destination] = self.destination
+        self.destination.incoming[origin] = self.origin
 
 
 class Game:
-    players = {}     # {name: player(Player)}
-    forts = {}       # {name: fort(Fort)}
+    players = {}  # {name: player(Player)}
+    forts = {}  # {name: fort(Fort)}
     marches = set()  # (march(March))
 
     @staticmethod
@@ -108,7 +108,11 @@ class Command:
         self.garrison = garrison
 
     def __str__(self):
-        return "{} {} {}".format(self.origin.name, self.destination.name, self.garrison)
+        return "{} {} {}".format(
+            self.origin.name,
+            self.destination.name,
+            self.garrison
+        )
 
 
 class Mind:
@@ -117,14 +121,16 @@ class Mind:
         self.player = None
         self.turn = 0
         self.commands = set()
-        self.marches = {}          # {destination(Fort): march(March)}
-        self.forts = {}            # {name: fort(Fort)}
-        self.fort_safety = {}      # {fort(Fort): 0|1}
-        self.fort_threatened = {}  # {fort(Fort): 0|1}
+        self.marches = {}  # {destination(Fort): march(March)}
+        self.forts = {}  # {name: fort(Fort)}
+        self.territory = {}  # {fort(Fort): False|True}
+        self.under_attack = {}  # {fort(Fort): False|True}
+        self.targets = {}  # {enemy: set(mine)}
 
     def play(self):
         self.__collect_data()
         self.__defend_borders()
+        self.__attack()
         # TODO
 
     def orders(self):
@@ -135,21 +141,47 @@ class Mind:
         self.player = Game.players[self.name]
         self.forts = self.player.forts
         self.marches = self.player.marches
-        self.fort_safety = {fort: 1 if self.__in_safety(fort) else 0 for fort in self.forts}
+        self.territory = {f for f in self.forts if self.__in_safety(f)}
+        self.borders = {f for f in self.forts if not self.__in_safety(f)}
+        self.under_attack = {f for f in self.forts if self.__threatened(f)}
+
+        self.targets = {}
+        for mine in self.forts:
+            for tar in mine.neighbours:
+                if tar.owner is not self.player:
+                    self.targets.update((tar, self.targets[tar] | set(mine)))
+
+    def __attack(self):
+        def pressure(f, t):
+            return f.garrison / 2 - t.garrison - f.distance(t)
+
+        _max = (5, None)
+        for target, prongs in self.targets.values():
+            diff = sum(pressure(fort, target) for fort in prongs)
+            if diff > _max[0]:
+                _max = (diff, target)
+
+        if _max[1] is not None:
+            target = _max[1]
+            for prong in self.targets[target]:
+                self.__apply_command(prong, target, prong.garrison / 2)
 
     def __defend_borders(self):
-        for safe_fort in (fort for fort, safe in self.fort_safety.items() if safe):
+        for safe_fort in (f for f, safe in self.territory.items() if safe):
             half = floor(safe_fort.garrison / 2)
             amount = floor(half / len(safe_fort.neighbours))
             for neighbour in safe_fort.neighbours.values():
-                self.commands.add(Command(safe_fort, neighbour, amount))
+                self.__apply_command(safe_fort, neighbour, amount)
+
+    def __apply_command(self, origin, destination, amount):
+        self.forts[origin].garrison -= amount
+        self.commands.add(Command(origin, destination, amount))
 
     def __in_safety(self, my_fort):
-        return all(fort.owner == self.player for fort in my_fort.neighbours.values())
+        return all(n.owner == self.player for n in my_fort.neighbours.values())
 
     def __threatened(self, my_fort):
-        return any(fort.owner != self.player for fort in my_fort.incoming_marches.values())
+        return any(e.owner != self.player for e in my_fort.incoming.values())
 
 
 Game.start()
-
