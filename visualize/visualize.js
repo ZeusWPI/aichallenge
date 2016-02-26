@@ -166,7 +166,7 @@ var draw = function(game, step){
   // ROADS
 
   var roads = fig.selectAll("line")
-      .data(data.roads);
+      .data(data.roads, function(d) {return d[0].name + " " + d[1].name});
 
   roads.enter().append("line")
       .attr("stroke-width", 0.1)
