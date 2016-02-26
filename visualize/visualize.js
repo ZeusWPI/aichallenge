@@ -163,15 +163,20 @@ var draw = function(game, step){
   var fig = d3.select("#visualisation")
       .attr("viewBox", viewbox(xmin, ymin, xmax, ymax, 2));
 
-  fig.selectAll("line")
-      .data(data.roads)
-      .enter().append("line")
+  // ROADS
+
+  var roads = fig.selectAll("line")
+      .data(data.roads);
+
+  roads.enter().append("line")
       .attr("stroke-width", 0.1)
       .attr("stroke", "gray")
       .attr("x1", function(d) {return d[0].x})
       .attr("y1", function(d) {return d[0].y})
       .attr("x2", function(d) {return d[1].x})
       .attr("y2", function(d) {return d[1].y});
+
+  roads.exit().remove();
 
   // MARCHES
 
@@ -225,9 +230,12 @@ var draw = function(game, step){
       .remove();
 
 
-  var newForts = fig.selectAll(".fort")
-      .data(data.forts)
-      .enter().append("g")
+  // FORTS
+
+  var forts = fig.selectAll(".fort")
+      .data(data.forts);
+
+  var newForts = forts.enter().append("g")
       .attr("class", "fort")
       .attr("transform", function(d) {return translate(d.x, d.y)});
 
@@ -241,15 +249,15 @@ var draw = function(game, step){
       .attr("dy","0.3em")
       .attr("text-anchor", "middle");
 
-  var fortGroups = fig.selectAll(".fort");
-
-  fortGroups.select("circle")
+  forts.select("circle")
       .transition()
       .duration(speed)
       .attr("fill", function(d) {return game.getPlayerColor(d.owner)});
 
-  fortGroups.select("text")
+  forts.select("text")
       .text(function(d) {return d.garrison});
+
+  forts.exit().remove();
 
   drawLegend(game);
 };
