@@ -104,11 +104,12 @@ var translate = function(x, y){
 };
 
 var visualize = function(steps){
-  var drawstep = function(i) {
-    draw(steps[i]);
-    d3.select("#next-step").on("click", function(){ drawstep(i+1); });
-  };
-  drawstep(0);
+  $('#control-slider').on('change', function(e) {
+    draw(steps[(parseInt(e.target.value))]);
+  });
+  $('#control-slider').attr('min', 0);
+  $('#control-slider').attr('max', steps.length-1);
+  draw(steps[0]);
 };
 
 var draw = function(data){
@@ -202,6 +203,4 @@ $.get('../arbiter/sample.data', function(dump){
     steps.push(parseData(lines, steps.length));
   }
   visualize(steps);
-  $('#control-slider').attr('min', 0);
-  $('#control-slider').attr('max', steps.length);
 });
