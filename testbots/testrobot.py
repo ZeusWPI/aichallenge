@@ -161,9 +161,9 @@ class Mind:
 
     def __attack(self):
         def pressure(f, t):
-            return f.garrison / 2 - t.garrison - f.distance(t)
+            return f.garrison // 2 - t.garrison - f.distance(t)
 
-        _max = (5, None)
+        _max = (1, None)
         for target, prongs in self.targets.items():
             diff = sum(pressure(fort, target) for fort in prongs)
             if diff > _max[0]:
@@ -176,8 +176,8 @@ class Mind:
 
     def __defend_borders(self):
         for safe_fort in (fort for fort in self.territory):
-            half = floor(safe_fort.garrison / 2)
-            amount = floor(half / len(safe_fort.neighbours))
+            half = safe_fort.garrison // 2
+            amount = half // len(safe_fort.neighbours)
             for neighbour in safe_fort.neighbours - self.territory:
                 self.__apply_command(safe_fort, neighbour, amount)
 
