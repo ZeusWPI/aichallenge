@@ -241,7 +241,7 @@ class Player:
         self.name = name
         self.forts = set()
         self.marches = set()
-        self.process = Popen(cmd, stdin=PIPE, stdout=PIPE,
+        self.process = Popen([cmd, name], stdin=PIPE, stdout=PIPE,
                              universal_newlines=True)
 
     def capture(self, fort):
