@@ -178,7 +178,7 @@ class Mind:
         for safe_fort in (fort for fort in self.territory):
             half = floor(safe_fort.garrison / 2)
             amount = floor(half / len(safe_fort.neighbours))
-            for neighbour in safe_fort.neighbours:
+            for neighbour in safe_fort.neighbours - self.territory:
                 self.__apply_command(safe_fort, neighbour, amount)
 
     def __apply_command(self, origin, destination, amount):
