@@ -13,13 +13,17 @@ NO_PLAYER_NAME = 'neutral'
 
 def read_section(handle):
     header = handle.readline()
+
+    print("header: ->" + header + "<-")
     section_length = int(header.split(' ')[0])
-    return [handle.readline().rstrip() for i in range(section_length)]
+    test = [handle.readline().rstrip() for i in range(section_length)]
+    return test
 
 
 def read_sections(handle, *parsers):
     for parser in parsers:
         for line in read_section(handle):
+            print("line: ->" + line + "<-")
             parser(line)
 
 
@@ -242,7 +246,7 @@ class Player:
         self.forts = set()
         self.marches = set()
         self.process = Popen([cmd, name], stdin=PIPE, stdout=PIPE,
-                             universal_newlines=True)
+                             universal_newlines=True, shell=True)
 
     def capture(self, fort):
         if fort.owner:
