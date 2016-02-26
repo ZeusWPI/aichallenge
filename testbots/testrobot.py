@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 from math import ceil, floor, sqrt
 from collections import defaultdict
 import sys

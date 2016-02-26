@@ -1,9 +1,9 @@
 {
     "players": {
-        "bart": "./yesbot.sh",
-        "berdt": "./yesbot.sh"
+        "bart": "./wrapper.sh",
+        "berdt": "../testbots/yesbot.sh"
     },
     "mapfile": "test.input",
     "logfile": "sample.data",
-    "max_steps": 25
+    "max_steps": 10
 }
