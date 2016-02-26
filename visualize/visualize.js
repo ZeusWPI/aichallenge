@@ -130,7 +130,6 @@ Game.prototype.getPlayerColor = function(name){
 
 var drawLegend = function(game){
   var entryHeight = 20;
-  var entrySpacing = 10;
   var fig = d3.select("#legend");
   var newEntries = fig.selectAll(".legend-entry")
       .data(Object.keys(game.playerColors, function(d){return d}))
@@ -159,8 +158,8 @@ var draw = function(game, step){
   var xmax = d3.max(data.forts, function(f) { return f.x });
   var ymax = d3.max(data.forts, function(f) { return f.y });
 
-  var playercolor = function(name) {
-  }
+  var speed = parseInt($("#speed-slider").val());
+  console.log(speed);
 
   var fig = d3.select("#visualisation")
       .attr("viewBox", viewbox(xmin, ymin, xmax, ymax, 2));
@@ -197,15 +196,18 @@ var draw = function(game, step){
 
   marches.select("text")
       .transition()
+      .duration(speed)
       .text(function(d) {return d.size});
 
   marches.data(data.marches, function(d) {return d.id})
       .transition()
+      .duration(speed)
       .attr("transform", function(d) {return translate(d.x, d.y)})
       .style("opacity", 1);
 
   marches.exit()
       .transition()
+      .duration(speed)
       .attr("transform", function(d) {
         if (d.steps == 1) {
           return translate(d.target.x, d.target.y)
