@@ -4,5 +4,6 @@
         "berdt": "./yesbot.sh"
     },
     "mapfile": "test.input",
-    "logfile": "sample.data"
+    "logfile": "sample.data",
+    "max_steps": 25
 }
