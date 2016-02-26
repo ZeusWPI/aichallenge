@@ -3,20 +3,37 @@
 <script type="text/javascript" src="visualize.js"></script>
 <script type="text/javascript" src="controls.js"></script>
 <link rel="stylesheet" type="text/css" href="visualize.css"/>
+<link rel="stylesheet" type="text/css" href="controls.css"/>
 <div id="content">
   <svg id ="visualisation"/>
   <div id="controls">
-    <input type="range" id="control-slider"  />
-    <input type="range" id="speed-slider" min="500" max="2000" />
-    <input type="number" id="control-label" />
-    <div id="steps">
-      <button data-step="-10">-10</button>
-      <button data-step="-5">-5</button>
-      <button data-step="-1">-1</button>
-      <button data-step="1">1</button>
-      <button data-step="5">5</button>
-      <button data-step="10">10</button>
+    <div id="control-label">
+      <h1>Turn</h1>
+      <label data-bind="#control-slider"></label>
     </div>
-    <button id="play">play</button>
+    <div>
+      <input type="range" id="control-slider"  />
+      <div id="steps">
+        <button data-step="-10">-10</button>
+        <button data-step="-5">-5</button>
+        <button data-step="-1">-1</button>
+        <button id="playpause">
+          <!-- Can be changed to anything, as long as the classes are added -->
+          <span class="play">play</span>
+          <span class="pause">pause</span>
+        </button>
+        <button data-step="1">+1</button>
+        <button data-step="5">+5</button>
+        <button data-step="10">+10</button>
+        <div id="speed">
+          <span class="title">
+            Animation Speed:
+            <label data-bind="#speed-slider"></label>
+            ms
+          </span>
+          <input type="range" id="speed-slider" min="200" max="2000" value="500" />
+        </div>
+      </div>
+    </div>
   </div>
 </div>

@@ -1,45 +1,44 @@
 $(document).ready(function() {
   var slider = $('#control-slider');
-  var playing = false;
+  var playpause = $('#playpause');
 
   var update_turn = function( new_turn ) {
-    $(slider).val(new_turn);
-    $(slider).change();
+    slider.val(new_turn);
+    slider.change();
   }
-
-  var update_inputs = function() {
-    var new_val = $(slider).val();
-
-    $('#control-label').val(new_val);
-    $('[data-step]').prop('disabled', function() {
-      step_val = parseInt(new_val) + parseInt($(this).data('step'));
-      return step_val < parseInt($(slider).attr('min')) || step_val > parseInt($(slider).attr('max'));
-    });
-  }
-
-  $(slider).bind('input', update_inputs);
-  $(slider).bind('change', update_inputs);
 
   $('[data-step]').on('click', function() {
     var step = parseInt($(this).data('step'));
-    var new_val = parseInt($(slider).val()) + step;
+    var new_val = parseInt(slider.val()) + step;
     update_turn(new_val);
   });
 
-  var updatePlaying = function( newState ) {
-    playing = newState;
-    $('#play').text(playing ? "Pause" : "Play");
-  }
+  $.each($('[data-bind]'), function() {
+    var binded = $(this);
+    var binder = $($(this).data('bind'));
+    binder.bind('input change', function() {
+      binded.val($(this).val());
+      binded.text($(this).val());
+    });
+    binder.change(); // Initialize the label
+  });
 
-  var startPlaying = function() {
-    slider_val = parseInt($(slider).val());
-    if (playing) {
-      update_turn(++slider_val);
-      setTimeout(startPlaying, parseInt($("#speed-slider").val()));
-      if (slider_val >= parseInt($("#control-slider").attr('max'))) { updatePlaying(false); }
+  var togglePlaying = function() {
+    if (playpause.hasClass('active')) {
+      sliderVal      = parseInt(slider.val());
+      animationSpeed = parseInt($("#speed-slider").val());
+      sliderMax      = parseInt($("#control-slider").attr('max'));
+
+      update_turn(++sliderVal);
+      setTimeout(togglePlaying, animationSpeed);
+      if (sliderVal >= sliderMax) { playpause.removeClass('active'); }
     }
   }
-  $('#play').on('click', function() { updatePlaying(!playing); startPlaying(); });
+
+  playpause.on('click', function() {
+    playpause.toggleClass('active');
+    togglePlaying();
+  });
 
   update_turn(0);
 });

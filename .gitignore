@@ -3,3 +3,7 @@
 *.iml
 *.data
 **/__pycache__
+
+# SASS
+*.map
+.sass-cache/
