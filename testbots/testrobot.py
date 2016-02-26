@@ -76,7 +76,6 @@ class Game:
 
     @staticmethod
     def parse_road(line):
-        print(line[0] + " - " + line[1])
         Game.forts[line[0]].add_neighbour(Game.forts[line[1]])
         Game.forts[line[1]].add_neighbour(Game.forts[line[0]])
 
