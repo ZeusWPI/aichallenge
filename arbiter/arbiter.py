@@ -13,12 +13,9 @@ NO_PLAYER_NAME = 'neutral'
 
 def read_section(handle):
     header = handle.readline()
-
-    print("header: ->" + header + "<-")
     section_length = int(header.split(' ')[0])
-    test = [handle.readline().rstrip() for i in range(section_length)]
-    return test
-
+    return [handle.readline().rstrip() for i in range(section_length)]
+    
 
 def read_sections(handle, *parsers):
     for parser in parsers:
