@@ -176,8 +176,8 @@ class Fort:
 
     def dispatch(self, neighbour, size):
         road = self.roads.get(neighbour)
-        if road:
-            size = min(size, self.garrison)
+        size = min(size, self.garrison)
+        if road and size > 0:
             road.march(neighbour, self.owner, size)
             self.garrison -= size
 
