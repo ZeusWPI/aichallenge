@@ -180,7 +180,13 @@ var draw = function(game, step){
       .data(data.marches, function(d) {return d.id})
 
   var newMarches = marches.enter().append("g")
-    .attr("class", "march")
+    .attr("class", "march");
+
+  newMarches .style("opacity", 0)
+    .attr("transform", function(d) {return translate(d.origin.x, d.origin.y)})
+    .transition()
+    .duration(speed)
+    .style("opacity", 1)
     .attr("transform", function(d) {return translate(d.x, d.y)});
 
   newMarches.append("circle")
