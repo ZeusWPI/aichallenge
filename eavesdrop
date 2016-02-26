@@ -1,0 +1,6 @@
+#! /bin/sh
+
+# Eavesdropper: eavesdrop on your bot!
+# Usage: eavesdrop $infile.log $outfile.log $command
+
+tee $1 | $3 ${@:4} | tee $2
