@@ -39,7 +39,7 @@ class Fort:
         Game.players[owner].forts[name] = self
 
     def add_neighbour(self, neighbour):
-        self.neighbours[neighbour.name] = self.distance(neighbour)
+        self.neighbours[neighbour.name] = neighbour
 
 
 class March:
@@ -73,6 +73,7 @@ class Game:
 
     @staticmethod
     def parse_road(line):
+        print(line[0] + " - " + line[1])
         Game.forts[line[0]].add_neighbour(Game.forts[line[1]])
         Game.forts[line[1]].add_neighbour(Game.forts[line[0]])
 
@@ -93,7 +94,7 @@ class Game:
                 handler(input().split())
 
         while True:
-            Game.players, Game.marches = {}, {}
+            Game.players, Game.marches = {}, set()
             handle(Game.parse_fort)
             handle(Game.parse_road)
             handle(Game.parse_march)
@@ -141,15 +142,16 @@ class Mind:
         self.player = Game.players[self.name]
         self.forts = self.player.forts
         self.marches = self.player.marches
-        self.territory = {f for f in self.forts if self.__in_safety(f)}
-        self.borders = {f for f in self.forts if not self.__in_safety(f)}
-        self.under_attack = {f for f in self.forts if self.__threatened(f)}
+        self.territory = {f for f in self.forts.values() if self.__in_safety(f)}
+        self.borders = {f for f in self.forts.values() if not self.__in_safety(f)}
+        self.under_attack = {f for f in self.forts.values() if self.__threatened(f)}
 
         self.targets = {}
-        for mine in self.forts:
-            for tar in mine.neighbours:
+        for mine in self.forts.values():
+            for tar in mine.neighbours.values():
                 if tar.owner is not self.player:
-                    self.targets.update((tar, self.targets[tar] | set(mine)))
+                    tmp = self.targets.get(tar, set()) | set(mine)
+                    self.targets.update((tar, tmp))
 
     def __attack(self):
         def pressure(f, t):
