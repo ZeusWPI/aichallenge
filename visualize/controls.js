@@ -1,5 +1,6 @@
 $(document).ready(function() {
   var slider = $('#control-slider');
+  var playing = false;
 
   var update_turn = function( new_turn ) {
     $(slider).val(new_turn);
@@ -24,6 +25,21 @@ $(document).ready(function() {
     var new_val = parseInt($(slider).val()) + step;
     update_turn(new_val);
   });
+
+  var updatePlaying = function( newState ) {
+    playing = newState;
+    $('#play').text(playing ? "Pause" : "Play");
+  }
+
+  var startPlaying = function() {
+    slider_val = parseInt($(slider).val());
+    if (playing) {
+      update_turn(++slider_val);
+      setTimeout(startPlaying, parseInt($("#speed-slider").val()));
+      if (slider_val >= parseInt($("#control-slider").attr('max'))) { updatePlaying(false); }
+    }
+  }
+  $('#play').on('click', function() { updatePlaying(!playing); startPlaying(); });
 
   update_turn(0);
 });
