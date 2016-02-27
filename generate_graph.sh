@@ -244,8 +244,8 @@ generate_graph() {
                 xp2 = xm + $((ys[b] - ys[a])) / 2;
                 yp2 = ym - $((xs[b] - xs[a])) / 2;
                 r = sqrt($((bd2m[a * homes + b])) / 2);
-                for ( i = 0 ; i < homes && !too_close ; i++) {
-                    if (i == a || i == b) {
+                for ( i = 0 ; i < $homes && !too_close ; i++) {
+                    if (i == $a || i == $b) {
                         continue;
                     }
                     /* other home should be in between a and b */
