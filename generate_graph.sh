@@ -251,7 +251,7 @@ generate_graph() {
                     /* other home should be in between a and b */
                     to_p1 = ((${xs[$i]} - xp1)^2 + (${ys[$i]} - yp1)^2 < $((bd2m[a * homes + b])) / 2);
                     to_p2 = ((${xs[$i]} - xp2)^2 + (${ys[$i]} - yp2)^2 < $((bd2m[a * homes + b])) / 2);
-                    too_close = to_p1 && to_p2;
+                    too_close = (to_p1 && to_p2);
                 }
                 too_close
             ")"
