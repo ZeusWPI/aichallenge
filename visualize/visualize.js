@@ -201,13 +201,11 @@ var draw = function(game, step){
   newMarches.append("text")
       .attr("font-size", function(d) {return .8*d.step_size})
       .attr("fill", "#fff")
-      .attr("dy","0.3em")
+      .attr("dy", function(d) {return .3*d.step_size})
       .attr("text-anchor", "middle")
       .text(function(d) {return d.size});
 
   marches.select("text")
-      .transition()
-      .duration(speed)
       .text(function(d) {return d.size});
 
   marches.data(data.marches, function(d) {return d.id})
