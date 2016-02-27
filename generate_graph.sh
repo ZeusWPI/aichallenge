@@ -214,7 +214,6 @@ generate_graph() {
             echo "$(( bd2m[i * homes + j] )) $i $j"
         done
     done | sort -n | while read distance2 a b; do
-        echo -n "considering connecting $a and $b" >&2
         local distance="$(bc <<< "sqrt($distance2) ")"
         # skip intersecting segments
         local cuts=0
@@ -225,49 +224,38 @@ generate_graph() {
             cuts=$(intersect $((xs[a])) $((ys[a])) $((xs[b])) $((ys[b])) $((xs[fe[i]])) $((ys[fe[i]])) $((xs[te[i]])) $((ys[te[i]])))
         done
         if test $cuts = 1; then
-            echo "           intersects with $((te[i-1])) to $((fe[i-1]))" >&2
             continue
         fi
 
         # connect every two closest nodes if they aren't connected
         if (( con[a * homes + b] )); then
-            echo -n "    old" >&2
 
             # if the new connection passes too close to another home, skip
             # it.
-            local too_close="$(bc <<<"
-                too_close = 0;
-                xm = $((xs[a] + xs[b])) / 2;
-                ym = $((ys[a] + ys[b])) / 2;
-                xp1 = xm - $((ys[b] - ys[a])) / 2;
-                yp1 = ym + $((xs[b] - xs[a])) / 2;
-                xp2 = xm + $((ys[b] - ys[a])) / 2;
-                yp2 = ym - $((xs[b] - xs[a])) / 2;
-                r = sqrt($((bd2m[a * homes + b])) / 2);
-                for ( i = 0 ; i < $homes && !too_close ; i++) {
-                    if (i == $a || i == $b) {
-                        continue;
-                    }
-                    /* other home should be in between a and b */
-                    to_p1 = ((${xs[$i]} - xp1)^2 + (${ys[$i]} - yp1)^2 < $((bd2m[a * homes + b])) / 2);
-                    to_p2 = ((${xs[$i]} - xp2)^2 + (${ys[$i]} - yp2)^2 < $((bd2m[a * homes + b])) / 2);
-                    too_close = (to_p1 && to_p2);
-                }
-                too_close
-            ")"
+            local too_close=0
+            local xm="$(bc <<< "$(( xs[a] + xs[b] )) / 2")"
+            local ym="$(bc <<< "$(( ys[a] + ys[b] )) / 2")"
+            local xp1="$(bc <<< "$xm - $(( ys[b] - ys[a] )) / 2")"
+            local yp1="$(bc <<< "$ym + $(( xs[b] - xs[a] )) / 2")"
+            local xp2="$(bc <<< "$xm + $(( ys[b] - ys[a] )) / 2")"
+            local yp2="$(bc <<< "$ym - $(( xs[b] - xs[a] )) / 2")"
+            local r="$(bc <<< "sqrt($(( bd2m[a * homes + b] )) / 2)")"
+            for (( i = 0; i < homes && !too_close; i++ )); do
+                if (( i == a || i == b )); then continue; fi
+                # other home should be "in between" a and b
+                local to_p1="$(bc <<< "(${xs[$i]} - $xp1)^2 + (${ys[$i]} - $yp1)^2 < $(( bd2m[a * homes + b] )) / 2")"
+                local to_p2="$(bc <<< "(${xs[$i]} - $xp2)^2 + (${ys[$i]} - $yp2)^2 < $(( bd2m[a * homes + b] )) / 2")"
+                too_close="$(bc <<< "$to_p1 && $to_p2")"
+            done
             if test "$too_close" == 1; then
-                echo "    too close to point $((i - 1))" >&2
                 continue
             fi
-        else
-            echo -n "    new" >&2
         fi
 
         # connect these two, update walking matrix
         fe[$roads]=$a
         te[$roads]=$b
         roads=$((roads + 1))
-        echo "    connected" >&2
         echo "${fortnames[$a]} ${fortnames[$b]}"
         for (( i = 0; i < homes; i++ )); do
             local connected="$(( con[a*homes + i] || con[b*homes + i] ))"
