@@ -11,22 +11,18 @@ MARCH_SPEED = 1
 NO_PLAYER_NAME = 'neutral'
 
 
-def readnext(handle):
-    line = handle.readline()
-    while line.startswith("\n") or line.startswith("#"):
-        line = handle.readline()
-    return line
-
-
 def read_section(handle):
-    header = readnext(handle)
+    header = next(handle)
     section_length = int(header.split(' ')[0])
-    return [readnext(handle).rstrip() for i in range(section_length)]
-    
+    return [next(handle) for i in range(section_length)]
+
 
 def read_sections(handle, *parsers):
+    # ignore empty lines and lines starting with a #
+    lines = (line.rstrip() for line in handle
+             if len(line.rstrip()) > 0 and not line.startswith("#"))
     for parser in parsers:
-        for line in read_section(handle):
+        for line in read_section(lines):
             print("line: ->" + line + "<-")
             parser(line)
 
