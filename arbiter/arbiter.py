@@ -12,9 +12,13 @@ NO_PLAYER_NAME = 'neutral'
 
 
 def read_section(handle):
-    header = next(handle)
-    section_length = int(header.split(' ')[0])
-    return [next(handle) for i in range(section_length)]
+    while True:
+        try:
+            header = next(handle)
+            section_length = int(header.split(' ')[0])
+            return [next(handle) for i in range(section_length)]
+        except ValueError:
+            continue
 
 
 def read_sections(handle, *parsers):
@@ -23,7 +27,6 @@ def read_sections(handle, *parsers):
              if len(line.rstrip()) > 0 and not line.startswith("#"))
     for parser in parsers:
         for line in read_section(lines):
-            print("line: ->" + line + "<-")
             parser(line)
 
 
