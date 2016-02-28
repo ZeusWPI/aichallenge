@@ -1,2 +1,2 @@
 #! /bin/bash
-yes "0 marches:"
+yes | sed "s/y/\n#TEST\n0 marches:/"
