@@ -246,9 +246,11 @@ generate_graph() {
             for (( i = 0; i < homes && !too_close; i++ )); do
                 if (( i == a || i == b )); then continue; fi
                 # other home should be "in between" a and b
-                local to_p1="$(bc <<< "(${xs[$i]} - $xp1)^2 + (${ys[$i]} - $yp1)^2 < $(( bd2m[a * homes + b] )) / 2")"
-                local to_p2="$(bc <<< "(${xs[$i]} - $xp2)^2 + (${ys[$i]} - $yp2)^2 < $(( bd2m[a * homes + b] )) / 2")"
-                too_close="$(bc <<< "$to_p1 && $to_p2")"
+                too_close="$(bc <<<"
+                    to_p1 = ((${xs[$i]} - $xp1)^2 + (${ys[$i]} - $yp1)^2 < $(( bd2m[a * homes + b] )) / 2);
+                    to_p2 = ((${xs[$i]} - $xp2)^2 + (${ys[$i]} - $yp2)^2 < $(( bd2m[a * homes + b] )) / 2);
+                    to_p1 && to_p2
+                ")"
             done
             if test "$too_close" == 1; then
                 continue
