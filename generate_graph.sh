@@ -227,19 +227,22 @@ generate_graph() {
             continue
         fi
 
+        local xm ym xp1 yp1 xp2 yp2 rad
         # connect every two closest nodes if they aren't connected
         if (( con[a * homes + b] )); then
 
             # if the new connection passes too close to another home, skip
             # it.
             local too_close=0
-            local xm="$(bc <<< "$(( xs[a] + xs[b] )) / 2")"
-            local ym="$(bc <<< "$(( ys[a] + ys[b] )) / 2")"
-            local xp1="$(bc <<< "$xm - $(( ys[b] - ys[a] )) / 2")"
-            local yp1="$(bc <<< "$ym + $(( xs[b] - xs[a] )) / 2")"
-            local xp2="$(bc <<< "$xm + $(( ys[b] - ys[a] )) / 2")"
-            local yp2="$(bc <<< "$ym - $(( xs[b] - xs[a] )) / 2")"
-            local r="$(bc <<< "sqrt($(( bd2m[a * homes + b] )) / 2)")"
+            read xp1 yp1 xp2 yp2 < <(bc <<<"
+                xm = ( $((xs[a])) + $((xs[b])) ) / 2;
+                ym = ( $((ys[a])) + $((ys[b])) ) / 2;
+                xp1 = xm - ( $((ys[b])) - $((ys[a])) ) / 2; xp1;
+                yp1 = ym - ( $((xs[b])) - $((xs[a])) ) / 2; yp1;
+                xp2 = xm - ( $((ys[b])) - $((ys[a])) ) / 2; xp2;
+                yp2 = ym - ( $((xs[b])) - $((xs[a])) ) / 2; yp2;
+                " | tr '\n' ' '
+            )
             for (( i = 0; i < homes && !too_close; i++ )); do
                 if (( i == a || i == b )); then continue; fi
                 # other home should be "in between" a and b
