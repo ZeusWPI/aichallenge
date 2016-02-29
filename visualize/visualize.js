@@ -160,7 +160,10 @@ var draw = function(game, step){
 
   var speed = parseInt($("#speed-slider").val());
 
-  var fig = d3.select("#visualisation")
+  var fig = d3.select("#visualisation");
+
+  fig.transition()
+      .duration(speed)
       .attr("viewBox", viewbox(xmin, ymin, xmax, ymax, 2));
 
   // ROADS
