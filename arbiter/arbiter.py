@@ -319,6 +319,4 @@ class Game:
             fort.step()
 
 
-game = Game(sys.argv[1])
-
-game.play()
+Game(sys.argv[1]).play()
