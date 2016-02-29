@@ -1,9 +1,5 @@
 #visualisation {
-    max-height: 100%;
-}
-
-#containing-div{
-    margin: auto;
+    max-height: 90vh;
 }
 
 #legend {
