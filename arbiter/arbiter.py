@@ -272,7 +272,10 @@ class Player:
 
     def read_commands(self, game):
         if not self.process.poll():
-            read_commands(game, self, self.process.stdout)
+            try:
+                read_commands(game, self, self.process.stdout)
+            except StopIteration:
+                self.process.kill()
 
 
 class Game:
@@ -331,3 +334,4 @@ class Game:
 
 
 Game(sys.argv[1]).play()
+print("Succes!")
