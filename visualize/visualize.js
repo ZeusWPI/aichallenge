@@ -164,7 +164,7 @@ var draw = function(game, step){
 
   fig.transition()
       .duration(speed)
-      .attr("viewBox", viewbox(xmin, ymin, xmax, ymax, 2));
+      .attr("viewBox", viewbox(xmin, ymin, xmax-xmin, ymax-ymin, 2));
 
   // ROADS
 
