@@ -165,7 +165,7 @@ var draw = function(game, step){
 
   // ROADS
 
-  var roads = fig.selectAll("line")
+  var roads = fig.select("#roads").selectAll("line")
       .data(data.roads, function(d) {return d[0].name + " " + d[1].name});
 
   roads.enter().append("line")
@@ -180,7 +180,7 @@ var draw = function(game, step){
 
   // MARCHES
 
-  var marches = fig.selectAll(".march")
+  var marches = fig.select("#marches").selectAll(".march")
       .data(data.marches, function(d) {return d.id})
 
   var newMarches = marches.enter().append("g")
@@ -230,7 +230,7 @@ var draw = function(game, step){
 
   // FORTS
 
-  var forts = fig.selectAll(".fort")
+  var forts = fig.select("#forts").selectAll(".fort")
       .data(data.forts);
 
   var newForts = forts.enter().append("g")
