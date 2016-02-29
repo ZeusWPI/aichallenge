@@ -57,9 +57,12 @@ def read_map(game, handle):
 
 
 def parse_command(game, player, string):
-    origin, target, size = string.split(' ')
-    if game.forts[origin] and game.forts[origin].owner == player:
-        game.forts[origin].dispatch(game.forts[target], int(size))
+    try:
+        origin, target, size = string.split(' ')
+        if game.forts[origin] and game.forts[origin].owner == player:
+            game.forts[origin].dispatch(game.forts[target], int(size))
+    except ValueError:
+        return
 
 
 def read_commands(game, player, handle):
