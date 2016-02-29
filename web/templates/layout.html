@@ -76,7 +76,17 @@
   </div>
 </nav>
 
+
 <div class="container">
+  <div>
+    {% for message in get_flashed_messages() %}
+      <div class="alert alert-info">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+
   {# Block to be filled on each page. #}
   {% block content -%}{%- endblock %}
 </div>
