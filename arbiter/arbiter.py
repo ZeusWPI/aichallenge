@@ -253,7 +253,7 @@ class Player:
         self.marches = set()
         args = cmd.split(' ')
         self.process = Popen([*args, name], stdin=PIPE, stdout=PIPE,
-                             universal_newlines=True, shell=True)
+                             universal_newlines=True)
 
     def capture(self, fort):
         if fort.owner:
