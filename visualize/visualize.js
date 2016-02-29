@@ -257,6 +257,9 @@ var draw = function(game, step){
 
   forts.exit().remove();
 
+  forts.attr("transform", function(d) {return translate(d.x, d.y)});
+
+
   drawLegend(game);
 };
 

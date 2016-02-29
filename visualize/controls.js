@@ -5,7 +5,7 @@ $(document).ready(function() {
   var update_turn = function( new_turn ) {
     slider.val(new_turn);
     slider.change();
-  }
+  };
 
   $('[data-step]').on('click', function() {
     var step = parseInt($(this).data('step'));
@@ -33,7 +33,7 @@ $(document).ready(function() {
       setTimeout(togglePlaying, animationSpeed);
       if (sliderVal >= sliderMax) { playpause.removeClass('active'); }
     }
-  }
+  };
 
   playpause.on('click', function() {
     playpause.toggleClass('active');

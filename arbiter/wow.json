@@ -1,6 +1,6 @@
 {
     "players": {
-        "testrobot": "../testbots/testrobot.py",
+        "testrobot": "../eavesdrop test.in /dev/null ../testbots/testrobot.py",
         "yesbot": "../testbots/yesbot.sh"
     },
     "mapfile": "map.input",
