@@ -1,6 +1,6 @@
 {
     "players": {
-        "bart": "./wrapper.sh",
+        "bart": "../testbots/yesbot.sh",
         "berdt": "../testbots/yesbot.sh"
     },
     "mapfile": "test.input",

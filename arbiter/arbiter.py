@@ -12,15 +12,21 @@ NO_PLAYER_NAME = 'neutral'
 
 
 def read_section(handle):
-    header = handle.readline()
-    section_length = int(header.split(' ')[0])
-    return [handle.readline().rstrip() for i in range(section_length)]
-    
+    while True:
+        try:
+            header = next(handle)
+            section_length = int(header.split(' ')[0])
+            return [next(handle) for i in range(section_length)]
+        except ValueError:
+            continue
+
 
 def read_sections(handle, *parsers):
+    # ignore empty lines and lines starting with a #
+    lines = (line.rstrip() for line in handle
+             if len(line.rstrip()) > 0 and not line.startswith("#"))
     for parser in parsers:
-        for line in read_section(handle):
-            print("line: ->" + line + "<-")
+        for line in read_section(lines):
             parser(line)
 
 
@@ -51,9 +57,12 @@ def read_map(game, handle):
 
 
 def parse_command(game, player, string):
-    origin, target, size = string.split(' ')
-    if game.forts[origin] and game.forts[origin].owner == player:
-        game.forts[origin].dispatch(game.forts[target], int(size))
+    try:
+        origin, target, size = string.split(' ')
+        if game.forts[origin] and game.forts[origin].owner == player:
+            game.forts[origin].dispatch(game.forts[target], int(size))
+    except ValueError:
+        return
 
 
 def read_commands(game, player, handle):
@@ -244,7 +253,7 @@ class Player:
         self.marches = set()
         args = cmd.split(' ')
         self.process = Popen([*args, name], stdin=PIPE, stdout=PIPE,
-                             universal_newlines=True, shell=True)
+                             universal_newlines=True)
 
     def capture(self, fort):
         if fort.owner:
@@ -256,12 +265,14 @@ class Player:
         return (not self.forts) and (not self.marches)
 
     def send_state(self):
-        self.process.stdin.write(show_visible(self.forts))
-        self.process.stdin.write('\n')
-        self.process.stdin.flush()
+        if not self.process.poll():
+            self.process.stdin.write(show_visible(self.forts))
+            self.process.stdin.write('\n')
+            self.process.stdin.flush()
 
     def read_commands(self, game):
-        read_commands(game, self, self.process.stdout)
+        if not self.process.poll():
+            read_commands(game, self, self.process.stdout)
 
 
 class Game:
