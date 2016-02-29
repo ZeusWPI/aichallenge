@@ -1,25 +1,27 @@
 #visualisation {
-    margin-right: 100px;
-    margin-bottom: 200px;
     max-height: 100%;
+}
+
+#containing-div{
+    margin: auto;
 }
 
 #legend {
     width: 100px;
     position: absolute;
-    right: 0px;
+    right: 0;
     top: 25px;
 }
 
 #controls {
     position: absolute;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 #file-chooser {
     position: absolute;
-    left: 0px;
-    top: 0px;
+    left: 0;
+    top: 0;
 }
