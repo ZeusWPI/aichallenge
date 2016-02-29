@@ -23,6 +23,8 @@ worden voor de verplaatsing van soldaten. Eénrichtingsverkeer deed men in de
 middeleeuwen nog niet aan mee, dus troepen kunnen zich telkens in beide
 richtingen verplaatsen.
 
+Elke speler begint als eigenaar van 1 fort met daarin 100 soldaten.
+
 ## Het speldoel
 
 Het doel van het spel is eenvoudig: verover het land. Dit doe je door alle
