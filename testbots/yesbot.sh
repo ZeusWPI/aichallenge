@@ -1,2 +1,4 @@
 #! /bin/bash
-yes | sed "s/y/\n#TEST\n2 marches:\nhelsingor stonefieldt bart 40 6/"
+
+yes | sed "s/y/\n#TEST\n0 marches:/" &
+cat - > /dev/null
