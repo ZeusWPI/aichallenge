@@ -262,12 +262,14 @@ class Player:
         return (not self.forts) and (not self.marches)
 
     def send_state(self):
-        self.process.stdin.write(show_visible(self.forts))
-        self.process.stdin.write('\n')
-        self.process.stdin.flush()
+        if not self.process.poll():
+            self.process.stdin.write(show_visible(self.forts))
+            self.process.stdin.write('\n')
+            self.process.stdin.flush()
 
     def read_commands(self, game):
-        read_commands(game, self, self.process.stdout)
+        if not self.process.poll():
+            read_commands(game, self, self.process.stdout)
 
 
 class Game:
