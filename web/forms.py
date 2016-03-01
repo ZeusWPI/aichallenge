@@ -1,5 +1,6 @@
 from flask.ext.user.forms import RegisterForm
-from wtforms import StringField, BooleanField, PasswordField, Form
+from flask.ext.wtf import Form
+from wtforms import StringField, BooleanField, PasswordField
 from wtforms.validators import DataRequired
 
 

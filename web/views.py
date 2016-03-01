@@ -5,7 +5,7 @@ from os import path
 from markdown import Markdown
 
 from web import app
-from web.forms import LoginForm
+from forms import LoginForm
 from web.models import User
 
 
