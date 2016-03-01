@@ -1,31 +1,29 @@
 #! /usr/bin/python3
 
-from itertools import chain
+from itertools import chain, islice
 from collections import defaultdict
 from math import ceil, sqrt
-from subprocess import Popen, PIPE
+# from subprocess import Popen, PIPE
 from fcntl import fcntl, F_GETFL, F_SETFL
 from os import O_NONBLOCK
 import json
 import sys
 
+import asyncio
+from asyncio import subprocess
+
 MARCH_SPEED = 1
 NO_PLAYER_NAME = 'neutral'
 
-
-def read_section(handle):
-    while True:
-        try:
-            header = next(handle)
-            section_length = int(header.split(' ')[0])
-            return [next(handle) for i in range(section_length)]
-        except ValueError:
-            continue
+def read_section(iterable):
+    header = next(iterable)
+    section_length = int(header.split(' ')[0])
+    return islice(iterable, section_length)
 
 
-def read_sections(handle, *parsers):
+def read_sections(lines, *parsers):
     # ignore empty lines and lines starting with a #
-    lines = (line.rstrip() for line in handle
+    lines = (line.rstrip() for line in lines
              if len(line.rstrip()) > 0 and not line.startswith("#"))
     for parser in parsers:
         for line in read_section(lines):
@@ -65,10 +63,6 @@ def parse_command(game, player, string):
             game.forts[origin].dispatch(game.forts[target], int(size))
     except ValueError:
         return
-
-
-def read_commands(game, player, handle):
-    read_sections(handle, lambda line: parse_command(game, player, line))
 
 
 def show_player(player):
@@ -248,8 +242,23 @@ class March:
     def die(self):
         self.owner.marches.remove(self)
 
-    def __repr__(self):
-        return str(self.size)
+
+@asyncio.coroutine
+def async_read_line(stream):
+    while not stream.at_eof():
+        byteline = yield from stream.readline()
+        line = byteline.decode('utf-8').rstrip()
+        return line
+
+@asyncio.coroutine
+def async_read_section(stream):
+    header = yield from async_read_line(stream)
+    num_lines = int(header.split(' ')[0])
+    section = []
+    for _ in range(num_lines):
+        l = yield from async_read_line(stream)
+        section.append(l)
+    return section
 
 
 class Player:
@@ -258,10 +267,12 @@ class Player:
         self.forts = set()
         self.marches = set()
         self.in_control = True;
-        args = cmd.split(' ')
-        self.process = Popen([*args, name], stdin=PIPE, stdout=PIPE,
-                             universal_newlines=True)
-        unblock(self.process.stdin)
+        self.cmd = cmd
+
+    @asyncio.coroutine
+    def start_process(self):
+        self.process = yield from asyncio.create_subprocess_exec(
+                *self.cmd.split(' '), stdout=subprocess.PIPE)
 
     def capture(self, fort):
         if fort.owner:
@@ -273,6 +284,7 @@ class Player:
         return (not self.forts) and (not self.marches)
 
     def send_state(self):
+        return
         try:
             self.process.stdin.write(show_visible(self.forts))
             self.process.stdin.write('\n')
@@ -286,12 +298,17 @@ class Player:
         self.in_control = False
         sys.stderr.write("Took control from {}.\n".format(self.name))
 
+    @asyncio.coroutine
+    def communicate(self):
+        yield from self.start_process()
+        l = yield from async_read_section(self.process.stdout)
+        print(l)
+
+
+    @asyncio.coroutine
     def read_commands(self, game):
-        try:
-            read_commands(game, self, self.process.stdout)
-        except StopIteration:
-            sys.stderr.write("{} failed to provide commands.\n".format(self.name))
-            self.remove_control()
+        section = yield from async_read_section(self.process.stdout)
+        print(section)
 
 
 class Game:
@@ -310,11 +327,16 @@ class Game:
 
         self.logfile = open(config['logfile'], 'w')
 
+    @asyncio.coroutine
     def play(self):
         steps = 0
+
+        for player in self.players.values():
+            yield from player.start_process()
+
         while steps < self.maxsteps and not self.winner():
             self.log(steps)
-            self.get_commands()
+            yield from self.get_commands()
             self.step()
             self.remove_losers()
             steps += 1
@@ -336,11 +358,12 @@ class Game:
             if player.is_defeated():
                 del self.players[player.name]
 
+    @asyncio.coroutine
     def get_commands(self):
         for player in self.players.values():
             player.send_state()
         for player in self.players.values():
-            player.read_commands(self)
+            yield from player.read_commands(self)
 
     def step(self):
         for road in self.roads:
@@ -349,5 +372,7 @@ class Game:
             fort.step()
 
 
-Game(sys.argv[1]).play()
-print("Succes!")
+game = Game(sys.argv[1])
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(game.play())
