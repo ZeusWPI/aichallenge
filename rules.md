@@ -112,9 +112,16 @@ gewoon *plain text* bestanden.
 
 Hieronder een voorbeeld van een spelconfiguratie.
 
-    3 forts boyard 10 20 felix 100 helsingor 20 10 ilion 200 nox 30 30 neutral
-    0 2 roads: boyard helsingor helsingor nox 2 marches: boyard helsingor felix
-    100 2 helsingor boyard ilion 10 3
+    3 forts:
+    boyard 10 20 felix 100
+    helsingor 20 10 ilion 200
+    nox 30 30 neutral 0
+    0 2 roads:
+    boyard helsingor
+    helsingor nox
+    2 marches: 
+    boyard helsingor felix 100 2
+    helsingor boyard ilion 10 3
 
 We zien 3 secties in het formaat: eerst komen de forten, dan de straten, en
 tenslotte de marcherende legers. Elke sectie begint met een titel, waarin staat
@@ -135,7 +142,9 @@ hoeveel elementen de sectie bevat. Elk element bestaat uit één regel:
 
 Het formaat van een commando lijkt erg op dat van een marcherende troep:
 
-    2 commands: boyard helsingor 100 helsingor boyard 10
+    2 commands:
+    boyard helsingor 100
+    helsingor boyard 10
 
 Bovenstaand commando's zullen bijvoorbeeld 100 soldaten uit boyard naar
 helsingor laten marcheren, en 10 soldaten uit helsingor naar boyard verzenden.
