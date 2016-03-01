@@ -129,12 +129,14 @@ class Mind:
         self.forts = set()
         self.territory = set()
         self.borders = set()
+        self.neutral = set()
         self.under_attack = set()
         self.marches = {}
         self.targets = defaultdict(set)
 
     def play(self):
         self.__collect_data()
+        self.__get_neutral()
         self.__defend_borders()
         self.__attack()
         # TODO
@@ -150,6 +152,7 @@ class Mind:
         self.marches = self.player.marches
         self.territory = set(f for f in self.forts if self.__in_safety(f))
         self.borders = set(f for f in self.forts if not self.__in_safety(f))
+        self.neutral = set(f for f in Game.forts if f.owner == 'neutral')
         self.under_attack = set(f for f in self.forts if self.__threatened(f))
 
         self.targets = defaultdict(set)
@@ -158,6 +161,13 @@ class Mind:
                 if tar.owner is not self.player:
                     tmp = self.targets[tar].union([mine])
                     self.targets.update([(tar, tmp)])
+
+    def __get_neutral(self):
+        for fort in self.borders:
+            neuts = self.neutral.intersection(fort.neighbours)
+            for neut in neuts:
+                if neut.garrison <= fort.garrison:
+                    self.__apply_command(fort, neut, neut.garrison)
 
     def __attack(self):
         def pressure(f, t):
