@@ -187,8 +187,9 @@ class Mind:
     def __defend_borders(self):
         for safe_fort in (fort for fort in self.territory):
             half = safe_fort.garrison // 2
-            amount = half // len(safe_fort.neighbours)
-            for neighbour in safe_fort.neighbours - self.territory:
+            targets = safe_fort.neighbours.difference(self.territory)
+            amount = half // len(targets)
+            for neighbour in targets:
                 self.__apply_command(safe_fort, neighbour, amount)
 
     def __apply_command(self, origin, destination, amount):
@@ -199,7 +200,8 @@ class Mind:
         return all(n.owner == self.player for n in my_fort.neighbours)
 
     def __threatened(self, my_fort):
-        return any(t.owner != self.player for t in my_fort.incoming.values())
+        return any(t.owner.name not in [self.player.name, 'neutral']
+                   for t in my_fort.incoming.values())
 
 
 Game.start()
