@@ -152,7 +152,7 @@ class Mind:
         self.marches = self.player.marches
         self.territory = set(f for f in self.forts if self.__in_safety(f))
         self.borders = set(f for f in self.forts if not self.__in_safety(f))
-        self.neutral = set(f for f in Game.forts if f.owner == 'neutral')
+        self.neutral = set(f for f in Game.forts.values() if f.owner == 'neutral')
         self.under_attack = set(f for f in self.forts if self.__threatened(f))
 
         self.targets = defaultdict(set)
@@ -185,7 +185,7 @@ class Mind:
                 self.__apply_command(prong, target, prong.garrison // 2)
 
     def __defend_borders(self):
-        for safe_fort in (fort for fort in self.territory):
+        for safe_fort in self.territory:
             half = safe_fort.garrison // 2
             targets = safe_fort.neighbours.difference(self.territory)
             amount = half // len(targets)
@@ -197,11 +197,10 @@ class Mind:
         self.commands.add(Command(origin, destination, amount))
 
     def __in_safety(self, my_fort):
-        return all(n.owner == self.player for n in my_fort.neighbours)
+        return all(n.owner not in [self.player, Game.players['neutral']]
+                   for n in my_fort.neighbours)
 
     def __threatened(self, my_fort):
-        return any(t.owner.name not in [self.player.name, 'neutral']
-                   for t in my_fort.incoming.values())
-
+        return any(t.owner is my_fort.owner for t in my_fort.incoming.values())
 
 Game.start()

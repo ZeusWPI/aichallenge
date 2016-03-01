@@ -126,7 +126,7 @@ Game.prototype.getPlayerColor = function(name){
     color = PLAYER_COLORS[num];
   }
   return color;
-}
+};
 
 var drawLegend = function(game){
   var entryHeight = 20;
@@ -137,7 +137,7 @@ var drawLegend = function(game){
       .attr('class', 'legend-entry')
       .attr('transform', function(d, i){
         return translate(0, i * entryHeight);
-      })
+      });
 
   newEntries.append('circle')
       .attr('cy', 8)
@@ -149,7 +149,7 @@ var drawLegend = function(game){
       .attr('x', 20)
       .attr('y', 12)
       .text(function(d) {return d});
-}
+};
 
 var draw = function(game, step){
   var data = game.steps[step];
@@ -184,21 +184,23 @@ var draw = function(game, step){
   // MARCHES
 
   var marches = fig.select("#marches").selectAll(".march")
-      .data(data.marches, function(d) {return d.id})
+      .data(data.marches, function(d) {return d.id});
 
   var newMarches = marches.enter().append("g")
     .attr("class", "march");
 
   // animate new marches
-  newMarches .style("opacity", 0)
+  newMarches.style("opacity", 0)
     .attr("transform", function(d) {return translate(d.origin.x, d.origin.y)})
     .transition()
     .duration(speed)
     .style("opacity", 1)
     .attr("transform", function(d) {return translate(d.x, d.y)});
 
+
+
   newMarches.append("circle")
-      .attr("r", function(d) {return d.step_size/2})
+      .attr("r", function(d) {return d.step_size*0.5})
       .attr("fill", function(d) {return game.getPlayerColor(d.owner)});
 
   newMarches.append("text")
@@ -280,7 +282,7 @@ var visualizeLog = function(log){
     steps.push(parseData(lines, steps.length));
   }
   visualize(new Game(steps));
-}
+};
 
 $(document).ready(function(){
   var reader = new FileReader();
