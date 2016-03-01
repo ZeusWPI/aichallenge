@@ -3,12 +3,13 @@
 
 {% block content -%}
     <div class="jumbotron">
-      <h2>Sign In</h2>
+      <h2>Sign Up</h2>
       <form action="" method="post" name="login">
           {{ form.nickname }}<br>
+          {{ form.email }}<br>
           {{ form.password }}<br>
-          <p>{{ form.remember_me }} Remember Me</p>
-          <p><input class="btn btn-default" type="submit" value="Sign In"></p>
+          {{ form.password_confirmation }}<br>
+          <p><input class="btn btn-default" type="submit" value="Sign Up"></p>
       </form>
     </div>
 {%- endblock %}s

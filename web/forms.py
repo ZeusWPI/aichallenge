@@ -11,4 +11,4 @@ class LoginForm(Form):
 
 
 class MyRegisterForm(RegisterForm):
-    pass
+    nickname = StringField('name', validators=[DataRequired()])
