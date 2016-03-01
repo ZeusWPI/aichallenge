@@ -128,7 +128,7 @@ tenslotte de marcherende legers. Elke sectie begint met een titel, waarin staat
 hoeveel elementen de sectie bevat. Elk element bestaat uit één regel:
 
 - Een fort wordt omschreven door zijn naam (bijvoorbeeld, "boyard"), zijn
-  coördinaat (2 gehele getallen, eerst y, dan x), zijn eigenaar (bijvoorbeeld
+  coördinaat (2 gehele getallen, eerst x, dan y), zijn eigenaar (bijvoorbeeld
   "ilion") of "neutral" in het geval het fort geen eigenaar heeft, en tenslotte
   het aantal soldaten (tevens een geheel getal).
 - Een straat wordt eenvoudigweg omschreven door de namen van de twee steden die
