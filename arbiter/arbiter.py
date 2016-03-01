@@ -4,6 +4,8 @@ from itertools import chain
 from collections import defaultdict
 from math import ceil, sqrt
 from subprocess import Popen, PIPE
+from fcntl import fcntl, F_GETFL, F_SETFL
+from os import O_NONBLOCK
 import json
 import sys
 
@@ -107,6 +109,10 @@ def show_visible(forts):
         show_section(marches, 'marches', show_march)
     ])
 
+
+def unblock(handle):
+    flags = fcntl(handle, F_GETFL)
+    fcntl(handle, F_SETFL, flags | O_NONBLOCK)
 
 class Road:
     def __init__(self, fort1, fort2):
@@ -251,9 +257,11 @@ class Player:
         self.name = name
         self.forts = set()
         self.marches = set()
+        self.in_control = True;
         args = cmd.split(' ')
         self.process = Popen([*args, name], stdin=PIPE, stdout=PIPE,
                              universal_newlines=True)
+        unblock(self.process.stdin)
 
     def capture(self, fort):
         if fort.owner:
@@ -265,17 +273,25 @@ class Player:
         return (not self.forts) and (not self.marches)
 
     def send_state(self):
-        if not self.process.poll():
+        try:
             self.process.stdin.write(show_visible(self.forts))
             self.process.stdin.write('\n')
             self.process.stdin.flush()
+        except BlockingIOError:
+            sys.stderr.write("{} failed to consume input.\n".format(self.name))
+            self.remove_control()
+
+    def remove_control(self):
+        self.process.kill()
+        self.in_control = False
+        sys.stderr.write("Took control from {}.\n".format(self.name))
 
     def read_commands(self, game):
-        if not self.process.poll():
-            try:
-                read_commands(game, self, self.process.stdout)
-            except StopIteration:
-                self.process.kill()
+        try:
+            read_commands(game, self, self.process.stdout)
+        except StopIteration:
+            sys.stderr.write("{} failed to provide commands.\n".format(self.name))
+            self.remove_control()
 
 
 class Game:
