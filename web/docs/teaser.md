@@ -29,3 +29,8 @@ On this same date we will announce the date of the final tournament. You can
 count on a few weeks to code your bot.
 
 For those unable to attend, all information will be made available on this site.
+
+# Github
+
+More things also to be found on [Github](https://github.be/ZeusWPI/aichallenge).
+
