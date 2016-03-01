@@ -119,7 +119,7 @@ Hieronder een voorbeeld van een spelconfiguratie.
     0 2 roads:
     boyard helsingor
     helsingor nox
-    2 marches: 
+    2 marches:
     boyard helsingor felix 100 2
     helsingor boyard ilion 10 3
 
@@ -149,7 +149,7 @@ Het formaat van een commando lijkt erg op dat van een marcherende troep:
 Bovenstaand commando's zullen bijvoorbeeld 100 soldaten uit boyard naar
 helsingor laten marcheren, en 10 soldaten uit helsingor naar boyard verzenden.
 
-# Speleinde
+## Speleinde
 
 Het spel eindigt, zoals eerder vermeld, als er 1 speler alle forten veroverd
 heeft, en alle troepen van de tegenstander uitgeschakeld heeft. Merk wel op dat
@@ -157,3 +157,38 @@ we spelletjes die te lang duren (de twee spelers zijn even sterk of gewoon erg
 lui) hardhandig zullen stopzetten met een lekkere CTRL-C of gelijkaardig
 signaal.
 
+
+# Getting started
+
+Een bot schrijven is op zich triviaal. Het is niet meer dan een programma
+schrijven die informatie zoals hierboven beschreven in "Formaat speelveld"
+inleest via standaard invoer, en die commando's stuurt zoals in "Formaat
+commando's" schrijft naar standaard uitvoer.
+
+Stel dat je een dergelijk programma hebt geschreven, bijvoorbeeld genaamd
+`bot.py`, dan kunnen we deze testen door deze te laten vechten tegen andere bots
+of tegen zichzelf. Hiervoor schrijven we eerste een klein configuratie-bestandje
+in JSON, bijvoorbeeld `config.json`:
+```
+{
+    "players": {
+        "bot1": "python bot.py",
+        "bot2": "python bot.py"
+    },
+    "mapfile": "test.input",
+    "logfile": "sample.data",
+    "max_steps": 500
+}
+```
+
+Wanneer we dit configuratiebestandje meegeven aan de arbiter, zullen twee
+versies van `bot.py` tegen elkaar vechten op het speelveld van `test.input`.
+Deze zal een verslag van het gevecht uitschrijven in `sample.data`.
+```python3 arbiter.py config.json```
+
+Vervolgens kunnen we dit verslag gebruiken om het verloop van het gevecht te
+visualisueren. Open het HTML-bestand in `visualize/visualize.html` in je browser
+en selecteer `sample.data`.
+
+Zo, nu je weet hoe je bot kan testen, ben je klaar om wicked bots te beginnen
+schrijven!
