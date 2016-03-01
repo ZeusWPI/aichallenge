@@ -1,3 +1,5 @@
+[Presentatie](https://docs.google.com/presentation/d/1Y3DMxwDXzszvYDkskC_Oc7U0f_HSdA7zRcnfjHp4ypI/edit?usp=sharing)
+
 ## Rules
 
 The playing field consists of a planar graph, where nodes are forts and edges
