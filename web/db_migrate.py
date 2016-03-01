@@ -4,7 +4,7 @@ from web import db
 from web.config import SQLALCHEMY_DATABASE_URI
 from web.config import SQLALCHEMY_MIGRATE_REPO
 
-
+print('Migrating the database')
 v = api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
 migration = SQLALCHEMY_MIGRATE_REPO + ('/versions/%03d_migration.py' % (v+1))
 tmp_module = imp.new_module('old_model')

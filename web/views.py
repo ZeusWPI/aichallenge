@@ -1,17 +1,12 @@
 from flask import render_template, request, redirect, url_for, flash, abort, g, session
-from flask_login import login_required, login_user, logout_user, LoginManager
+from flask_login import login_required, login_user, logout_user
 from werkzeug.utils import secure_filename
 from os import path
 from markdown import Markdown
 
-from web import app
-from forms import LoginForm, MyRegisterForm
+from web import app, db
+from web.forms import LoginForm, MyRegisterForm
 from web.models import User
-
-
-lm = LoginManager()
-lm.init_app(app)
-
 
 @app.route('/home')
 @app.route('/')
@@ -24,8 +19,11 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         session['remember_me'] = form.remember_me.data
-        flash('Logged in successfully.')
+        user = User.query.filter(User.nickname==form.nickname.data).first()
 
+        if user is None:
+            abort(513) # shouldn't happen
+        login_user(user)
         _next = request.args.get('next')
         if _next == '':
             return abort(400)
@@ -41,21 +39,22 @@ def logout():
     return redirect('home.html')
 
 
-@lm.user_loader
-def load_user(id):
-    return User.query.get(int(id))
-
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = MyRegisterForm()
-    if request.method == 'POST' and form.validate():
-        #  user = User(form.username.data, form.email.data,
-                #  form.password.data)
-        #  db_session.add(user)
-        #  flash('Thanks for registering')
+    kelly = MyRegisterForm()
+    if request.method=="POST" and kelly.validate():
+        print("validated")
+        user = User(kelly.nickname.data, kelly.email.data,
+                kelly.password.data)
+        print(user)
+        db.session.add(user)
+        db.session.save()
+        flash('Thanks for registering')
         return redirect(url_for('login'))
-    return render_template('register.html', form=form)
+    elif request.method=="POST":
+        print("Form", kelly.nickname)
+        print("Non valid request")
+    return render_template('register.html', form=kelly)
 
 
 @app.route('/docs/<name>')

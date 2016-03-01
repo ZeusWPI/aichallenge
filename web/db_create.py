@@ -4,6 +4,7 @@ from web.config import SQLALCHEMY_MIGRATE_REPO
 from web import db
 
 import os.path
+print("Creating new Battlebots databees")
 db.create_all()
 if not os.path.exists(SQLALCHEMY_MIGRATE_REPO):
     api.create(SQLALCHEMY_MIGRATE_REPO, 'database repository')
