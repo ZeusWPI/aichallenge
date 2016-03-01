@@ -1,4 +1,5 @@
-[Presentatie](https://docs.google.com/presentation/d/1Y3DMxwDXzszvYDkskC_Oc7U0f_HSdA7zRcnfjHp4ypI/edit?usp=sharing)
+* [Presentatie](https://docs.google.com/presentation/d/1Y3DMxwDXzszvYDkskC_Oc7U0f_HSdA7zRcnfjHp4ypI/edit?usp=sharing)
+* [Regels](https://github.com/ZeusWPI/aichallenge/blob/master/rules.md)
 
 ## Stappenplan:
 
@@ -6,7 +7,7 @@
 2. Maak een configfile aan (zie: [test.json](https://github.com/ZeusWPI/aichallenge/blob/master/arbiter/test.json))
 3. Voer arbiter uit:
 ```
-   python arbiter.py wow.json 
+   python arbiter.py test.json 
 ```
 
 
