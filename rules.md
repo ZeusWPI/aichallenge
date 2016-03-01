@@ -166,9 +166,9 @@ inleest via standaard invoer, en die commando's stuurt zoals in "Formaat
 commando's" schrijft naar standaard uitvoer.
 
 Stel dat je een dergelijk programma hebt geschreven, bijvoorbeeld genaamd
-`bot.py`, dan kunnen we deze testen door deze te laten vechten tegen andere bots
-of tegen zichzelf. Hiervoor schrijven we eerste een klein configuratie-bestandje
-in JSON, bijvoorbeeld `config.json`:
+`bot.py`, dan willen we deze natuurlijk testen door deze te laten vechten tegen
+andere bots of tegen zichzelf. Hiervoor schrijven we eerste een klein
+configuratie-bestandje in JSON, bijvoorbeeld `config.json`:
 ```
 {
     "players": {
@@ -184,11 +184,14 @@ in JSON, bijvoorbeeld `config.json`:
 Wanneer we dit configuratiebestandje meegeven aan de arbiter, zullen twee
 versies van `bot.py` tegen elkaar vechten op het speelveld van `test.input`.
 Deze zal een verslag van het gevecht uitschrijven in `sample.data`.
-```python3 arbiter.py config.json```
+De arbiter is een Python 3.5 programma dat in deze repo staat, dus clone eerst
+deze repo en roep dit programma als volgt met je zonet geschreven
+configuratiebestand als argument:
+```python3 arbiter/arbiter.py config.json```
 
 Vervolgens kunnen we dit verslag gebruiken om het verloop van het gevecht te
-visualisueren. Open het HTML-bestand in `visualize/visualize.html` in je browser
-en selecteer `sample.data`.
+visualisueren. Open het HTML-bestand `visualize/visualize.html` van deze repo in
+je browser en selecteer `sample.data`.
 
 Zo, nu je weet hoe je bot kan testen, ben je klaar om wicked bots te beginnen
 schrijven!
