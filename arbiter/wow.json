@@ -1,9 +1,9 @@
 {
     "players": {
-        "testrobot": "../eavesdrop test.in /dev/null ../testbots/testrobot.py",
-        "yesbot": "../testbots/yesbot.sh"
+        "testrobot": "../eavesdrop test.in /dev/null python ../testbots/destroybot.py",
+        "destroybot": "../eavesdrop test.in destroy.out python ../testbots/destroybot.py"
     },
     "mapfile": "map.input",
-    "logfile": "sample.data",
-    "max_steps": 200
+    "logfile": "epic.data",
+    "max_steps": 500
 }
