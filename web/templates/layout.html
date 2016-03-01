@@ -62,7 +62,11 @@
       `
       <!-- Navbar-rightside, used for login/logout/account-acces -->
       <ul class="nav navbar-nav navbar-right">
+        {% if current_user.is_authenticated %}
+          <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        {% else %}
           <li><a href="{{ url_for('login') }}">Login</a></li>
+        {% endif %}
           {#
         {% if current_user.is_anonymous %}
         {% else %}
