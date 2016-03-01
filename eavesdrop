@@ -3,4 +3,7 @@
 # Eavesdropper: eavesdrop on your bot!
 # Usage: eavesdrop $infile.log $outfile.log $command
 
-tee $1 | $3 ${@:4} | tee $2
+infile="$1"
+outfile="$2"
+shift 2
+tee "$infile" | "$@" | tee "$outfile"

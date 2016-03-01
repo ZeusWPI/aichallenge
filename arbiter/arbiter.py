@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-from itertools import chain
+from itertools import chain, takewhile
 from collections import defaultdict
 from math import ceil, sqrt
 from subprocess import Popen, PIPE
@@ -12,13 +12,15 @@ NO_PLAYER_NAME = 'neutral'
 
 
 def read_section(handle):
-    while True:
-        try:
-            header = next(handle)
-            section_length = int(header.split(' ')[0])
-            return [next(handle) for i in range(section_length)]
-        except ValueError:
-            continue
+    line = next(handle)
+    while ':' not in line: line = next(handle)
+    # found a header
+    lines, _ = line.rstrip(":").split(" ")
+    if lines == "?":
+        return list(takewhile(lambda line: line != "end", handle))
+    else:
+        section_length = int(lines)
+        return [next(handle) for i in range(section_length)]
 
 
 def read_sections(handle, *parsers):
