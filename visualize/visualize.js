@@ -73,11 +73,11 @@ var parseData = function (lines, turn) {
     var alpha = Math.atan2(dy, dx);
     var x_step = Math.cos(alpha);
     var y_step = Math.sin(alpha);
-    var dist = Math.ceil(dx / x_step);
 
-    var dx_gates = dx - 2 * FORT_RADIUS * x_step;
+    var dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
+    var steps = Math.ceil(dist)
+    var k = (dist-2*FORT_RADIUS)/(steps-1)
 
-    var k = (dx_gates/(dist-1)) / x_step;
     m.x = m.target.x - x_step * (FORT_RADIUS + k * (m.steps-0.5));
     m.y = m.target.y - y_step * (FORT_RADIUS + k * (m.steps-0.5));
     m.step_size = k;
