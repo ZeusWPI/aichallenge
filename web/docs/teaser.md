@@ -18,19 +18,8 @@ to show your strength. We will top this off with a grand tournament, where you
 will see the action unfold before your eyes. There will be prizes.
 
 
-# Details
+# Getting started
 
-The rules for this game will be disclosed on Tuesday March 1st. On this day, we
-will organise an introductory session starting at 18h in computer room Hopper
-(campus De Sterre, building S5). Be sure to stop by, we'd love to help you get
-started.
-
-On this same date we will announce the date of the final tournament. You can
-count on a few weeks to code your bot.
-
-For those unable to attend, all information will be made available on this site.
-
-# Github
-
-More things also to be found on [Github](https://github.com/ZeusWPI/aichallenge).
-
+Ready to start coding?
+You can find all relevant files and info to get started on [the GitHub
+repo](https://github.com/ZeusWPI/aichallenge/blob/master/rules.md).
