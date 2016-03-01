@@ -46,7 +46,7 @@ def parse_march(game, string):
     origin = game.forts[origin]
     target = game.forts[target]
     owner = game.players[owner]
-    origin.roads[target].march(target, owner, int(size), int(steps))
+    March(origin.roads[target], target, owner, int(size)).dispatch(int(steps))
 
 
 def read_map(game, handle):
@@ -59,10 +59,13 @@ def read_map(game, handle):
 def parse_command(game, player, string):
     try:
         origin, target, size = string.split(' ')
-        if game.forts[origin] and game.forts[origin].owner == player:
-            game.forts[origin].dispatch(game.forts[target], int(size))
+        if not (origin in game.forts and target in game.forts):
+            return None
+        road = game.forts[origin].roads[game.forts[target]]
+        if road and game.forts[origin].owner == player:
+            return March(road, player, int(size))
     except ValueError:
-        return
+        return None
 
 
 def show_player(player):
@@ -116,13 +119,12 @@ class Road:
             fort2: [None] * (self.length * 2 + 1),
         }
 
-    def march(self, destination, owner, size, steps=None):
+    def add_march(self, march, steps=None):
         position = 2 * (steps or self.length)
-        if self.headed_to[destination][position]:
-            self.headed_to[destination][position].size += size
+        if self.headed_to[march.destination][position]:
+            self.headed_to[march.destination][position].size += march.size
         else:
-            march = March(self, owner, size)
-            self.headed_to[destination][position] = march
+            self.headed_to[march.destination][position] = march
 
     def step(self):
         self.half_step()
@@ -233,11 +235,15 @@ class Fort:
 
 
 class March:
-    def __init__(self, road, owner, size):
+    def __init__(self, road, destination, owner, size):
         self.road = road
+        self.destination = destination
         self.owner = owner
         self.size = size
         self.owner.marches.add(self)
+
+    def dispatch(self, steps=None):
+        self.road.add_march(self, steps)
 
     def die(self):
         self.owner.marches.remove(self)
@@ -272,26 +278,19 @@ class Player:
     @asyncio.coroutine
     def start_process(self):
         self.process = yield from asyncio.create_subprocess_exec(
-                *self.cmd.split(' '), stdout=subprocess.PIPE)
+                *self.cmd.split(' '),
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE
+                )
 
     def capture(self, fort):
         if fort.owner:
             fort.owner.forts.remove(fort)
-        self.forts.add(fort)
         fort.owner = self
+        self.forts.add(fort)
 
     def is_defeated(self):
         return (not self.forts) and (not self.marches)
-
-    def send_state(self):
-        return
-        try:
-            self.process.stdin.write(show_visible(self.forts))
-            self.process.stdin.write('\n')
-            self.process.stdin.flush()
-        except BlockingIOError:
-            sys.stderr.write("{} failed to consume input.\n".format(self.name))
-            self.remove_control()
 
     def remove_control(self):
         self.process.kill()
@@ -299,16 +298,14 @@ class Player:
         sys.stderr.write("Took control from {}.\n".format(self.name))
 
     @asyncio.coroutine
-    def communicate(self):
-        yield from self.start_process()
-        l = yield from async_read_section(self.process.stdout)
-        print(l)
-
-
-    @asyncio.coroutine
-    def read_commands(self, game):
+    def communicate(self, game):
+        state = show_visible(self.forts)
+        encoded = (state + '\n').encode('utf-8')
+        self.process.stdin.write(encoded)
+        self.process.stdin.drain()
         section = yield from async_read_section(self.process.stdout)
-        print(section)
+        marches = (parse_command(game, self, line) for line in section)
+        return marches;
 
 
 class Game:
@@ -361,9 +358,7 @@ class Game:
     @asyncio.coroutine
     def get_commands(self):
         for player in self.players.values():
-            player.send_state()
-        for player in self.players.values():
-            yield from player.read_commands(self)
+            yield from player.communicate(self)
 
     def step(self):
         for road in self.roads:
