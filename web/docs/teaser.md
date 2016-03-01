@@ -32,5 +32,5 @@ For those unable to attend, all information will be made available on this site.
 
 # Github
 
-More things also to be found on [Github](https://github.be/ZeusWPI/aichallenge).
+More things also to be found on [Github](https://github.com/ZeusWPI/aichallenge).
 
