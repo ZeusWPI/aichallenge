@@ -161,9 +161,9 @@ signaal.
 # Getting started
 
 Een bot schrijven is op zich triviaal. Het is niet meer dan een programma
-schrijven die informatie zoals hierboven beschreven in "Formaat speelveld"
-inleest via standaard invoer, en die commando's stuurt zoals in "Formaat
-commando's" schrijft naar standaard uitvoer.
+schrijven die informatie zoals [hierboven beschreven](#formaat-speelveld)
+inleest via standaard invoer, en die commando's stuurt zoals [hierboven
+beschreven](#formaat-commandos) schrijft naar standaard uitvoer.
 
 Stel dat je een dergelijk programma hebt geschreven, bijvoorbeeld genaamd
 `bot.py`, dan willen we deze natuurlijk testen door deze te laten vechten tegen
