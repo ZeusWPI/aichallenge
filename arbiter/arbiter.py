@@ -78,7 +78,7 @@ def show_player(player):
 def show_section(items, name, formatter):
     header = "{} {}:".format(str(len(items)), name)
     body = (formatter(item) for item in items)
-    return '\n'.join([header, *body])
+    return '\n'.join([header] + list(body))
 
 
 def show_fort(fort):
@@ -252,7 +252,7 @@ class Player:
         self.forts = set()
         self.marches = set()
         args = cmd.split(' ')
-        self.process = Popen([*args, name], stdin=PIPE, stdout=PIPE,
+        self.process = Popen(list(args) + [name], stdin=PIPE, stdout=PIPE,
                              universal_newlines=True)
 
     def capture(self, fort):
@@ -302,6 +302,7 @@ class Game:
             self.step()
             self.remove_losers()
             steps += 1
+            print("Made step "+str(steps))
         self.log(steps)
 
     def log(self, step):
