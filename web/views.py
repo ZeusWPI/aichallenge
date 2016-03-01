@@ -46,6 +46,11 @@ def load_user(id):
     return User.query.get(int(id))
 
 
+@app.route('/register')
+def register():
+    pass
+
+
 @app.route('/docs/<name>')
 def docs(name):
     md = Markdown(extensions=['markdown.extensions.toc'])
