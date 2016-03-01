@@ -5,5 +5,5 @@
     },
     "mapfile": "test.input",
     "logfile": "sample.data",
-    "max_steps": 100
+    "max_steps": 60
 }
