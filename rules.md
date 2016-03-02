@@ -1,4 +1,3 @@
-
 # Spelregels Zeus' Badass Battle Bots
 
 Wanneer de oude vorst sterft zonder duidelijke erfgenaam, is het land in chaos.
@@ -195,3 +194,5 @@ je browser en selecteer `sample.data`.
 
 Zo, nu je weet hoe je bot kan testen, ben je klaar om wicked bots te beginnen
 schrijven!
+
+![Visualisator screenshot](web/static/visualiser_scrot.png)

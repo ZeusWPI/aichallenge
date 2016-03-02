@@ -17,9 +17,10 @@ you are stuck, trash-talk your opponents, or compete in a preliminary tournament
 to show your strength. We will top this off with a grand tournament, where you
 will see the action unfold before your eyes. There will be prizes.
 
+![Visualisator screenshot](static/visualiser_scrot.png)
 
-# Getting started
 
-Ready to start coding?
+# Ready to start coding?
+
 You can find all relevant files and info to get started on [the GitHub
 repo](https://github.com/ZeusWPI/aichallenge/blob/master/rules.md).

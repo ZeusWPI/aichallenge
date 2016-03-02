@@ -95,6 +95,10 @@ nav .toc ul ul {
     padding-top: 20;
 }
 
+.content * {
+    max-width: 800px;
+}
+
 
 body {
     padding: 0px;
