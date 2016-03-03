@@ -13,13 +13,18 @@ from web.models import User
 @app.route('/')
 def home():
     content = markdown_to_html('docs/teaser')
-    return render_template("home.html", content=content)
+    return render_template('home.html', content=content)
 
 
 @app.route('/rules')
 def rules():
     content = markdown_to_html('../rules')
     return render_template('rules.html', content=content)
+
+
+@app.route('/upload')
+def upload():
+    return render_template('upload.html')
 
 
 @app.route('/login', methods=('GET', 'POST'))
