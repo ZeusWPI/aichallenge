@@ -7,7 +7,7 @@
 {% set active_page = active_page|default('home') -%}
 
 {# Map the navbar id's used in the code on their respective names for use in the navbar. #}
-{% set navbar = [('home', 'Home')] -%}
+{% set navbar = [('home', 'Home'), ('rules', 'Rules')] -%}
 
 
 {# Macro for easier form rendering #}
@@ -39,6 +39,8 @@
 
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="../static/bootstrap.min.css">
+
+  <link rel="stylesheet" href="../static/style.css">
 
   <!-- jQuery library -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

@@ -17,7 +17,7 @@ you are stuck, trash-talk your opponents, or compete in a preliminary tournament
 to show your strength. We will top this off with a grand tournament, where you
 will see the action unfold before your eyes. There will be prizes.
 
-![Visualisator screenshot](/battlebots/static/visualiser_scrot.png)
+![Visualisator screenshot](../static/visualiser_scrot.png)
 
 
 # Ready to start coding?

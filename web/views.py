@@ -12,7 +12,14 @@ from web.models import User
 @app.route('/home')
 @app.route('/')
 def home():
-    return render_template("home.html")
+    content = markdown_to_html('docs/teaser')
+    return render_template("home.html", content=content)
+
+
+@app.route('/rules')
+def rules():
+    content = markdown_to_html('../rules')
+    return render_template('rules.html', content=content)
 
 
 @app.route('/login', methods=('GET', 'POST'))
@@ -60,9 +67,13 @@ def register():
     return render_template('register.html', form=form)
 
 
+def markdown_to_html(name):
+    md = Markdown(extensions=['markdown.extensions.toc'])
+    text = open(name + '.md').read()
+    return md.convert(text)
+
+
 @app.route('/docs/<name>')
 def docs(name):
-    md = Markdown(extensions=['markdown.extensions.toc'])
-    text = open(path.join('docs', secure_filename(name) + '.md')).read()
-    html = md.convert(text)
+    html = markdown_to_html('/docs/' + name)
     return render_template('doc.html', content=html, toc=md.toc)
