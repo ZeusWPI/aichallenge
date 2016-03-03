@@ -56,7 +56,7 @@
 
     <!-- The navbar collapse for small viewports -->
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">Kelly&#8482;</a>
+      <a class="navbar-brand" href="#">BBB</a>
       <button type="button" class="navbar-toggle collapsed dropdown"
               data-toggle="collapse"
               data-target="#navbar-collapse" aria-expanded="false">
@@ -85,14 +85,6 @@
           <li><a href="{{ url_for('login') }}">Login</a></li>
           <li><a href="{{ url_for('register') }}">Register</a></li>
         {% endif %}
-          {#
-        {% if current_user.is_anonymous %}
-        {% else %}
-          <li><a href="{{ url_for('logout') }}">Logout</a></li>
-          <li><a href="{{ url_for('profile') }}">{{ current_user.username }}</a>
-          </li>
-        {% endif %}
-           #}
       </ul>
     </div>
   </div>
