@@ -67,8 +67,8 @@ body {
     max-width: 100%;
 }
 .content h1 {
-    padding-top: 120px;
-    margin-top: -60px;
+    padding-top: 10px;
+    padding-bottom: 20px;
     text-align: center;
 }
 .content h2 {

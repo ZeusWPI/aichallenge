@@ -32,6 +32,7 @@ steden te veroveren en alle vijandige troepen uit de weg te ruimen.
 ## Het spelverloop
 
 Het spel verloopt in beurten, bestaande uit volgende eenvoudige stappen:
+
 - Iedere speler krijgt de staat van het spel meegedeeld. Deze bestaat uit alle
   tegenstanders, forten, wegen en troepen die hij kan zien (zie "Fog of war").
 - Na zorgvuldige analyse en goed nadenken deelt elke speler zijn commando's
@@ -168,25 +169,26 @@ Stel dat je een dergelijk programma hebt geschreven, bijvoorbeeld genaamd
 `bot.py`, dan willen we deze natuurlijk testen door deze te laten vechten tegen
 andere bots of tegen zichzelf. Hiervoor schrijven we eerste een klein
 configuratie-bestandje in JSON, bijvoorbeeld `config.json`:
-```
-{
-    "players": {
-        "bot1": "python bot.py",
-        "bot2": "python bot.py"
-    },
-    "mapfile": "test.input",
-    "logfile": "sample.data",
-    "max_steps": 500
-}
-```
+
+    {
+        "players": {
+            "bot1": "python bot.py",
+            "bot2": "python bot.py"
+        },
+        "mapfile": "test.input",
+        "logfile": "sample.data",
+        "max_steps": 500
+    }
 
 Wanneer we dit configuratiebestandje meegeven aan de arbiter, zullen twee
 versies van `bot.py` tegen elkaar vechten op het speelveld van `test.input`.
 Deze zal een verslag van het gevecht uitschrijven in `sample.data`.
-De arbiter is een Python 3.5 programma dat in deze repo staat, dus clone eerst
-deze repo en roep dit programma als volgt met je zonet geschreven
-configuratiebestand als argument:
-```python3 arbiter/arbiter.py config.json```
+De arbiter is een Python 3.5 programma dat in [de GitHub
+repo](https://github.com/ZeusWPI/aichallenge) staat, dus clone eerst deze repo
+en roep dit programma als volgt met je zonet geschreven configuratiebestand als
+argument:
+
+    python3 arbiter/arbiter.py config.json
 
 Vervolgens kunnen we dit verslag gebruiken om het verloop van het gevecht te
 visualisueren. Open het HTML-bestand `visualize/visualize.html` van deze repo in
