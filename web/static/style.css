@@ -21,7 +21,31 @@ body {
     max-height: 100vh;
     overflow: hidden;
 }
+@media (min-width: 768px) {
+    nav {
+        background-color: #111 !important;
+        color: #ccc;
+        width: 100%;
+    }
 
+    nav a {
+        color: #fff !important;
+    }
+
+    .active > a {
+        color: #fff !important;
+        background-color: inherit !important;
+        border-bottom: 3px solid rgb(80, 110, 230);
+    }
+
+    nav ul li {
+        display: inline-block;
+        line-height: 57px;
+        margin: 0 15px;
+        font-size: 11pt;
+        text-transform: uppercase;
+    }
+}
 .navbar {
     position: relative;
 }
@@ -34,7 +58,7 @@ body {
 .content {
     max-width: 800px;
     margin: auto;
-    padding: 0 45;
+    padding: 0 45px;
     font-size: 12pt;
     text-align: justify;
     text-justify: inter-word;
