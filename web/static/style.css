@@ -19,5 +19,5 @@
 
 .content * {
     max-width: 100%;
-    font-family: "Roboto", arial, sans-serif;
+    font-family: "Roboto", inherit;
 }
