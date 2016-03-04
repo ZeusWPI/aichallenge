@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% set active_page = "bots" %}
+
+{% block content -%}
+  <div class="jumbotron">
+    <h2>My bots</h2>
+    <ul>
+      {% for bot in bots %}
+        <li>{{ bot.name }}</li>
+      {% endfor %}
+    </ul>
+    <p><a href="{{ url_for('new_bot') }}">Upload new bot</a></p>
+  </div>
+{%- endblock %}

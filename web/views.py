@@ -22,11 +22,6 @@ def rules():
     return render_template('rules.html', content=content)
 
 
-@app.route('/upload')
-def upload():
-    return render_template('upload.html')
-
-
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     form = LoginForm()

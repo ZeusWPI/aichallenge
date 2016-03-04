@@ -6,8 +6,9 @@
 {# Set the active page for highlighting in the navbar. Default is home. #}
 {% set active_page = active_page|default('home') -%}
 
-{# Map the navbar id's used in the code on their respective names for use in the navbar. #}
-{% set navbar = [('home', 'Home'), ('rules', 'Rules'), ('upload','Upload')] -%}
+{# List for every element that should appear in the navigation bar (1) the controller function, (2) the name that should
+   be shown, and (3) whether it's required to be logged in to see this element. #}
+{% set navbar = [('home', 'Home', False), ('rules', 'Rules', False), ('bots', 'My bots', True)] -%}
 
 
 {# Macro for easier form rendering #}
@@ -72,10 +73,12 @@
     <!-- Main navbar content-->
     <div class="collapse navbar-collapse" id="navbar-collapse">
       <ul class="nav navbar-nav">
-        {% for id, name in navbar -%}
-          <li class="{{ 'active' if active_page in id else '' }}">
-            <a href="{{ url_for(id) }}">{{ name }}</a>
-          </li>
+        {% for id, name, login_required in navbar -%}
+          {% if not login_required or current_user.is_authenticated %}
+            <li class="{{ 'active' if active_page in id else '' }}">
+              <a href="{{ url_for(id) }}">{{ name }}</a>
+            </li>
+          {% endif %}
         {% endfor -%}
       </ul>
 
