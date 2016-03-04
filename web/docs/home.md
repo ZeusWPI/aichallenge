@@ -1,4 +1,4 @@
-# BattleBots
+# Badass Battle Bots
 
 We are Zeus WPI. We like games. We like programming. So we decided to build our
 very own programming game. Now, we would like to share. Welcome to Badass Battle

@@ -12,14 +12,12 @@ from web.models import User
 @app.route('/home')
 @app.route('/')
 def home():
-    content = markdown_to_html('home')
-    return render_template('home.html', content=content)
+    return render_markdown('home')
 
 
 @app.route('/rules')
 def rules():
-    content = markdown_to_html('rules')
-    return render_template('rules.html', content=content)
+    return render_markdown('rules')
 
 
 @app.route('/upload')
@@ -76,3 +74,8 @@ def markdown_to_html(name):
     md = Markdown()
     text = open(os.path.join('docs', name + '.md')).read()
     return md.convert(text)
+
+
+def render_markdown(name):
+    content = markdown_to_html(name)
+    return render_template('markdown.html', name=name, content=content)
