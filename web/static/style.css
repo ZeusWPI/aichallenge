@@ -74,6 +74,10 @@ body {
 .content h2 {
     padding-top: 20px;
 }
+.content a[name] {
+    color: inherit;
+    text-decoration: none;
+}
 
 footer {
     padding-bottom: 15px;

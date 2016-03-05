@@ -108,7 +108,7 @@ zoals het meegedeeld wordt aan de spelers, en één om de commando's van de
 spelers door te geven aan het spel. Om alles eenvoudig te houden, zijn dit
 gewoon *plain text* bestanden.
 
-### Formaat speelveld
+### <a name="formaat-speelveld">Formaat speelveld</a>
 
 Hieronder een voorbeeld van een spelconfiguratie.
 
@@ -138,7 +138,7 @@ hoeveel elementen de sectie bevat. Elk element bestaat uit één regel:
   het aantal soldaten waaruit het bestaat, en tenslotte binnen hoeveel beurten
   het leger op zijn bestemming zal toekomen.
 
-### Formaat commando's
+### <a name="formaat-commandos">Formaat commando's</a>
 
 Het formaat van een commando lijkt erg op dat van een marcherende troep:
 
