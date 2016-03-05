@@ -81,8 +81,12 @@
               {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
               {% else %}
-                <li><a href="{{ url_for('login') }}">Login</a></li>
-                <li><a href="{{ url_for('register') }}">Register</a></li>
+                <li class="{{ 'active' if active_page == 'login' else '' }}">
+                  <a href="{{ url_for('login') }}">Login</a>
+                </li>
+                <li class="{{ 'active' if active_page == 'register' else '' }}">
+                  <a href="{{ url_for('register') }}">Register</a>
+                </li>
               {% endif %}
             </ul>
           </div>
