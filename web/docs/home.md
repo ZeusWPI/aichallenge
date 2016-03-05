@@ -22,5 +22,4 @@ will see the action unfold before your eyes. There will be prizes.
 
 # Ready to start coding?
 
-You can find all relevant files and info to get started on [the GitHub
-repo](https://github.com/ZeusWPI/aichallenge/blob/master/rules.md).
+Start by reading [the rules](rules) and you're on your way!

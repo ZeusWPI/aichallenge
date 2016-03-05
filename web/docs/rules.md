@@ -1,4 +1,4 @@
-# Spelregels Zeus' Badass Battle Bots
+# Rules (in Dutch)
 
 Wanneer de oude vorst sterft zonder duidelijke erfgenaam, is het land in chaos.
 Velen wagen een worp naar de troon, maar slechts enkele maken een kans.
