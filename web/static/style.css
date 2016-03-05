@@ -4,13 +4,6 @@ body {
     font-family: "Roboto", sans-serif;
 }
 
-#outer {
-    padding-top: 33vh;
-}
-#inner {
-    min-height: 67vh;
-    background-color: #fff;
-}
 #banner {
     background-color: #000;
     width: 100%;
@@ -21,9 +14,18 @@ body {
     max-height: 100vh;
     overflow: hidden;
 }
+#outer {
+    padding-top: 33vh;
+}
+#inner {
+    min-height: 67vh;
+    background-color: #fff;
+}
+
 @media (min-width: 768px) {
-    nav {
-        background-color: #111 !important;
+    .navbar {
+        background-color: #111;
+        border: 0;
         color: #ccc;
         width: 100%;
     }
@@ -46,13 +48,10 @@ body {
         text-transform: uppercase;
     }
 }
-.navbar {
-    position: relative;
-}
-.navbar .fixed-header {
-    position: fixed;
-    left: 0px;
-    top: 0px;
+
+#below-navbar.fixed-header {
+    /* This class is dynamically added when navbar gets fixed. */
+    padding-top: 60px;
 }
 
 .content {

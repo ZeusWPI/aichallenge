@@ -51,7 +51,7 @@
 
   <div id="outer">
     <div id="inner">
-      <nav class="navbar navbar-default navbar-fixed-top">
+      <nav class="navbar navbar-default">
         <div class="container">
 
           <!-- The navbar collapses for small viewports -->
@@ -93,7 +93,7 @@
         </div>
       </nav>
 
-      <div class="container">
+      <div id="below-navbar" class="container">
         <div class="flash">
           {% for message in get_flashed_messages() %}
             <div class="alert alert-info">
