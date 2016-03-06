@@ -1,4 +1,5 @@
 import os.path
+import tokenize
 
 from flask import render_template, request, redirect, url_for, flash, abort
 from flask.ext.login import login_required, login_user, logout_user
@@ -72,7 +73,7 @@ def register():
 
 def markdown_to_html(name):
     md = Markdown()
-    text = open(os.path.join('docs', name + '.md')).read()
+    text = tokenize.open(os.path.join('docs', name + '.md')).read()
     return md.convert(text)
 
 
