@@ -1,3 +1,9 @@
+{% extends 'markdown.html' -%}
+{% set active_page = 'home' -%}
+
+
+{% block markdown_content -%}
+
 # Badass Battle Bots
 
 We are Zeus WPI. We like games. We like programming. So we decided to build our
@@ -17,9 +23,11 @@ you are stuck, trash-talk your opponents, or compete in a preliminary tournament
 to show your strength. We will top this off with a grand tournament, where you
 will see the action unfold before your eyes. There will be prizes.
 
-![Visualisator screenshot](static/visualiser_scrot.png)
+![Visualisator screenshot]({{ url_for('static', filename='visualiser_scrot.png') }})
 
 
 # Ready to start coding?
 
-Start by reading [the rules](rules) and you're on your way!
+Start by reading [the rules]({{ url_for('rules') }}) and you're on your way!
+
+{%- endblock %}

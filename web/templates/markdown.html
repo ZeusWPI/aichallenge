@@ -1,8 +1,9 @@
 {% extends "layout.html" -%}
-{% set active_page = name -%}
 
 {% block content -%}
   <div class="content">
-    {{ content | safe }}
+    {% filter markdown -%}
+      {%- block markdown_content -%}{%- endblock -%}
+    {%- endfilter %}
   </div>
 {%- endblock %}

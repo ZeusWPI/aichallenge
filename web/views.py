@@ -3,7 +3,6 @@ import tokenize
 
 from flask import render_template, request, redirect, url_for, flash, abort
 from flask.ext.login import login_required, login_user, logout_user
-from markdown import Markdown
 
 from web import app, db
 from web.forms import LoginForm, RegisterForm
@@ -13,12 +12,12 @@ from web.models import User
 @app.route('/home')
 @app.route('/')
 def home():
-    return render_markdown('home')
+    return render_template('home.md')
 
 
 @app.route('/rules')
 def rules():
-    return render_markdown('rules')
+    return render_template('rules.md')
 
 
 @app.route('/upload')
@@ -69,14 +68,3 @@ def register():
         flash('Registering failed. Please supply all information', 'error')
 
     return render_template('register.html', form=form)
-
-
-def markdown_to_html(name):
-    md = Markdown()
-    text = tokenize.open(os.path.join('docs', name + '.md')).read()
-    return md.convert(text)
-
-
-def render_markdown(name):
-    content = markdown_to_html(name)
-    return render_template('markdown.html', name=name, content=content)

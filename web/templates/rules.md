@@ -1,3 +1,9 @@
+{% extends 'markdown.html' -%}
+{% set active_page = 'rules' -%}
+
+
+{% block markdown_content -%}
+
 # Rules (in Dutch)
 
 Wanneer de oude vorst sterft zonder duidelijke erfgenaam, is het land in chaos.
@@ -196,3 +202,5 @@ je browser en selecteer `sample.data`.
 
 Zo, nu je weet hoe je bot kan testen, ben je klaar om wicked bots te beginnen
 schrijven!
+
+{%- endblock %}
