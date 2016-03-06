@@ -7,7 +7,7 @@ You can review
 of the kick-off event if you want.
 
 If you just want to start coding, you can read the protocols and how to test
-your bot [here](web/docs/rules.md).
+your bot [here](https://zeus.ugent.be/battlebots/rules).
 
 
 ![Visualisation](web/static/visualiser_scrot.png)
