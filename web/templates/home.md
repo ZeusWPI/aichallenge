@@ -1,3 +1,9 @@
+{% extends 'markdown.html' -%}
+{% set active_page = 'home' -%}
+
+
+{% block markdown_content -%}
+
 # Badass Battle Bots
 
 We are Zeus WPI. We like games. We like programming. So we decided to build our
@@ -23,3 +29,5 @@ will see the action unfold before your eyes. There will be prizes.
 # Ready to start coding?
 
 Start by reading [the rules](rules) and you're on your way!
+
+{%- endblock %}
