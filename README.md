@@ -1,14 +1,16 @@
 # BattleBots
 
-## Voor deelnemers
+## For participants
 
-Je kan
-[de presentatie](https://docs.google.com/presentation/d/1Y3DMxwDXzszvYDkskC_Oc7U0f_HSdA7zRcnfjHp4ypI/edit?usp=sharing)
-van de kickoff-event nog eens doornemen.
+You can review
+[the presentation](https://docs.google.com/presentation/d/1Y3DMxwDXzszvYDkskC_Oc7U0f_HSdA7zRcnfjHp4ypI/edit?usp=sharing)
+of the kick-off event if you want.
 
-Als je er meteen in wilt vliegen, dan leggen we
-[hier](https://github.com/ZeusWPI/aichallenge/blob/master/rules.md) nog eens de
-regels en protocollen uit.
+If you just want to start coding, you can read the protocols and how to test
+your bot [here](https://zeus.ugent.be/battlebots/rules).
+
+
+![Visualisation](web/static/visualiser_scrot.png)
 
 
 ## Rules

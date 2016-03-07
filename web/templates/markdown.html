@@ -1,0 +1,9 @@
+{% extends "layout.html" -%}
+
+{% block content -%}
+  <div class="content">
+    {% filter markdown -%}
+      {%- block markdown_content -%}{%- endblock -%}
+    {%- endfilter %}
+  </div>
+{%- endblock %}

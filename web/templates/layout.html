@@ -29,104 +29,104 @@
 
 <!DOCTYPE html>
 <html>
+
 <head lang="en">
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Haldis">
+  <meta name="description" content="Zeus WPI's Badass Battle Bots">
 
-  <!-- GitHub buttons integration for footer -->
-  <script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto">
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="../static/bootstrap.min.css">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
 
-  <link rel="stylesheet" href="../static/style.css">
-
-  <!-- jQuery library -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-
-  <!-- Latest compiled JavaScript -->
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
-  <title> BattleBots - {{ active_page|capitalize }} </title>
+  <title>Badass Battle Bots - {{ active_page|capitalize }}</title>
 </head>
 
-<body style="padding-top: 70px">
+<body>
+  <img id="banner" src="{{ url_for('static', filename='header.jpg') }}"/>
 
-<nav class="navbar navbar-default navbar-fixed-top">
-  <div class="container">
+  <div id="outer">
+    <div id="inner">
+      <nav class="navbar navbar-default">
+        <div class="container">
 
-    <!-- The navbar collapse for small viewports -->
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">BBB</a>
-      <button type="button" class="navbar-toggle collapsed dropdown"
-              data-toggle="collapse"
-              data-target="#navbar-collapse" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
+          <!-- The navbar collapses for small viewports -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed dropdown"
+                                  data-toggle="collapse"
+                                  data-target="#navbar-collapse" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+          </div>
 
-    <!-- Main navbar content-->
-    <div class="collapse navbar-collapse" id="navbar-collapse">
-      <ul class="nav navbar-nav">
-        {% for id, name, login_required in navbar -%}
-          {% if not login_required or current_user.is_authenticated %}
-            <li class="{{ 'active' if active_page in id else '' }}">
-              <a href="{{ url_for(id) }}">{{ name }}</a>
-            </li>
-          {% endif %}
-        {% endfor -%}
-      </ul>
+          <!-- Main navbar content-->
+          <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav">
+              {% for id, name in navbar -%}
+              <li class="{{ 'active' if active_page in id else '' }}">
+                <a href="{{ url_for(id) }}">{{ name }}</a>
+              </li>
+              {% endfor -%}
+            </ul>
 
-      <!-- Navbar-rightside, used for login/logout/account-acces -->
-      <ul class="nav navbar-nav navbar-right">
-        {% if current_user.is_authenticated %}
-          <li><a href="{{ url_for('logout') }}">Logout</a></li>
-        {% else %}
-          <li><a href="{{ url_for('login') }}">Login</a></li>
-          <li><a href="{{ url_for('register') }}">Register</a></li>
-        {% endif %}
-      </ul>
-    </div>
-  </div>
-</nav>
+            <!-- Navbar-rightside, used for login/logout/account-acces -->
+            <ul class="nav navbar-nav navbar-right">
+              {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+              {% else %}
+                <li class="{{ 'active' if active_page == 'login' else '' }}">
+                  <a href="{{ url_for('login') }}">Login</a>
+                </li>
+                <li class="{{ 'active' if active_page == 'register' else '' }}">
+                  <a href="{{ url_for('register') }}">Register</a>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </nav>
 
+      <div id="below-navbar" class="container">
+        <div class="flash">
+          {% for message in get_flashed_messages() %}
+            <div class="alert alert-info">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
 
-<div class="container">
-  <div>
-    {% for message in get_flashed_messages() %}
-      <div class="alert alert-info">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        {{ message }}
+        {# Block to be filled on each page. #}
+        {% block content -%}{%- endblock %}
       </div>
-    {% endfor %}
-  </div>
 
-  {# Block to be filled on each page. #}
-  {% block content -%}{%- endblock %}
-</div>
-
-<footer>
-  <hr>
-  <div class="container">
-    <div class="pull-right">Made with ❤ by <a
-        href="http://zeus.ugent.be">Zeus WPI</a></div>
-    <div class="pull-left"><a class="github-button"
-                              href="https://github.com/ZeusWPI/aichallenge"
-                              data-icon="octicon-star" data-style="mega"
-                              data-count-href="/ZeusWPI/aichallenge/stargazers"
-                              data-count-api="/repos/ZeusWPI/aichallenge#stargazers_count"
-                              data-count-aria-label="# stargazers on GitHub"
-                              aria-label="Star ZeusWPI/aichallenge on GitHub">Star</a>
+      <footer>
+        <hr>
+        <div class="container">
+          <div class="pull-right">Made with ❤ by <a href="http://zeus.ugent.be">Zeus WPI</a></div>
+          <div class="pull-left"><a href="http://github.com/ZeusWPI/aichallenge">© 2016</a></div>
+        </div>
+      </footer>
     </div>
-    <div class="text-center"><a
-        href="http://github.com/ZeusWPI/Haldis"> © 2016 </a></div>
   </div>
-</footer>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-25444917-10', 'auto');
+    ga('send', 'pageview');
+  </script>
 </body>
 
 </html>

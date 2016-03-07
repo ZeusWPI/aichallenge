@@ -1,4 +1,10 @@
-# Spelregels Zeus' Badass Battle Bots
+{% extends 'markdown.html' -%}
+{% set active_page = 'rules' -%}
+
+
+{% block markdown_content -%}
+
+# Rules (in Dutch)
 
 Wanneer de oude vorst sterft zonder duidelijke erfgenaam, is het land in chaos.
 Velen wagen een worp naar de troon, maar slechts enkele maken een kans.
@@ -32,6 +38,7 @@ steden te veroveren en alle vijandige troepen uit de weg te ruimen.
 ## Het spelverloop
 
 Het spel verloopt in beurten, bestaande uit volgende eenvoudige stappen:
+
 - Iedere speler krijgt de staat van het spel meegedeeld. Deze bestaat uit alle
   tegenstanders, forten, wegen en troepen die hij kan zien (zie "Fog of war").
 - Na zorgvuldige analyse en goed nadenken deelt elke speler zijn commando's
@@ -107,7 +114,7 @@ zoals het meegedeeld wordt aan de spelers, en één om de commando's van de
 spelers door te geven aan het spel. Om alles eenvoudig te houden, zijn dit
 gewoon *plain text* bestanden.
 
-### Formaat speelveld
+### <a name="formaat-speelveld">Formaat speelveld</a>
 
 Hieronder een voorbeeld van een spelconfiguratie.
 
@@ -137,7 +144,7 @@ hoeveel elementen de sectie bevat. Elk element bestaat uit één regel:
   het aantal soldaten waaruit het bestaat, en tenslotte binnen hoeveel beurten
   het leger op zijn bestemming zal toekomen.
 
-### Formaat commando's
+### <a name="formaat-commandos">Formaat commando's</a>
 
 Het formaat van een commando lijkt erg op dat van een marcherende troep:
 
@@ -168,25 +175,26 @@ Stel dat je een dergelijk programma hebt geschreven, bijvoorbeeld genaamd
 `bot.py`, dan willen we deze natuurlijk testen door deze te laten vechten tegen
 andere bots of tegen zichzelf. Hiervoor schrijven we eerste een klein
 configuratie-bestandje in JSON, bijvoorbeeld `config.json`:
-```
-{
-    "players": {
-        "bot1": "python bot.py",
-        "bot2": "python bot.py"
-    },
-    "mapfile": "test.input",
-    "logfile": "sample.data",
-    "max_steps": 500
-}
-```
+
+    {
+        "players": {
+            "bot1": "python bot.py",
+            "bot2": "python bot.py"
+        },
+        "mapfile": "test.input",
+        "logfile": "sample.data",
+        "max_steps": 500
+    }
 
 Wanneer we dit configuratiebestandje meegeven aan de arbiter, zullen twee
 versies van `bot.py` tegen elkaar vechten op het speelveld van `test.input`.
 Deze zal een verslag van het gevecht uitschrijven in `sample.data`.
-De arbiter is een Python 3.5 programma dat in deze repo staat, dus clone eerst
-deze repo en roep dit programma als volgt met je zonet geschreven
-configuratiebestand als argument:
-```python3 arbiter/arbiter.py config.json```
+De arbiter is een Python 3.5 programma dat in [de GitHub
+repo](https://github.com/ZeusWPI/aichallenge) staat, dus clone eerst deze repo
+en roep dit programma als volgt met je zonet geschreven configuratiebestand als
+argument:
+
+    python3 arbiter/arbiter.py config.json
 
 Vervolgens kunnen we dit verslag gebruiken om het verloop van het gevecht te
 visualisueren. Open het HTML-bestand `visualize/visualize.html` van deze repo in
@@ -195,4 +203,4 @@ je browser en selecteer `sample.data`.
 Zo, nu je weet hoe je bot kan testen, ben je klaar om wicked bots te beginnen
 schrijven!
 
-![Visualisator screenshot](/static/visualiser_scrot.png)
+{%- endblock %}
