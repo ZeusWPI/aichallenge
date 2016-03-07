@@ -24,7 +24,7 @@ def rules():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter(User.nickname == form.nickname.data).first()
+        user = User.query.filter_by(nickname=form.nickname.data).first()
         if user is None:
             abort(513)  # shouldn't happen
 

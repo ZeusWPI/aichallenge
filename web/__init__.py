@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for
+from flask import Flask
 from flask.ext.login import LoginManager
 from flask.ext.sqlalchemy import SQLAlchemy
 import jinja2
@@ -19,5 +19,4 @@ from web.bots import models
 db.create_all()
 
 from web import views
-
 from web.bots import controllers

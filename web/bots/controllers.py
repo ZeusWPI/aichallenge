@@ -9,7 +9,7 @@ from web.bots.forms import BotForm
 @app.route('/bots/', methods=('GET',))
 @login.login_required
 def bots():
-    bots = Bot.query.filter(Bot.user == login.current_user)
+    bots = Bot.query.filter_by(user=login.current_user)
     return render_template('bots/index.html', bots=bots)
 
 
