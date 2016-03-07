@@ -1,13 +1,17 @@
 from flask.ext.wtf import Form
-from wtforms import (StringField, BooleanField, PasswordField, SubmitField,
+from wtforms import (StringField, BooleanField, PasswordField, SubmitField, FileField,
                      ValidationError)
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Length, Email, Optional, EqualTo
 from web.models import User
+
+NICKNAME_LENGTH = (1, 32)
+PASSWORD_LENGTH = (1, 32)
+BOTNAME_LENTGH = (1, 32)
 
 
 class LoginForm(Form):
-    nickname = StringField('Name', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    nickname = StringField('Name', validators=[DataRequired(), Length(*NICKNAME_LENGTH)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(*PASSWORD_LENGTH)])
     remember_me = BooleanField('Remember Me', default=True)
     submit = SubmitField('Sign In')
 
@@ -30,14 +34,17 @@ class LoginForm(Form):
 
 
 class RegisterForm(Form):
-    nickname = StringField('Name', validators=[DataRequired()])
-    email = StringField('E-mail', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    nickname = StringField('Name', validators=[DataRequired(), Length(*NICKNAME_LENGTH)])
+    email = StringField('E-mail', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(*PASSWORD_LENGTH)])
     password_check = PasswordField('Re-enter password',
-                                   validators=[DataRequired()])
+                                   validators=[DataRequired(), EqualTo('password', message="Passwords must match.")])
     submit = SubmitField('Sign up')
 
-    def validate_password_check(self, password_check):
-        password = self.password.data
-        if password != password_check.data:
-            raise ValidationError("Passwords are not the same.")
+
+class UploadForm(Form):
+    botname = StringField('Name', validators=[DataRequired(), Length(*BOTNAME_LENTGH)])
+    file = FileField('Bot', validators=[DataRequired()])
+    compile_command = StringField('Compile Command', validators=[Optional()])
+    make_file = FileField('Make File', validators=[Optional()])
+    run_command = StringField('Run Command', validators=[DataRequired()])
