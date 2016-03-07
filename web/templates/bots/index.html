@@ -2,13 +2,20 @@
 {% set active_page = "bots" %}
 
 {% block content -%}
-  <div class="jumbotron">
+  <div class="content">
     <h2>My bots</h2>
-    <ul>
+    <table class="table table-striped table-hover">
       {% for bot in bots %}
-        <li>{{ bot.name }}</li>
+        <tr>
+          <td>{{ bot.name }}</td>
+          <td class="pull-right">
+            <form method="post" action="{{ url_for('remove_bot', user=current_user.nickname, botname=bot.name) }}">
+              <input class="btn btn-danger" type="submit" value="Delete">
+            </form>
+          </td>
+        </tr>
       {% endfor %}
-    </ul>
+    </table>
     <p><a href="{{ url_for('new_bot') }}">Upload new bot</a></p>
   </div>
 {%- endblock %}

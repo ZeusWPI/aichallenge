@@ -1,8 +1,8 @@
-from flask import flash, redirect, render_template
+from flask import flash, redirect, render_template, abort
 from flask.ext import login
 from web import app
 from web.bots import models
-from web.bots.models import Bot, User
+from web.bots.models import Bot
 from web.bots.forms import BotForm
 
 
@@ -24,3 +24,13 @@ def new_bot():
         return redirect('/bots')
 
     return render_template('bots/new.html', form=form)
+
+
+@app.route('/bots/<user>/<botname>', methods=('POST',))
+@login.login_required
+def remove_bot(user, botname):
+    if user != login.current_user.nickname:
+        abort(400)  # Should not happen
+    models.remove_bot(login.current_user, botname)
+    flash('Removed bot "%s" succesfully!' % botname)
+    return redirect('/bots')
