@@ -343,7 +343,6 @@ class Game:
             yield from player.start_process()
 
         while steps < self.maxsteps and not self.winner():
-            print(steps)
             self.log(steps)
             yield from self.get_commands()
             self.step()
@@ -369,6 +368,7 @@ class Game:
 
     @asyncio.coroutine
     def get_commands(self):
+        return
         coroutines = (player.orders(self)
                             for player in self.players.values())
         orders = yield from asyncio.gather(*coroutines)
@@ -383,4 +383,6 @@ class Game:
 game = Game(sys.argv[1])
 
 loop = asyncio.get_event_loop()
+loop.set_debug(True)
 loop.run_until_complete(game.play())
+loop.close()
