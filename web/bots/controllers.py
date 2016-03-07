@@ -2,13 +2,14 @@ from flask import flash, redirect, render_template
 from flask.ext import login
 from web import app
 from web.bots import models
-from web.bots.models import Bot
+from web.bots.models import Bot, User
 from web.bots.forms import NewBotForm
 
 
 @app.route('/bots/', methods=('GET',))
+@login.login_required
 def bots():
-    bots = Bot.query.filter_by(user=login.current_user)
+    bots = Bot.query.filter(User == login.current_user)
     return render_template('bots/index.html', bots=bots)
 
 
