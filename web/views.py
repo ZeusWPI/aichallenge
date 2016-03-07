@@ -4,7 +4,7 @@ import tokenize
 from flask import render_template, request, redirect, url_for, flash, abort
 from flask.ext.login import login_required, login_user, logout_user
 
-from web import app, db
+from web import app, db, lm
 from web.forms import LoginForm, RegisterForm
 from web.models import User
 
@@ -21,6 +21,7 @@ def rules():
 
 
 @app.route('/login', methods=('GET', 'POST'))
+@lm.unauthorized_handler
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -63,3 +64,7 @@ def register():
         flash('Registering failed. Please supply all information', 'error')
 
     return render_template('register.html', form=form)
+
+
+def unauthorized_handler():
+    return redirect(url_for('login', next=request.args['next']))
