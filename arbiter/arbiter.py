@@ -14,6 +14,7 @@ from asyncio import subprocess
 
 MARCH_SPEED = 1
 NO_PLAYER_NAME = 'neutral'
+BOT_TIMEOUT=2 # seconds
 
 def read_section(iterable):
     header = next(iterable)
@@ -294,18 +295,24 @@ class Player:
 
     def remove_control(self):
         self.process.kill()
+        sys.stderr.write("Removing control from {}.\n".format(self.name))
         self.in_control = False
-        sys.stderr.write("Took control from {}.\n".format(self.name))
 
     @asyncio.coroutine
-    def communicate(self, game):
+    def orders(self, game):
         state = show_visible(self.forts)
         encoded = (state + '\n').encode('utf-8')
         self.process.stdin.write(encoded)
         self.process.stdin.drain()
-        section = yield from async_read_section(self.process.stdout)
-        marches = (parse_command(game, self, line) for line in section)
-        return marches;
+        try:
+            coroutine = async_read_section(self.process.stdout)
+            section = yield from asyncio.wait_for(coroutine, BOT_TIMEOUT)
+            marches = (parse_command(game, self, line) for line in section)
+            return marches
+        except asyncio.TimeoutError:
+            sys.stderr.write("{} timed out!\n".format(self.name))
+            self.remove_control()
+            return []
 
 
 class Game:
@@ -332,6 +339,7 @@ class Game:
             yield from player.start_process()
 
         while steps < self.maxsteps and not self.winner():
+            print(steps)
             self.log(steps)
             yield from self.get_commands()
             self.step()
@@ -357,8 +365,9 @@ class Game:
 
     @asyncio.coroutine
     def get_commands(self):
-        for player in self.players.values():
-            yield from player.communicate(self)
+        coroutines = (player.orders(self)
+                            for player in self.players.values())
+        orders = yield from asyncio.gather(*coroutines)
 
     def step(self):
         for road in self.roads:
