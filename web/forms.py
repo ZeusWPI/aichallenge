@@ -36,7 +36,7 @@ class LoginForm(Form):
 class RegisterForm(Form):
     nickname = StringField('Name', validators=[DataRequired(), Length(*NICKNAME_LENGTH)])
     email = StringField('E-mail', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired(*PASSWORD_LENGTH)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(*PASSWORD_LENGTH)])
     password_check = PasswordField('Re-enter password',
                                    validators=[DataRequired(), EqualTo('password', message="Passwords must match.")])
     submit = SubmitField('Sign up')
