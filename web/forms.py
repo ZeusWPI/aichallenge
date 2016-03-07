@@ -40,11 +40,3 @@ class RegisterForm(Form):
     password_check = PasswordField('Re-enter password',
                                    validators=[DataRequired(), EqualTo('password', message="Passwords must match.")])
     submit = SubmitField('Sign up')
-
-
-class UploadForm(Form):
-    botname = StringField('Name', validators=[DataRequired(), Length(*BOTNAME_LENTGH)])
-    file = FileField('Bot', validators=[DataRequired()])
-    compile_command = StringField('Compile Command', validators=[Optional()])
-    make_file = FileField('Make File', validators=[Optional()])
-    run_command = StringField('Run Command', validators=[DataRequired()])
