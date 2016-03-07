@@ -21,7 +21,6 @@ def rules():
 
 
 @app.route('/login', methods=('GET', 'POST'))
-@lm.unauthorized_handler
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -66,5 +65,6 @@ def register():
     return render_template('register.html', form=form)
 
 
+@lm.unauthorized_handler
 def unauthorized_handler():
-    return redirect(url_for('login', next=request.args['next']))
+    return redirect(url_for('login', next=request.base_url))

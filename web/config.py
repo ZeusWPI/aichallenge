@@ -1,6 +1,7 @@
 import os.path
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.join(basedir, 'db_repository')
 
 WTF_CSRF_ENABLED = False
 SECRET_KEY = 'badass'

@@ -19,6 +19,5 @@ from web.bots import models
 db.create_all()
 
 from web import views
-lm.unauthorized_handler(views.unauthorized_handler)
 
 from web.bots import controllers
