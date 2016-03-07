@@ -252,10 +252,11 @@ class March:
 
 @asyncio.coroutine
 def async_read_line(stream):
-    while not stream.at_eof():
-        byteline = yield from stream.readline()
-        line = byteline.decode('utf-8').rstrip()
-        return line
+    byteline = yield from stream.readline()
+    line = byteline.decode('utf-8').rstrip()
+    if not line:
+        raise EOFError
+    return line
 
 @asyncio.coroutine
 def async_read_section(stream):
@@ -263,8 +264,8 @@ def async_read_section(stream):
     num_lines = int(header.split(' ')[0])
     section = []
     for _ in range(num_lines):
-        l = yield from async_read_line(stream)
-        section.append(l)
+        line = yield from async_read_line(stream)
+        section.append(line)
     return section
 
 
@@ -312,6 +313,9 @@ class Player:
         except asyncio.TimeoutError:
             sys.stderr.write("{} timed out!\n".format(self.name))
             self.remove_control()
+            return []
+        except EOFError:
+            # TODO: how should this be handled?
             return []
 
 
