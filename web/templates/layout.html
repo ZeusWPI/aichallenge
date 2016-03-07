@@ -70,10 +70,12 @@
           <!-- Main navbar content-->
           <div class="collapse navbar-collapse" id="navbar-collapse">
             <ul class="nav navbar-nav">
-              {% for id, name in navbar -%}
-              <li class="{{ 'active' if active_page in id else '' }}">
-                <a href="{{ url_for(id) }}">{{ name }}</a>
-              </li>
+              {% for id, name, login_required in navbar -%}
+                {% if not login_required or current_user.is_authenticated %}
+                  <li class="{{ 'active' if active_page in id else '' }}">
+                    <a href="{{ url_for(id) }}">{{ name }}</a>
+                  </li>
+                {% endif %}
               {% endfor -%}
             </ul>
 
