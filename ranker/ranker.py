@@ -123,8 +123,9 @@ def battle_on():
 
 
 def db_session():
-    engine = create_engine("sqlite:////home/procrat/repos/aichallenge/"
-                           "web/db_repository/database.db")
+    db_path = os.path.join(os.path.pardir, 'web', 'db_repository',
+                           'databases.db')
+    engine = create_engine("sqlite:///" + os.path.realpath(db_path))
     Session = sessionmaker(bind=engine)
     return Session()
 
