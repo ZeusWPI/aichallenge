@@ -255,7 +255,7 @@ class Player:
         self.marches = set()
         args = cmd.split(' ')
         self.process = Popen(list(args) + [name], stdin=PIPE, stdout=PIPE,
-                             universal_newlines=True)
+                             universal_newlines=True, shell=True)
 
     def capture(self, fort):
         if fort.owner:
@@ -336,5 +336,6 @@ class Game:
             fort.step()
 
 
-Game(sys.argv[1]).play()
-print("Succes!")
+if __name__ == '__main__':
+    Game(sys.argv[1]).play()
+    print("Succes!")
