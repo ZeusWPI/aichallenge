@@ -281,6 +281,11 @@ class Player:
                 stdout=subprocess.PIPE
                 )
 
+    def stop_process(self):
+        self.process.stdin.close()
+        self.process._transport.close()
+        self.process.kill()
+
     def capture(self, fort):
         if fort.owner:
             fort.owner.forts.remove(fort)
@@ -331,6 +336,9 @@ class Game:
 
         self.logfile = open(config['logfile'], 'w')
 
+    def __del__(self):
+        self.logfile.close()
+
     @asyncio.coroutine
     def play(self):
         steps = 0
@@ -338,14 +346,19 @@ class Game:
         for player in self.players.values():
             yield from player.start_process()
 
-        while steps < self.maxsteps and not self.winner():
-            print(steps)
+        try:
+            while steps < self.maxsteps and not self.winner():
+                print(steps)
+                self.log(steps)
+                yield from self.get_commands()
+                self.step()
+                self.remove_losers()
+                steps += 1
             self.log(steps)
-            yield from self.get_commands()
-            self.step()
-            self.remove_losers()
-            steps += 1
-        self.log(steps)
+
+        finally:
+            for player in self.players.values():
+                player.stop_process()
 
     def log(self, step):
         self.logfile.writelines(["# STEP: " + str(step) + "\n",
@@ -375,8 +388,11 @@ class Game:
             fort.step()
 
 
-game = Game(sys.argv[1])
+if __name__ == '__main__':
+    game = Game(sys.argv[1])
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(game.play())
-loop.close()
+    loop = asyncio.get_event_loop()
+    try:
+        loop.run_until_complete(game.play())
+    finally:
+        loop.close()
