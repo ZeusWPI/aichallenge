@@ -282,7 +282,6 @@ class Player:
                 )
 
     def stop_process(self):
-        self.process.stdin.close()
         self.process._transport.close()
         self.process.kill()
 
