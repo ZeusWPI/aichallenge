@@ -304,7 +304,7 @@ class Game:
             self.step()
             self.remove_losers()
             steps += 1
-            print("Made step "+str(steps))
+            sys.stderr.write("Completed step {}\n".format(steps))
         self.log(steps)
 
     def log(self, step):
