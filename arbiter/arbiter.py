@@ -282,8 +282,8 @@ class Player:
                 )
 
     def stop_process(self):
-        self.process._transport.close()
         self.process.kill()
+        self.process._transport.close()
 
     def capture(self, fort):
         if fort.owner:
@@ -295,7 +295,7 @@ class Player:
         return (not self.forts) and (not self.marches)
 
     def remove_control(self):
-        self.process.kill()
+        self.stop_process()
         sys.stderr.write("Removing control from {}.\n".format(self.name))
         self.in_control = False
 
@@ -381,7 +381,6 @@ class Game:
         orders = yield from asyncio.gather(*coroutines)
         for march in chain(*orders):
             march.dispatch()
-
 
     def step(self):
         for road in self.roads:
