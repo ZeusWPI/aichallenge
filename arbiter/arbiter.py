@@ -305,7 +305,7 @@ class Player:
         state = show_visible(self.forts)
         encoded = (state + '\n').encode('utf-8')
         self.process.stdin.write(encoded)
-        self.process.stdin.drain()
+        yield from self.process.stdin.drain()
         try:
             coroutine = async_read_section(self.process.stdout)
             section = yield from asyncio.wait_for(coroutine, BOT_TIMEOUT)
