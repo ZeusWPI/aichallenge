@@ -3,8 +3,6 @@
 from itertools import chain, islice
 from collections import defaultdict
 from math import ceil, sqrt
-from fcntl import fcntl, F_GETFL, F_SETFL
-from os import O_NONBLOCK
 import json
 import sys
 
@@ -13,7 +11,8 @@ from asyncio import subprocess
 
 MARCH_SPEED = 1
 NO_PLAYER_NAME = 'neutral'
-BOT_TIMEOUT=2 # seconds
+BOT_TIMEOUT = 2  # seconds
+
 
 def read_section(iterable):
     header = next(iterable)
@@ -107,10 +106,6 @@ def show_visible(forts):
     ])
 
 
-def unblock(handle):
-    flags = fcntl(handle, F_GETFL)
-    fcntl(handle, F_SETFL, flags | O_NONBLOCK)
-
 class Road:
     def __init__(self, fort1, fort2):
         self.length = fort1.distance(fort2)
@@ -138,7 +133,8 @@ class Road:
         self.resolve_encounters()
 
     def resolve_encounters(self):
-        army = lambda ind, fort: self.headed_to[fort][ind]
+        def army(ind, fort):
+            return self.headed_to[fort][ind]
 
         fort1, fort2 = self.headed_to.keys()
         for i in range(2 * self.length + 1):
@@ -257,6 +253,7 @@ def async_read_line(stream):
         raise EOFError
     return line
 
+
 @asyncio.coroutine
 def async_read_section(stream):
     header = yield from async_read_line(stream)
@@ -273,7 +270,7 @@ class Player:
         self.name = name
         self.forts = set()
         self.marches = set()
-        self.in_control = True;
+        self.in_control = True
         self.cmd = cmd
 
     @asyncio.coroutine
@@ -351,9 +348,9 @@ class Game:
         self.log(steps)
 
     def log(self, step):
-            self.logfile.writelines(["# STEP: " + str(step) + "\n",
-                                    show_visible(self.forts.values()) + "\n",
-                                    "\n"])
+        self.logfile.writelines(["# STEP: " + str(step) + "\n",
+                                 show_visible(self.forts.values()) + "\n",
+                                 "\n"])
 
     def winner(self):
         if len(self.players) > 1:
@@ -368,8 +365,7 @@ class Game:
 
     @asyncio.coroutine
     def get_commands(self):
-        coroutines = (player.orders(self)
-                            for player in self.players.values())
+        coroutines = (player.orders(self) for player in self.players.values())
         orders = yield from asyncio.gather(*coroutines)
 
     def step(self):
