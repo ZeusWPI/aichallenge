@@ -380,6 +380,9 @@ class Game:
     def get_commands(self):
         coroutines = (player.orders(self) for player in self.players.values())
         orders = yield from asyncio.gather(*coroutines)
+        for march in chain(*orders):
+            march.dispatch()
+
 
     def step(self):
         for road in self.roads:
