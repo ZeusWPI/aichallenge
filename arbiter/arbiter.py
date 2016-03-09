@@ -337,5 +337,6 @@ class Game:
 
 
 if __name__ == '__main__':
-    Game(sys.argv[1]).play()
-    print("Succes!")
+    game = Game(sys.argv[1])
+    game.play()
+    print("winner: {}".format(game.winner()))
