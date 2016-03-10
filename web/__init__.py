@@ -16,7 +16,6 @@ lm.init_app(app)
 
 from web import models
 from web.bots import models
-db.create_all()
 
 from web import views
 from web.bots import controllers
