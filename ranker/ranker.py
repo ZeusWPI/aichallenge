@@ -125,6 +125,7 @@ def battle_on():
 def db_session():
     db_path = os.path.join(os.path.pardir, 'web', 'db_repository',
                            'databases.db')
+    print(db_path)
     engine = create_engine("sqlite:///" + os.path.realpath(db_path))
     Session = sessionmaker(bind=engine)
     return Session()
