@@ -1,8 +1,7 @@
 from flask.ext.wtf import Form
-from wtforms import (StringField, BooleanField, PasswordField, SubmitField, FileField,
-                     ValidationError)
-from wtforms.validators import DataRequired, Length, Email, Optional, EqualTo
-from web.models import User
+from wtforms import (StringField, BooleanField, PasswordField, SubmitField)
+from wtforms.validators import DataRequired, Length, Email, EqualTo
+from battlebots.database.models import User
 
 NICKNAME_LENGTH = (1, 32)
 PASSWORD_LENGTH = (1, 32)

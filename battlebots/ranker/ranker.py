@@ -4,12 +4,11 @@ import json
 import logging
 import os.path
 import subprocess as sp
-
 from sqlalchemy import create_engine, Column, Integer, ForeignKey, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
-from arbiter import arbiter
+from battlebots import arbiter
 
 MAX_STEPS = 500
 Base = declarative_base()

@@ -1,12 +1,9 @@
-import os.path
-import tokenize
-
-from flask import render_template, request, redirect, url_for, flash, abort
+from flask import render_template, request, redirect, url_for, flash, abort, make_response
 from flask.ext.login import login_required, login_user, logout_user
 
-from web import app, db, lm
-from web.forms import LoginForm, RegisterForm
-from web.models import User
+from battlebots.database.models import User
+from battlebots.web import app, db, lm
+from battlebots.web.forms import LoginForm, RegisterForm
 
 
 @app.route('/home')
@@ -53,6 +50,7 @@ def logout():
 @app.route('/register', methods=('GET', 'POST'))
 def register():
     form = RegisterForm()
+    req = request
     if form.validate_on_submit():
         user = User(form.nickname.data, form.email.data, form.password.data)
         db.session.add(user)
@@ -61,6 +59,7 @@ def register():
         return redirect(url_for('login'))
     elif request.method == "POST":
         flash('Registering failed. Please supply all information', 'error')
+        return render_template("register.html", form=form, error=form.errors)
 
     return render_template('register.html', form=form)
 

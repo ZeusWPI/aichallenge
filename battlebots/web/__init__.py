@@ -14,8 +14,6 @@ lm = LoginManager(app)
 lm.init_app(app)
 # XXX This layout is somewhat horrible. I will deny to have written this.
 
-from web import models
-from web.bots import models
 
-from web import views
-from web.bots import controllers
+from battlebots.web import views
+from battlebots.web.bots import controllers

@@ -1,9 +1,10 @@
 from flask import flash, redirect, render_template, abort
 from flask.ext import login
-from web import app
-from web.bots import models
-from web.bots.models import Bot
-from web.bots.forms import BotForm
+
+from battlebots.database import models
+from battlebots.database.models import Bot
+from battlebots.web import app
+from battlebots.web.bots.forms import BotForm
 
 
 @app.route('/bots/', methods=('GET',))

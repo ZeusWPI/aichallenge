@@ -1,9 +1,10 @@
-from migrate.versioning import api
-from web.config import SQLALCHEMY_DATABASE_URI
-from web.config import SQLALCHEMY_MIGRATE_REPO
-from web import db
-
 import os.path
+from migrate.versioning import api
+
+from battlebots.config import SQLALCHEMY_DATABASE_URI
+from battlebots.config import SQLALCHEMY_MIGRATE_REPO
+from battlebots.web import db
+
 print("Creating new Battlebots databees")
 if not os.path.exists(SQLALCHEMY_MIGRATE_REPO):
     api.create(SQLALCHEMY_MIGRATE_REPO, 'database repository')

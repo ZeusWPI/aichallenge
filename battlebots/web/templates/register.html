@@ -4,6 +4,7 @@
 {% block content -%}
   <div class="content">
     <h1>Sign Up</h1>
+    {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
     <form action="" method="post" name="login">
       {{ render_field(form.nickname) }}<br>
       {{ render_field(form.email) }}<br>
