@@ -2,6 +2,7 @@ from flask.ext.wtf import Form
 from wtforms import (StringField, BooleanField, PasswordField, SubmitField)
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from battlebots.database.models import User
+from battlebots import session
 
 NICKNAME_LENGTH = (1, 32)
 PASSWORD_LENGTH = (1, 32)
@@ -19,7 +20,7 @@ class LoginForm(Form):
         if not rv:
             return rv
 
-        user = User.query.filter_by(nickname=self.nickname.data).first()
+        user = session.query(User).filter_by(nickname=self.nickname.data).first()
         if user is None:
             self.nickname.errors.append('User unknown.')
             return False
