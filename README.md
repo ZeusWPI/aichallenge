@@ -10,7 +10,7 @@ If you just want to start coding, you can read the protocols and how to test
 your bot [here](https://zeus.ugent.be/battlebots/rules).
 
 
-![Visualisation](web/static/visualiser_scrot.png)
+![Visualisation](battlebots/web/static/visualiser_scrot.png)
 
 
 ## Rules
@@ -141,6 +141,5 @@ Colliding armies behave as follows:
 ## How to generate test files
 Run the following:
 ```
-cd arbiter
-python arbiter.py test.json
+python battlebots/arbiter/arbiter.py test.json
 ```
