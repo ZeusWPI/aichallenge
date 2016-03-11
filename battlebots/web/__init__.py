@@ -4,17 +4,19 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import jinja2
 import markdown
 
-from battlebots import config
 
 app = Flask(__name__)
-app.config.from_object(config)
+app.config.from_object('battlebots.config')
 app.jinja_env.filters['markdown'] = (lambda text:
                                      jinja2.Markup(markdown.markdown(text)))
 
 db = SQLAlchemy(app)
 lm = LoginManager(app)
 lm.init_app(app)
-# XXX This layout is somewhat horrible. I will deny to have written this.
+
+
+from battlebots.database import models
+db.create_all()
 
 
 from battlebots.web import views

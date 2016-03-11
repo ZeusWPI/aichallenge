@@ -1,6 +1,6 @@
 from os import path
 
-BASE_DIR = path.abspath(path.join(path.dirname(__file__)))
+BASE_DIR = path.abspath(path.dirname(__file__))
 DB_DIR = path.join(BASE_DIR, 'database')
 
 WTF_CSRF_ENABLE = False
