@@ -8,6 +8,8 @@ import subprocess as sp
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from sqlalchemy.sql.expression import func
+
 from battlebots.database.models import User, Bot
 
 from battlebots import config
@@ -27,8 +29,8 @@ def in_dir(directory):
 def battle_on():
     db = db_session()
 
-    # TODO choose two random bots
-    bot1 = bot2 = db.query(Bot).first()
+    bot1 = db.query(Bot).order_by(func.random()).first()
+    bot2 = db.query(Bot).order_by(func.random()).first()
 
     # TODO compile async
     compilation_success = all(bot.compile() for bot in (bot1, bot2))
