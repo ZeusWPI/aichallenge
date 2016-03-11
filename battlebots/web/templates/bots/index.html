@@ -10,6 +10,7 @@
           <td>{{ bot.name }}</td>
           <td class="pull-right">
             <form method="post" action="{{ url_for('remove_bot', user=current_user.nickname, botname=bot.name) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <input class="btn btn-danger" type="submit" value="Delete">
             </form>
           </td>

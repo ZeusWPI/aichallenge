@@ -1,6 +1,7 @@
 from flask import Flask
 from flask.ext.login import LoginManager
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.wtf.csrf import CsrfProtect
 import jinja2
 import markdown
 
@@ -13,7 +14,8 @@ app.jinja_env.filters['markdown'] = (lambda text:
 db = SQLAlchemy(app)
 lm = LoginManager(app)
 lm.init_app(app)
-
+csrf = CsrfProtect()
+csrf.init_app(app)
 
 from battlebots.database import models
 db.create_all()

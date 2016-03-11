@@ -5,6 +5,7 @@
   <div class="jumbotron">
     <h2>New bot</h2>
     <form action="" method="post" enctype="multipart/form-data">
+      {{ form.csrf_token }}
       {{ render_field(form.botname) }}<br>
       {{ render_field(form.files, multiple="") }}<br>
       {{ render_field(form.compile_cmd) }}<br>

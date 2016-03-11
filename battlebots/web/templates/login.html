@@ -5,6 +5,7 @@
   <div class="content">
     <h1>Sign In</h1>
     <form action="" method="post" name="login">
+      {{ form.csrf_token }}
       {{ render_field(form.nickname) }}<br>
       {{ render_field(form.password) }}<br>
       {{ form.remember_me }} {{ form.remember_me.label }}<br>
