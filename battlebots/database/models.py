@@ -51,6 +51,37 @@ class Bot(Base):
     def __repr__(self):
         return '<Bot {} ({})>'.format(self.name, self.user.nickname)
 
+    @property
+    def code_path(self):
+        return os.path.join(config.BOT_CODE_DIR, self.user.nickname, self.name)
+
+    @property
+    def full_name(self):
+        return '%s (%s)' % (self.name, self.user.nickname)
+
+    def compile(self):
+        """Return True if compilation succeeds, False otherwise."""
+
+        # TODO run in sandbox & async
+        with in_dir(self.code_path):
+            process = sp.Popen(self.compile_cmd, stdout=sp.PIPE,
+                               stderr=sp.PIPE, shell=True)
+            process.wait(timeout=20)
+
+            if process.returncode == 0:
+                return True
+
+            self.compile_errors = ('Compilation exited with error code %d.\n\n'
+                                   % process.returncode)
+            self.compile_errors += 'STDOUT:\n' + process.stdout.read()
+            self.compile_errors += 'STDERR:\n' + process.stderr.read()
+            return False
+
+    @property
+    def sandboxed_run_cmd(self):
+        # TODO
+        return 'cd "%s" && %s' % (self.code_path, self.run_cmd)
+
 
 def add_bot(user, form):
     # Save code to <BOT_CODE_DIR>/<user>/<botname>/<codename>
