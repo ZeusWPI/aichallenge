@@ -1,9 +1,10 @@
-from flask import render_template, request, redirect, url_for, flash, abort, make_response
+from flask import render_template, request, redirect, url_for, flash, abort
 from flask.ext.login import login_required, login_user, logout_user
 
 from battlebots.database.models import User
 from battlebots.web import app, db, lm
 from battlebots.web.forms import LoginForm, RegisterForm
+from battlebots import session
 
 
 @app.route('/home')
@@ -67,3 +68,8 @@ def register():
 @lm.unauthorized_handler
 def unauthorized_handler():
     return redirect(url_for('login', next=request.base_url))
+
+
+@lm.user_loader
+def load_user(id):
+    return session.query(User).filter(User.id == id)

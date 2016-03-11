@@ -3,15 +3,19 @@ import os.path
 import shutil
 
 from flask.ext.login import UserMixin
-from werkzeug.security import generate_password_hash, \
-     check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask import request
 from werkzeug import secure_filename
+import sqlalchemy as db
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
 
-from battlebots.web import app, db, lm
+from battlebots import config, Session
 
+Base = declarative_base()
 
-class User(db.Model, UserMixin):
+class User(Base, UserMixin):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
@@ -32,10 +36,11 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.password, password)
 
 
-class Bot(db.Model):
+class Bot(Base):
+    __tablename__ = 'bot'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship(User, backref='bots')
+    user = relationship(User, backref='bots')
     name = db.Column(db.String(100), nullable=False, index=True, unique=True)
     compile_cmd = db.Column(db.String(200))
     run_cmd = db.Column(db.String(200), nullable=False)
@@ -50,7 +55,7 @@ class Bot(db.Model):
 def add_bot(user, form):
     # Save code to <BOT_CODE_DIR>/<user>/<botname>/<codename>
     files = request.files.getlist('files')
-    parent = os.path.join(app.config['BOT_CODE_DIR'], user.nickname,
+    parent = os.path.join(config.BOT_CODE_DIR, user.nickname,
                           form.botname.data)
     os.makedirs(parent, exist_ok=True)
 
@@ -63,8 +68,8 @@ def add_bot(user, form):
     bot = Bot(user=user, name=form.botname.data,
               compile_cmd=form.compile_cmd.data, run_cmd=form.run_cmd.data)
 
-    db.session.add(bot)
-    db.session.commit()
+    session.add(bot)
+    session.commit()
 
 
 def remove_bot(user, botname):
@@ -78,10 +83,7 @@ def remove_bot(user, botname):
         pass
 
     bot = Bot.query.filter_by(user=user, name=botname).one()
-    db.session.delete(bot)
-    db.session.commit()
+    session.delete(bot)
+    session.commit()
 
 
-@lm.user_loader
-def load_user(id):
-    return User.query.get(int(id))
