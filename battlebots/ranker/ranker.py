@@ -4,11 +4,13 @@ import json
 import logging
 import os.path
 import subprocess as sp
+
 from sqlalchemy import create_engine, Column, Integer, ForeignKey, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
-from battlebots import arbiter
+from battlebots import config
+from battlebots.arbiter import arbiter
 
 MAX_STEPS = 500
 Base = declarative_base()
@@ -42,8 +44,7 @@ class Bot(Base):
 
     @property
     def code_path(self):
-        return os.path.realpath(os.path.join(os.pardir, 'web', 'bot_code',
-                                             self.user.nickname, self.name))
+        return os.path.join(config.BOT_CODE_DIR, self.user.nickname, self.name)
 
     @property
     def full_name(self):
@@ -96,8 +97,8 @@ def battle_on():
         logging.warn('Compilation failed')
         return
 
-    # TODO generate new map
-    map_filename = '../arbiter/map.input'
+    # TODO generate new map instead of a fixed one
+    map_filename = os.path.abspath(__file__ + '/../../arbiter/map.input')
 
     log_filename = 'match.log'
     config = {
@@ -122,10 +123,7 @@ def battle_on():
 
 
 def db_session():
-    db_path = os.path.join(os.path.pardir, 'web', 'db_repository',
-                           'databases.db')
-    print(db_path)
-    engine = create_engine("sqlite:///" + os.path.realpath(db_path))
+    engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
     Session = sessionmaker(bind=engine)
     return Session()
 

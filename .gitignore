@@ -1,5 +1,7 @@
 database.db
-bot_code/
+
+# Where bot code of participants is saved
+battlebots/bots/
 
 # IntelliJ files
 .idea/*
