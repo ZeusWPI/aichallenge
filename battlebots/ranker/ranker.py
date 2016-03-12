@@ -25,14 +25,14 @@ def in_dir(directory):
     os.chdir(prev_dir)
 
 
-def generate_graph(player_names, outfile):
+def generate_graph(player_names):
     script = os.path.join(config.BASE_DIR, 'scripts', 'generate_graph.sh')
     #TODO: shadow names
     process = sp.Popen(script, stdout = sp.PIPE, in = sp.PIPE)
     for name in player_names:
         P.stdin.write("{}\n".format(name))
     P.stdin.close()
-    outfile.writelines(P.stdout.readlines())
+    return P.stdout
 
 
 def battle_on():
@@ -50,28 +50,21 @@ def battle_on():
         logging.warn('Compilation failed')
         return
 
-    # TODO generate new map instead of a fixed one
-    map_filename = os.path.abspath(__file__ + '/../../arbiter/map.input')
+    # TODO: shadow names
+    playermap = {
+        'bot1': bot1.sandboxed_run_cmd,
+        'bot2': bot2.sandboxed_run_cmd
+        }
 
-    log_filename = 'match.log'
-    config = {
-        'players': {
-            bot1.full_name: bot1.sandboxed_run_cmd,
-            # TODO remove the v2 once we select two different bots
-            bot2.full_name + ' v2': bot2.sandboxed_run_cmd,
-        },
-        'mapfile': map_filename,
-        'logfile': log_filename,
-        'max_steps': MAX_STEPS,
-    }
-    config_filename = 'config.json'
-    with open(config_filename, 'w') as config_file:
-        json.dump(config, config_file)
+    # TODO: actually use a decent place for logfiles
+    with (open('test.log', 'w') as logfile):
+        game = arbiter.Game(playermap,
+                            generate_graph(['bot1', 'bot2']),
+                            MAX_STEPS,
+                            logfile)
+        game.play()
+        # winner: game.winner()
 
-    game = arbiter.Game(config_filename)
-    game.play()
-
-    # TODO Parse log (log_filename) and output to some Match object
     # TODO Update some overall ranking
 
 
