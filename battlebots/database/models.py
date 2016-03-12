@@ -16,11 +16,15 @@ from battlebots import config, session
 
 Base = declarative_base()
 
+NICKNAME_LENGTH = (1, 32)
+PASSWORD_LENGTH = (1, 32)
+BOTNAME_LENTGH = (1, 32)
+
 
 class User(Base, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    nickname = db.Column(db.String(64), index=True, unique=True)
+    nickname = db.Column(db.String(NICKNAME_LENGTH[1]), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password = db.Column(db.String(120), index=True)
 
@@ -52,7 +56,8 @@ class Bot(Base):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = relationship(User, backref='bots')
-    name = db.Column(db.String(100), nullable=False, index=True, unique=True)
+    name = db.Column(db.String(BOTNAME_LENTGH[1]), nullable=False,
+                     index=True, unique=True)
     compile_cmd = db.Column(db.String(200))
     run_cmd = db.Column(db.String(200), nullable=False)
     # These two fields can be filled in by the compiler/ranker/arbiter

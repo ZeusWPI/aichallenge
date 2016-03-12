@@ -1,12 +1,8 @@
 from flask.ext.wtf import Form
 from wtforms import (StringField, BooleanField, PasswordField, SubmitField)
 from wtforms.validators import DataRequired, Length, Email, EqualTo
-from battlebots.database.models import User
+from battlebots.database.models import User, PASSWORD_LENGTH, NICKNAME_LENGTH
 from battlebots import session
-
-NICKNAME_LENGTH = (1, 32)
-PASSWORD_LENGTH = (1, 32)
-BOTNAME_LENTGH = (1, 32)
 
 
 class LoginForm(Form):

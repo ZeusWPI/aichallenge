@@ -3,7 +3,7 @@ from flask_wtf.file import FileField
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Length, Optional
 
-from battlebots.web.forms import BOTNAME_LENTGH
+from battlebots.database.models import BOTNAME_LENTGH
 
 
 class BotForm(Form):
