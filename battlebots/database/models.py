@@ -36,6 +36,13 @@ class User(Base, UserMixin):
         return check_password_hash(self.password, password)
 
 
+@contextlib.contextmanager
+def in_dir(directory):
+    prev_dir = os.getcwd()
+    os.chdir(directory)
+    yield
+    os.chdir(prev_dir)
+
 class Bot(Base):
     __tablename__ = 'bot'
     id = db.Column(db.Integer, primary_key=True)

@@ -17,13 +17,6 @@ from battlebots.arbiter import arbiter
 
 MAX_STEPS = 500
 
-@contextlib.contextmanager
-def in_dir(directory):
-    prev_dir = os.getcwd()
-    os.chdir(directory)
-    yield
-    os.chdir(prev_dir)
-
 
 def generate_graph(player_names):
     script = os.path.join(config.BASE_DIR, 'scripts', 'generate_graph.sh')
