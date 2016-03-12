@@ -3,6 +3,7 @@ from wtforms import (StringField, BooleanField, PasswordField, SubmitField)
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 
 from battlebots.database.models import User, PASSWORD_LENGTH, NICKNAME_LENGTH
+from battlebots.web.validators import NonDuplicate
 from battlebots import session
 
 
@@ -31,26 +32,8 @@ class LoginForm(Form):
 
 
 class RegisterForm(Form):
-    nickname = StringField('Name', validators=[DataRequired(), Length(*NICKNAME_LENGTH)])
-    email = StringField('E-mail', validators=[DataRequired(), Email()])
+    nickname = StringField('Name', validators=[DataRequired(), Length(*NICKNAME_LENGTH), NonDuplicate('nickname')])
+    email = StringField('E-mail', validators=[DataRequired(), Email(), NonDuplicate('email')])
     password = PasswordField('Password', validators=[DataRequired(), Length(*PASSWORD_LENGTH)])
-    password_check = PasswordField('Re-enter password',
-                                   validators=[DataRequired(), EqualTo('password', message="Passwords must match.")])
+    password_check = PasswordField('Re-enter password', validators=[DataRequired(), EqualTo('password', message="Passwords must match.")])
     submit = SubmitField('Sign up')
-
-    def validate(self):
-        rv = Form.validate(self)
-        if not rv:
-            return False
-
-        user = session.query(User).filter_by(nickname=self.nickname.data).one()
-        if user is not None:
-            self.nickname.errors.append('Nickname already in use.')
-            return False
-
-        user = session.query(User).filter_by(email=self.email.data).one()
-        if user is not None:
-            self.password.errors.append('Email already in use.')
-            return False
-
-        return True
