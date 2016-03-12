@@ -16,6 +16,7 @@ def read_section(handle):
     while ':' not in line: line = next(handle)
     # found a header
     lines, _ = line.rstrip(":").split(" ")
+    # TODO: move this to the asyncio code
     if lines == "?":
         return list(takewhile(lambda line: line != "end", handle))
     else:
@@ -281,24 +282,21 @@ class Player:
 
 
 class Game:
-    def __init__(self, configfile):
-        with open(configfile, 'r') as f:
-            config = json.load(f)
-        self.maxsteps = config['max_steps']
-        self.players = {}
-        for name, cmd in config['players'].items():
-            self.players[name] = Player(name, cmd)
+    def __init__(self, playermap, mapfile, max_steps, logfile):
+        self.max_steps = max_steps
+        self.logfile = logfile
+
+        self.players = {name: Player(name, cmd)
+                            for name, cmd in playermap.items()}
 
         self.forts = {}
         self.roads = []
-        with open(config['mapfile'], 'r') as f:
-            read_map(self, f)
-
-        self.logfile = open(config['logfile'], 'w')
+        # TODO this could work in a better fashion ...
+        read_map(self, mapfile)
 
     def play(self):
         steps = 0
-        while steps < self.maxsteps and not self.winner():
+        while steps < self.max_steps and not self.winner():
             self.log(steps)
             self.get_commands()
             self.step()
@@ -337,6 +335,16 @@ class Game:
 
 
 if __name__ == '__main__':
-    game = Game(sys.argv[1])
-    game.play()
-    print("winner: {}".format(game.winner()))
+    configfile = sys.argv[1]
+
+    with open(configfile, 'r') as f:
+        config = json.load(f)
+
+    with open(config['mapfile'], 'r') as mapfile:
+        with open(config['logfile'], 'w') as logfile:
+            game = Game(config['players'],
+                        mapfile,
+                        config['max_steps'],
+                        logfile)
+            game.play()
+            print("winner: {}".format(game.winner()))
