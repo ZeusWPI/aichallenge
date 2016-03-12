@@ -1,6 +1,8 @@
 import logging
 import os.path
 import shutil
+import subprocess as sp
+from contextlib import contextmanager
 
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,9 +12,10 @@ import sqlalchemy as db
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
-from battlebots import config, Session
+from battlebots import config, session
 
 Base = declarative_base()
+
 
 class User(Base, UserMixin):
     __tablename__ = 'user'
@@ -36,12 +39,13 @@ class User(Base, UserMixin):
         return check_password_hash(self.password, password)
 
 
-@contextlib.contextmanager
+@contextmanager
 def in_dir(directory):
     prev_dir = os.getcwd()
     os.chdir(directory)
     yield
     os.chdir(prev_dir)
+
 
 class Bot(Base):
     __tablename__ = 'bot'
@@ -111,17 +115,15 @@ def add_bot(user, form):
 
 
 def remove_bot(user, botname):
-    code_dir = os.path.join(app.config['BOT_CODE_DIR'], user.nickname, botname)
+    code_dir = os.path.join(config.BOT_CODE_DIR, user.nickname, botname)
     try:
         shutil.rmtree(code_dir)
     except FileNotFoundError:
         # Don't crash if for some reason this dir doesn't exist anymore
-        logging.warn('Code dir of bot %s:%s not found (%s)'
-                     % (user.nickname, botname, code_dir))
+        logging.warning('Code dir of bot %s:%s not found (%s)'
+                        % (user.nickname, botname, code_dir))
         pass
 
     bot = Bot.query.filter_by(user=user, name=botname).one()
     session.delete(bot)
     session.commit()
-
-
