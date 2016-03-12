@@ -72,4 +72,4 @@ def unauthorized_handler():
 
 @lm.user_loader
 def load_user(id):
-    return session.query(User).filter(User.id == id)
+    return session.query(User).filter(User.id == id).one()
