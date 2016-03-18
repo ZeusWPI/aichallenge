@@ -337,4 +337,4 @@ class Game:
 
 
 Game(sys.argv[1]).play()
-print("Succes!")
+print("Success!")
