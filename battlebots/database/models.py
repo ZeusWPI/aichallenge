@@ -72,19 +72,17 @@ class Bot(Base):
         """Return True if compilation succeeds, False otherwise."""
 
         # TODO run in sandbox & async
-        with in_dir(self.code_path):
-            process = sp.Popen(self.compile_cmd, stdout=sp.PIPE,
-                               stderr=sp.PIPE, shell=True)
-            process.wait(timeout=20)
-
-            if process.returncode == 0:
+        # TODO set some "already compiled" flag so we don't compile each time
+        with _in_dir(self.code_path):
+            try:
+                sp.run(self.compile_cmd, stdout=sp.PIPE, stderr=sp.PIPE,
+                       shell=True, check=True, timeout=20)
                 return True
-
-            self.compile_errors = ('Compilation exited with error code %d.\n\n'
-                                   % process.returncode)
-            self.compile_errors += 'STDOUT:\n' + process.stdout.read()
-            self.compile_errors += 'STDERR:\n' + process.stderr.read()
-            return False
+            except sp.SubprocessError as error:
+                self.compile_errors = str(error)
+                self.compile_errors += 'STDOUT:\n' + error.stdout
+                self.compile_errors += 'STDERR:\n' + error.stderr
+                return False
 
     @property
     def sandboxed_run_cmd(self):
