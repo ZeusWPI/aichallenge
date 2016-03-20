@@ -13,7 +13,8 @@ NO_PLAYER_NAME = 'neutral'
 
 def read_section(handle):
     line = next(handle)
-    while ':' not in line: line = next(handle)
+    while ':' not in line:
+        line = next(handle)
     # found a header
     lines, _ = line.rstrip(":").split(" ")
     # TODO: move this to the asyncio code
@@ -254,8 +255,9 @@ class Player:
         self.name = name
         self.forts = set()
         self.marches = set()
-        args = cmd.split(' ')
-        self.process = Popen(list(args) + [name], stdin=PIPE, stdout=PIPE,
+        cmd += ' {}'.format(name)
+        # TODO save stderr as user feedback
+        self.process = Popen(cmd, stdin=PIPE, stdout=PIPE,
                              universal_newlines=True, shell=True)
 
     def capture(self, fort):
@@ -268,9 +270,9 @@ class Player:
         return (not self.forts) and (not self.marches)
 
     def send_state(self):
+        visible = show_visible(self.forts)
         if not self.process.poll():
-            self.process.stdin.write(show_visible(self.forts))
-            self.process.stdin.write('\n')
+            self.process.stdin.write(visible + '\n')
             self.process.stdin.flush()
 
     def read_commands(self, game):
@@ -287,7 +289,7 @@ class Game:
         self.logfile = logfile
 
         self.players = {name: Player(name, cmd)
-                            for name, cmd in playermap.items()}
+                        for name, cmd in playermap.items()}
 
         self.forts = {}
         self.roads = []
