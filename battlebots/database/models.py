@@ -24,9 +24,10 @@ BOTNAME_LENTGH = (1, 32)
 class User(Base, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    nickname = db.Column(db.String(NICKNAME_LENGTH[1]), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
-    password = db.Column(db.String(120), index=True)
+    nickname = db.Column(db.String(NICKNAME_LENGTH[1]), index=True,
+                         unique=True, nullable=False)
+    email = db.Column(db.String(120), index=True, unique=True, nullable=False)
+    password = db.Column(db.String(120), index=True, nullable=False)
 
     def __repr__(self):
         return '<User {}>'.format(self.nickname)
@@ -43,26 +44,18 @@ class User(Base, UserMixin):
         return check_password_hash(self.password, password)
 
 
-@contextmanager
-def in_dir(directory):
-    prev_dir = os.getcwd()
-    os.chdir(directory)
-    yield
-    os.chdir(prev_dir)
-
-
 class Bot(Base):
     __tablename__ = 'bot'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = relationship(User, backref='bots')
     name = db.Column(db.String(BOTNAME_LENTGH[1]), nullable=False,
                      index=True, unique=True)
     compile_cmd = db.Column(db.String(200))
     run_cmd = db.Column(db.String(200), nullable=False)
     # These two fields can be filled in by the compiler/ranker/arbiter
-    compile_errors = db.Column(db.Text())
-    run_errors = db.Column(db.Text())
+    compile_errors = db.Column(db.Text)
+    run_errors = db.Column(db.Text)
 
     def __repr__(self):
         return '<Bot {} ({})>'.format(self.name, self.user.nickname)
@@ -129,6 +122,20 @@ def remove_bot(user, botname):
                         % (user.nickname, botname, code_dir))
         pass
 
-    bot = Bot.query.filter_by(user=user, name=botname).one()
+    bot = session.query(Bot).filter_by(user=user, name=botname).one()
     session.delete(bot)
     session.commit()
+
+
+@contextmanager
+def _in_dir(directory):
+    prev_dir = os.getcwd()
+    os.chdir(directory)
+    yield
+    os.chdir(prev_dir)
+
+
+# TODO Move session making form battlebots/__init__.py to here (and fix
+# imports form other modules)
+from battlebots import engine
+Base.metadata.create_all(engine)
