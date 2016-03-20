@@ -9,8 +9,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask import request
 from werkzeug import secure_filename
 import sqlalchemy as db
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.associationproxy import association_proxy
 
 from battlebots import config, session
 
@@ -56,6 +57,8 @@ class Bot(Base):
     # These two fields can be filled in by the compiler/ranker/arbiter
     compile_errors = db.Column(db.Text)
     run_errors = db.Column(db.Text)
+    # TODO make run_errors an association proxy to errors of MatchParticipation
+    # objects
 
     def __repr__(self):
         return '<Bot {} ({})>'.format(self.name, self.user.nickname)
@@ -88,6 +91,47 @@ class Bot(Base):
     def sandboxed_run_cmd(self):
         # TODO
         return 'cd "%s" && %s' % (self.code_path, self.run_cmd)
+
+
+class Match(Base):
+    __tablename__ = 'match'
+    id = db.Column(db.Integer, primary_key=True)
+    bots = association_proxy('participations', 'bots')
+    winner_id = db.Column(db.Integer, db.ForeignKey('bot.id'))
+    winner = relationship(Bot, backref='matches_won')
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
+
+    def __repr__(self):
+        return '<Match between {bots}; {winner} won; log: {logfile}>'.format(
+            bots=self.bots, winner=self.winner, logfile=self.logfile)
+
+    @property
+    def log_path(self):
+        return os.path.join(config.MATCH_LOG_DIR, str(self.id))
+
+    def save_log(self, content):
+        os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
+        with open(self.log_path, 'w') as logfile:
+            logfile.write(content)
+
+
+class MatchParticipation(Base):
+    __tablename__ = 'match_participation'
+    match_id = db.Column(db.Integer, db.ForeignKey('match.id'),
+                         primary_key=True)
+    bot_id = db.Column(db.Integer, db.ForeignKey('bot.id'), primary_key=True)
+
+    match = relationship(Match, backref=backref('participations',
+                                                cascade='all, delete-orphan'))
+    bot = relationship(Bot, backref=backref('participations',
+                                            cascade='all, delete-orphan'))
+
+    errors = db.Column(db.Text)
+
+    def __repr__(self):
+        return ('<MatchParticipation of {bot} in {match}; errors: {errors}>'
+                .format(bot=self.bot, match=self.match, errors=self.errors))
 
 
 def add_bot(user, form):

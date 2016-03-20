@@ -1,3 +1,4 @@
+import logging
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -14,3 +15,5 @@ os.environ['PYTHONPATH'] = __root_dir
 engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
 Session = sessionmaker(bind=engine, autoflush=False)
 session = Session()
+
+logging.basicConfig(level=config.LOG_LEVEL)

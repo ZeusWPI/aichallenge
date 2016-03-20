@@ -1,16 +1,17 @@
 #!/usr/bin/env python
-import contextlib
-import json
+from contextlib import ContextDecorator
+from datetime import datetime
 import logging
 import os.path
 import subprocess as sp
+import tempfile
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from sqlalchemy.sql.expression import func
 
-from battlebots.database.models import User, Bot
+from battlebots.database.models import Bot, Match, MatchParticipation
 
 from battlebots import config
 from battlebots.arbiter import arbiter
@@ -18,6 +19,15 @@ from battlebots.arbiter import arbiter
 GRAPH_WANDERLUST = 0
 GRAPH_GENERATION_TIMEOUT = 20  # seconds
 MAX_STEPS = 500
+
+
+class Timed(ContextDecorator):
+    def __enter__(self):
+        self.start_time = datetime.now()
+        return self
+
+    def __exit__(self, *exc):
+        self.end_time = datetime.now()
 
 
 def generate_graph(player_names):
@@ -43,7 +53,12 @@ def battle_on():
 
     bot1 = db.query(Bot).order_by(func.random()).first()
     bot2 = db.query(Bot).order_by(func.random()).first()
+    if not bot1 or not bot2:
+        logging.error('No bots found in database')
+        return
+    logging.info('Letting %r and %r fight', bot1, bot2)
 
+    logging.info('Starting compilation')
     # TODO compile async
     compilation_success = all(bot.compile() for bot in (bot1, bot2))
     if not compilation_success:
@@ -52,23 +67,40 @@ def battle_on():
         db.commit()
         logging.warn('Compilation failed')
         return
+    logging.info('Compilation done')
+
+    logging.info('Starting graph generation')
+    graph = generate_graph(['bot1', 'bot2'])
+    logging.info('Graph generated: %s', graph)
 
     # TODO: shadow names
     playermap = {
         'bot1': bot1.sandboxed_run_cmd,
         'bot2': bot2.sandboxed_run_cmd
-        }
+    }
 
-    # TODO: actually use a decent place for logfiles
-    with (open('test.log', 'w') as logfile):
-        game = arbiter.Game(playermap,
-                            generate_graph(['bot1', 'bot2']),
-                            MAX_STEPS,
-                            logfile)
-        game.play()
-        # winner: game.winner()
+    with tempfile.TemporaryFile('w+') as tmp_logfile:
+        game = arbiter.Game(playermap, graph, MAX_STEPS, tmp_logfile)
+        logging.info('Starting match')
+        with Timed() as timings:
+            game.play()
+        logging.info('Stopping match')
 
-    # TODO Update some overall ranking
+        # Save match outcome to database
+        winner = game.winner()
+        if winner:
+            winner = bot1 if winner.name == bot1.name else bot2
+        match = Match(winner=winner, start_time=timings.start_time,
+                      end_time=timings.end_time)
+        # TODO extract errors from arbiter and add them here
+        for bot in {bot1, bot2}:
+            match.participations.append(MatchParticipation(bot=bot, errors=''))
+        db.add(match)
+        db.commit()
+
+        # Store the log file to match.log_path
+        tmp_logfile.seek(0)
+        match.save_log(tmp_logfile.read())
 
 
 def db_session():
