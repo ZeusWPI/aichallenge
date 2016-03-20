@@ -15,17 +15,27 @@ from battlebots.database.models import User, Bot
 from battlebots import config
 from battlebots.arbiter import arbiter
 
+GRAPH_WANDERLUST = 0
+GRAPH_GENERATION_TIMEOUT = 20  # seconds
 MAX_STEPS = 500
 
 
 def generate_graph(player_names):
     script = os.path.join(config.BASE_DIR, 'scripts', 'generate_graph.sh')
-    #TODO: shadow names
-    process = sp.Popen(script, stdout = sp.PIPE, in = sp.PIPE)
-    for name in player_names:
-        P.stdin.write("{}\n".format(name))
-    P.stdin.close()
-    return P.stdout
+    # TODO: shadow names
+    input_ = b'\n'.join(name.encode('utf8') for name in player_names)
+    try:
+        process = sp.run([script, str(GRAPH_WANDERLUST)], input=input_,
+                         stdout=sp.PIPE, stderr=sp.PIPE, check=True,
+                         timeout=GRAPH_GENERATION_TIMEOUT)
+    except sp.SubprocessError as error:
+        logging.error('Graph generation failed.')
+        logging.error(error)
+        logging.error('Stdout was %s', error.stdout)
+        logging.error('Stderr was %s', error.stderr)
+        raise
+
+    return [line.decode('utf8') for line in process.stdout.splitlines()]
 
 
 def battle_on():
