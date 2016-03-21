@@ -127,10 +127,10 @@ class MatchParticipation(Base):
                          primary_key=True)
     bot_id = db.Column(db.Integer, db.ForeignKey('bot.id'), primary_key=True)
 
-    matches = relationship(Match, backref=backref('participations',
-                                                  cascade='all, delete-orphan'))
-    bots = relationship(Bot, backref=backref('participations',
-                                             cascade='all, delete-orphan'))
+    match = relationship(Match, backref=backref('participations',
+                                                cascade='all, delete-orphan'))
+    bot = relationship(Bot, backref=backref('participations',
+                                            cascade='all, delete-orphan'))
 
     errors = db.Column(db.Text)
 
