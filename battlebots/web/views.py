@@ -4,7 +4,7 @@ from flask.ext.login import login_required, login_user, logout_user
 from battlebots.database.models import User
 from battlebots.web import app, lm
 from battlebots.web.forms import LoginForm, RegisterForm
-from battlebots import session
+from battlebots.database import session
 
 
 @app.route('/home')

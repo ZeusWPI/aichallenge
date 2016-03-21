@@ -11,9 +11,10 @@ from werkzeug import secure_filename
 import sqlalchemy as db
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.associationproxy import association_proxy
 
-from battlebots import config, session
+
+from battlebots import config
+from battlebots.database import engine, session
 
 Base = declarative_base()
 
@@ -52,8 +53,11 @@ class Bot(Base):
     user = relationship(User, backref='bots')
     name = db.Column(db.String(BOTNAME_LENTGH[1]), nullable=False,
                      index=True, unique=True)
+    matches = relationship('Match', secondary='match_participation',
+                           back_populates='bots')
     compile_cmd = db.Column(db.String(200))
     run_cmd = db.Column(db.String(200), nullable=False)
+
     # These two fields can be filled in by the compiler/ranker/arbiter
     compile_errors = db.Column(db.Text)
     run_errors = db.Column(db.Text)
@@ -96,7 +100,8 @@ class Bot(Base):
 class Match(Base):
     __tablename__ = 'match'
     id = db.Column(db.Integer, primary_key=True)
-    bots = association_proxy('participations', 'bots')
+    bots = relationship(Bot, secondary='match_participation',
+                        back_populates='matches')
     winner_id = db.Column(db.Integer, db.ForeignKey('bot.id'))
     winner = relationship(Bot, backref='matches_won')
     start_time = db.Column(db.DateTime, nullable=False)
@@ -122,10 +127,10 @@ class MatchParticipation(Base):
                          primary_key=True)
     bot_id = db.Column(db.Integer, db.ForeignKey('bot.id'), primary_key=True)
 
-    match = relationship(Match, backref=backref('participations',
-                                                cascade='all, delete-orphan'))
-    bot = relationship(Bot, backref=backref('participations',
-                                            cascade='all, delete-orphan'))
+    matches = relationship(Match, backref=backref('participations',
+                                                  cascade='all, delete-orphan'))
+    bots = relationship(Bot, backref=backref('participations',
+                                             cascade='all, delete-orphan'))
 
     errors = db.Column(db.Text)
 
@@ -177,7 +182,4 @@ def _in_dir(directory):
     os.chdir(prev_dir)
 
 
-# TODO Move session making form battlebots/__init__.py to here (and fix
-# imports form other modules)
-from battlebots import engine
 Base.metadata.create_all(engine)

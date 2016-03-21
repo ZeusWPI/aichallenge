@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo
 
 from battlebots.database.models import User, PASSWORD_LENGTH, NICKNAME_LENGTH
 from battlebots.web.validators import NonDuplicate
-from battlebots import session
+from battlebots.database import session
 
 
 class LoginForm(Form):

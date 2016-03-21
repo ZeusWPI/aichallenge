@@ -1,7 +1,5 @@
 import logging
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from battlebots import config
 
 # Since this package is just a bunch of separate but interdependable scripts,
@@ -11,9 +9,5 @@ from battlebots import config
 # and https://github.com/mitsuhiko/flask/issues/1246
 __root_dir = os.path.dirname(os.path.dirname(__file__))
 os.environ['PYTHONPATH'] = __root_dir
-
-engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
-Session = sessionmaker(bind=engine, autoflush=False)
-session = Session()
 
 logging.basicConfig(level=config.LOG_LEVEL)

@@ -1,6 +1,6 @@
 from wtforms.validators import ValidationError
 
-from battlebots import session
+from battlebots.database import session
 from battlebots.database.models import User
 
 
