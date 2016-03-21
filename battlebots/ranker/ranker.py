@@ -6,13 +6,10 @@ import os.path
 import subprocess as sp
 import tempfile
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 from sqlalchemy.sql.expression import func
 
 from battlebots.database.models import Bot, Match, MatchParticipation
-
+from battlebots.database import Session
 from battlebots import config
 from battlebots.arbiter import arbiter
 
@@ -49,7 +46,7 @@ def generate_graph(player_names):
 
 
 def battle_on():
-    db = db_session()
+    db = Session()
 
     bot1 = db.query(Bot).order_by(func.random()).first()
     bot2 = db.query(Bot).order_by(func.random()).first()
@@ -101,13 +98,6 @@ def battle_on():
         # Store the log file to match.log_path
         tmp_logfile.seek(0)
         match.save_log(tmp_logfile.read())
-
-
-def db_session():
-    engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
-    Session = sessionmaker(bind=engine)
-    return Session()
-
 
 if __name__ == '__main__':
     battle_on()
