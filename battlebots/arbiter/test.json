@@ -1,7 +1,7 @@
 {
     "players": {
-        "bart": "python ../testbots/testrobot.py",
-        "berdt": "python ../testbots/destroybot.py"
+        "bart": "python3 ../testbots/testrobot.py",
+        "berdt": "python3 ../testbots/destroybot.py"
     },
     "mapfile": "test.input",
     "logfile": "sample.data",
