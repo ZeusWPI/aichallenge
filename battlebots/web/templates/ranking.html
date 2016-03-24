@@ -4,13 +4,14 @@
 {% block content -%}
   <div class="content">
     <table class="table table-striped table-hover">
+    <caption>Ranking</caption>
       <tr>
         <th>Bot</th>
         <th>User</th>
       </tr>
       {% for bot in bots %}
         <tr>
-          <td>{{ bot.name }}</td>
+          <td><a href="{{ url_for('bot_page', botname=bot.name) }}">{{ bot.name }}</a></td>
           <td><a href="{{url_for('user_page', user=current_user.nickname)}}">{{ current_user.nickname }}</a></td>
         </tr>
       {% endfor %}

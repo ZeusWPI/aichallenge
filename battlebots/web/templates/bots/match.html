@@ -1,0 +1,24 @@
+{% extends "layout.html" -%}
+{% set active_page = "None" %}
+
+{% block content -%}
+  <div class="content">
+    <h2>ID: {{ match.id }}</h2>
+    <h2>WInner: {{ match.winner.nickname }}</h2>
+    <table class="table table-striped table-hover">
+    <caption>Participants</caption>
+      <tr>
+        <th>Bot</th>
+        <th>Owner</th>
+      </tr>
+      {% for bot in match.bots %}
+        <tr>
+          <td>{{ bot.name }}</td>
+          <td>{{ bot.user.nickname }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+
+
+  </div>
+{%- endblock %}

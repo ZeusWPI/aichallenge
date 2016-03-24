@@ -2,7 +2,7 @@ from flask import flash, redirect, render_template, abort
 from flask.ext import login
 
 from battlebots.database import models, session
-from battlebots.database.models import Bot
+from battlebots.database.models import Bot, Match
 from battlebots.web import app
 from battlebots.web.forms.bots import BotForm
 
@@ -35,3 +35,15 @@ def remove_bot(user, botname):
     models.remove_bot(login.current_user, botname)
     flash('Removed bot "%s" succesfully!' % botname)
     return redirect('/bots')
+
+
+@app.route('/bots/<botname>', methods=('GET',))
+def bot_page(botname):
+    bot = session.query(Bot).filter_by(name=botname).one()
+    return render_template('bots/bot.html', bot=bot)
+
+
+@app.route('/matches/<matchid>')
+def match_page(matchid):
+    match = session.query(Match).filter_by(id=matchid).one()
+    return render_template('bots/match.html', match=match)

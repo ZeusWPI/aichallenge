@@ -10,7 +10,7 @@ from battlebots.database import session
 @app.route('/users/<user>')
 def user_page(user):
     user = session.query(User).filter_by(nickname=user).one()
-    return render_template('users/user_page.html', user=user)
+    return render_template('users/user.html', user=user)
 
 
 @app.route('/login', methods=('GET', 'POST'))

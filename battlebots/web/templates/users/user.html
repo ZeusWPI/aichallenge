@@ -3,9 +3,11 @@
 
 {% block content -%}
   <div class="content">
-    <h1>{{ user.nickname }}</h1>
-    <h2>Bots</h2>
+    <div class="jumbotron">
+      <h1>{{ user.nickname }}</h1>
+    </div>
     <table class="table table-striped table-hover">
+    <caption>Bots</caption>
       <tr>
         <th>Bot</th>
         <th>Ranking</th>
