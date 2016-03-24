@@ -1,18 +1,17 @@
 from flask import flash, redirect, render_template, abort
 from flask.ext import login
 
-
 from battlebots.database import models, session
 from battlebots.database.models import Bot
 from battlebots.web import app
-from battlebots.web.bots.forms import BotForm
+from battlebots.web.forms.bots import BotForm
 
 
 @app.route('/bots/', methods=('GET',))
 @login.login_required
 def bots():
-    bots = session.query(Bot).filter_by(user=login.current_user)
-    return render_template('bots/index.html', bots=bots)
+    bots_ = session.query(Bot).filter_by(user=login.current_user)
+    return render_template('bots/index.html', bots=bots_)
 
 
 @app.route('/bots/new', methods=('GET', 'POST'))
