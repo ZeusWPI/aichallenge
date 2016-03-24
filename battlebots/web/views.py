@@ -1,16 +1,24 @@
 from flask import render_template, request, redirect, url_for, flash, abort
-from flask.ext.login import login_required, login_user, logout_user
+from flask.ext.login \
+    import login_required, login_user, logout_user, current_user
 
 from battlebots.database.models import User
 from battlebots.web import app, lm
 from battlebots.web.forms import LoginForm, RegisterForm
 from battlebots.database import session
+from battlebots.database.models import Bot
 
 
 @app.route('/home')
 @app.route('/')
 def home():
     return render_template('home.md')
+
+
+@app.route('/ranking')
+def ranking():
+    bots = session.query(Bot).filter_by(user=current_user)
+    return render_template('ranking.html', bots=bots)
 
 
 @app.route('/rules')

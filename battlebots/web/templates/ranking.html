@@ -1,0 +1,19 @@
+{% extends "layout.html" -%}
+{% set active_page = "ranking" -%}
+
+{% block content -%}
+  <div class="content">
+    <table class="table table-striped table-hover">
+      <tr>
+        <th>Bot</th>
+        <th>User</th>
+      </tr>
+      {% for bot in bots %}
+        <tr>
+          <td>{{ bot.name }}</td>
+          <td>{{ bot.user.nickname }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{%- endblock %}
