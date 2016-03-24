@@ -7,6 +7,12 @@ from battlebots.web.forms.users import LoginForm, RegisterForm
 from battlebots.database import session
 
 
+@app.route('/users/<user>')
+def user_page(user):
+    user = session.query(User).filter_by(nickname=user).one()
+    return render_template('users/user_page.html', user=user)
+
+
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     form = LoginForm()
