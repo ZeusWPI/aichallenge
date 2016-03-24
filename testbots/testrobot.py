@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-from math import ceil, floor, sqrt
+from math import ceil, sqrt
 from collections import defaultdict
 import sys
 
@@ -85,7 +85,7 @@ class Game:
     def parse_march(line):
         owner_name = line[2]
         if owner_name not in Game.players:
-            Game.players[owner_name]= Player(owner_name)
+            Game.players[owner_name] = Player(owner_name)
 
         Game.marches.add(March(*line))
 
@@ -97,13 +97,16 @@ class Game:
             for i in range(int(input().split()[0])):
                 handler(input().split())
 
-        while True:
-            Game.players, Game.marches = {}, set()
-            handle(Game.parse_fort)
-            handle(Game.parse_road)
-            handle(Game.parse_march)
-            mind.play()
-            print(mind.orders())
+        try:
+            while True:
+                Game.players, Game.marches = {}, set()
+                handle(Game.parse_fort)
+                handle(Game.parse_road)
+                handle(Game.parse_march)
+                mind.play()
+                print(mind.orders())
+        except EOFError:
+            pass
 
 
 class Command:
@@ -202,5 +205,6 @@ class Mind:
 
     def __threatened(self, my_fort):
         return any(t.owner is my_fort.owner for t in my_fort.incoming.values())
+
 
 Game.start()
