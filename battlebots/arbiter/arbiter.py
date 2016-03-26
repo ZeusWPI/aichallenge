@@ -81,7 +81,7 @@ def show_player(player):
 
 
 def show_section(items, name, formatter):
-    header = "{} {}:".format(str(len(items)), name)
+    header = "{} {}:".format(len(items), name)
     body = (formatter(item) for item in items)
     return '\n'.join([header] + list(body))
 
@@ -395,13 +395,13 @@ class Game:
             yield from player.start_process()
 
         try:
-            while steps < self.maxsteps and not self.winner():
+            while steps < self.max_steps and not self.winner():
                 self.log(steps)
                 yield from self.get_commands()
                 self.step()
                 self.remove_losers()
                 steps += 1
-                print('Completed step', steps, file=sys.stder)
+                print('Completed step', steps, file=sys.stderr)
             self.log(steps)
 
         finally:
