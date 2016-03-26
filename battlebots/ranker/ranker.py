@@ -9,7 +9,7 @@ import tempfile
 from sqlalchemy.sql.expression import func
 
 from battlebots.database.models import Bot, Match, MatchParticipation
-from battlebots.database import Session
+from battlebots.database import session as db
 from battlebots import config
 from battlebots.arbiter import arbiter
 
@@ -45,9 +45,7 @@ def generate_graph(player_names):
     return [line.decode('utf8') for line in process.stdout.splitlines()]
 
 
-def battle_on():
-    db = Session()
-
+def battle():
     bot1 = db.query(Bot).order_by(func.random()).first()
     bot2 = db.query(Bot).order_by(func.random()).first()
     if not bot1 or not bot2:
@@ -99,5 +97,9 @@ def battle_on():
         tmp_logfile.seek(0)
         match.save_log(tmp_logfile.read())
 
+
 if __name__ == '__main__':
-    battle_on()
+    try:
+        battle()
+    except KeyboardInterrupt:
+        logging.info('Stopping ranker')
