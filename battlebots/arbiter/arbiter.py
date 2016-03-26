@@ -6,7 +6,7 @@ from math import ceil, sqrt
 import json
 import sys
 import asyncio
-from asyncio import subprocess
+from asyncio import subprocess as sp
 
 MARCH_SPEED = 1
 NO_PLAYER_NAME = 'neutral'
@@ -292,16 +292,14 @@ class Player:
         self.name = name
         self.forts = set()
         self.marches = set()
-        self.cmd = cmd + ' {}'.format(name)
+        self.cmd = '{} {}'.format(cmd, name).encode('utf8')
         self.in_control = True
 
     @asyncio.coroutine
     def start_process(self):
         # TODO save stderr as user feedback
-        self.process = yield from asyncio.create_subprocess_exec(
-            self.cmd,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE
-            shell=True, universal_newlines=True)
+        self.process = yield from asyncio.create_subprocess_shell(
+            self.cmd, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
 
     def stop_process(self):
         self.process.kill()
