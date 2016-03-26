@@ -63,13 +63,15 @@ def read_map(game, map_file):
 def parse_command(game, player, string):
     try:
         origin, target, size = string.split(' ')
-        if not (origin in game.forts and target in game.forts):
-            return None
-        road = game.forts[origin].roads[game.forts[target]]
-        if road and game.forts[origin].owner == player:
-            return March(road, player, int(size))
-    except ValueError:
-        return None
+        origin, target = game.forts[origin], game.forts[target]
+        road = origin.roads[target]
+        if road and origin.owner == player:
+            return March(road, target, player, int(size))
+    except (KeyError, ValueError):
+        # TODO add warning to bot and log warning
+        pass
+
+    return None
 
 
 def show_player(player):
@@ -427,7 +429,8 @@ class Game:
         coroutines = (player.orders(self) for player in self.players.values())
         orders = yield from asyncio.gather(*coroutines)
         for march in chain(*orders):
-            march.dispatch()
+            if march:
+                march.dispatch()
 
     def step(self):
         for road in self.roads:
