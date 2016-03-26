@@ -429,7 +429,7 @@ class Game:
         """
         if len(self.players) > 1:
             return None
-        return next(self.players.values())
+        return next(iter(self.players.values()))
 
     def remove_losers(self):
         for player in list(self.players.values()):
