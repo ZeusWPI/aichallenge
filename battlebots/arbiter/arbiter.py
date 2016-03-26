@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-from itertools import chain, islice, takewhile
+from itertools import chain, count, islice, takewhile
 from collections import defaultdict
 from math import ceil, sqrt
 import json
@@ -262,7 +262,7 @@ class March:
 
 
 @asyncio.coroutine
-def async_read_lines(stream):
+def async_read_line(stream):
     """
     Return the next non-empty line or raise an EOFError if at the end of the
     stream.
@@ -273,18 +273,40 @@ def async_read_lines(stream):
             raise EOFError
         line = byteline.decode('utf-8').strip()
         if line and not line.startswith("#"):
-            yield line
+            return line
+
+
+@asyncio.coroutine
+def async_slice(coro_iterable, stop):
+    xs = []
+    for _ in range(stop):
+        x = yield from next(coro_iterable)
+        xs.append(x)
+    return xs
+
+
+@asyncio.coroutine
+def async_takewhile(predicate, coro_iterable):
+    xs = []
+    while True:
+        x = yield from next(coro_iterable)
+        if not predicate(x):
+            break
+        xs.append(x)
+    return xs
 
 
 @asyncio.coroutine
 def async_read_section(stream):
-    lines = async_read_lines(stream)
-    header = next(lines)
-    n_lines, _ header.split(' ')
+    lines = (async_read_line(stream) for _ in count())
+    header = yield from next(lines)
+    n_lines, _ = header.split(' ')
     if n_lines == '?':
-        yield from takewhile(lambda line: line.strip() != 'end', lines)
+        def not_at_end(line): return line.strip() != 'end'
+        section = yield from async_takewhile(not_at_end, lines)
     else:
-        yield from islice(lines, int(n_lines))
+        section = yield from async_slice(lines, int(n_lines))
+    return section
 
 
 class Player:
