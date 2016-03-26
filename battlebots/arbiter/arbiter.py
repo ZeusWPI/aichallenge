@@ -1,33 +1,33 @@
 #! /usr/bin/python3
 
-from itertools import chain, takewhile
+from itertools import chain, islice, takewhile
 from collections import defaultdict
 from math import ceil, sqrt
-from subprocess import Popen, PIPE
 import json
 import sys
+import asyncio
+from asyncio import subprocess
 
 MARCH_SPEED = 1
 NO_PLAYER_NAME = 'neutral'
+BOT_TIMEOUT = 2  # seconds
 
 
-def read_section(handle):
-    line = next(handle)
+def read_section(lines):
+    line = next(lines)
     while ':' not in line:
-        line = next(handle)
+        line = next(lines)
     # found a header
-    lines, _ = line.rstrip(":").split(" ")
-    # TODO: move this to the asyncio code
-    if lines == "?":
-        return list(takewhile(lambda line: line != "end", handle))
+    n_lines, _ = line.rstrip(':').split(' ')
+    if n_lines == '?':
+        return takewhile(lambda line: line.strip() != 'end', lines)
     else:
-        section_length = int(lines)
-        return [next(handle) for i in range(section_length)]
+        return islice(lines, int(n_lines))
 
 
-def read_sections(handle, *parsers):
+def parse_sections(map_file, *parsers):
     # ignore empty lines and lines starting with a #
-    lines = (line.rstrip() for line in handle
+    lines = (line.rstrip() for line in map_file
              if len(line.rstrip()) > 0 and not line.startswith("#"))
     for parser in parsers:
         for line in read_section(lines):
@@ -50,27 +50,26 @@ def parse_march(game, string):
     origin = game.forts[origin]
     target = game.forts[target]
     owner = game.players[owner]
-    origin.roads[target].march(target, owner, int(size), int(steps))
+    March(origin.roads[target], target, owner, int(size)).dispatch(int(steps))
 
 
-def read_map(game, handle):
-    read_sections(handle,
-                  lambda line: parse_fort(game, line),
-                  lambda line: parse_road(game, line),
-                  lambda line: parse_march(game, line))
+def read_map(game, map_file):
+    parse_sections(map_file,
+                   lambda line: parse_fort(game, line),
+                   lambda line: parse_road(game, line),
+                   lambda line: parse_march(game, line))
 
 
 def parse_command(game, player, string):
     try:
         origin, target, size = string.split(' ')
-        if (origin in game.forts) and game.forts[origin].owner == player:
-            game.forts[origin].dispatch(game.forts[target], int(size))
+        if not (origin in game.forts and target in game.forts):
+            return None
+        road = game.forts[origin].roads[game.forts[target]]
+        if road and game.forts[origin].owner == player:
+            return March(road, player, int(size))
     except ValueError:
-        return
-
-
-def read_commands(game, player, handle):
-    read_sections(handle, lambda line: parse_command(game, player, line))
+        return None
 
 
 def show_player(player):
@@ -120,13 +119,12 @@ class Road:
             fort2: [None] * (self.length * 2 + 1),
         }
 
-    def march(self, destination, owner, size, steps=None):
+    def add_march(self, march, steps=None):
         position = 2 * (steps or self.length)
-        if self.headed_to[destination][position]:
-            self.headed_to[destination][position].size += size
+        if self.headed_to[march.destination][position]:
+            self.headed_to[march.destination][position].size += march.size
         else:
-            march = March(self, owner, size)
-            self.headed_to[destination][position] = march
+            self.headed_to[march.destination][position] = march
 
     def step(self):
         self.half_step()
@@ -140,7 +138,8 @@ class Road:
         self.resolve_encounters()
 
     def resolve_encounters(self):
-        army = lambda ind, fort: self.headed_to[fort][ind]
+        def army(ind, fort):
+            return self.headed_to[fort][ind]
 
         fort1, fort2 = self.headed_to.keys()
         for i in range(2 * self.length + 1):
@@ -237,17 +236,44 @@ class Fort:
 
 
 class March:
-    def __init__(self, road, owner, size):
+    def __init__(self, road, destination, owner, size):
         self.road = road
+        self.destination = destination
         self.owner = owner
         self.size = size
         self.owner.marches.add(self)
 
+    def dispatch(self, steps=None):
+        self.road.add_march(self, steps)
+
     def die(self):
         self.owner.marches.remove(self)
 
-    def __repr__(self):
-        return str(self.size)
+
+@asyncio.coroutine
+def async_read_lines(stream):
+    """
+    Return the next non-empty line or raise an EOFError if at the end of the
+    stream.
+    """
+    while True:
+        byteline = yield from stream.readline()
+        if not byteline:
+            raise EOFError
+        line = byteline.decode('utf-8').strip()
+        if line and not line.startswith("#"):
+            yield line
+
+
+@asyncio.coroutine
+def async_read_section(stream):
+    lines = async_read_lines(stream)
+    header = next(lines)
+    n_lines, _ header.split(' ')
+    if n_lines == '?':
+        yield from takewhile(lambda line: line.strip() != 'end', lines)
+    else:
+        yield from islice(lines, int(n_lines))
 
 
 class Player:
@@ -255,32 +281,58 @@ class Player:
         self.name = name
         self.forts = set()
         self.marches = set()
-        cmd += ' {}'.format(name)
+        self.cmd = cmd + ' {}'.format(name)
+        self.in_control = True
+
+    @asyncio.coroutine
+    def start_process(self):
         # TODO save stderr as user feedback
-        self.process = Popen(cmd, stdin=PIPE, stdout=PIPE,
-                             universal_newlines=True, shell=True)
+        self.process = yield from asyncio.create_subprocess_exec(
+            self.cmd,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE
+            shell=True, universal_newlines=True)
+
+    def stop_process(self):
+        self.process.kill()
+        self.process._transport.close()
 
     def capture(self, fort):
         if fort.owner:
             fort.owner.forts.remove(fort)
-        self.forts.add(fort)
         fort.owner = self
+        self.forts.add(fort)
 
     def is_defeated(self):
         return (not self.forts) and (not self.marches)
 
-    def send_state(self):
-        visible = show_visible(self.forts)
-        if not self.process.poll():
-            self.process.stdin.write(visible + '\n')
-            self.process.stdin.flush()
+    def remove_control(self):
+        self.stop_process()
+        sys.stderr.write("Removing control from {}.\n".format(self.name))
+        self.in_control = False
 
-    def read_commands(self, game):
-        if not self.process.poll():
-            try:
-                read_commands(game, self, self.process.stdout)
-            except StopIteration:
-                self.process.kill()
+    @asyncio.coroutine
+    def orders(self, game):
+        # Send current state
+        state = show_visible(self.forts)
+        encoded = (state + '\n').encode('utf-8')
+        self.process.stdin.write(encoded)
+        yield from self.process.stdin.drain()
+
+        # Read bot's marches
+        try:
+            coroutine = async_read_section(self.process.stdout)
+            section = yield from asyncio.wait_for(coroutine, BOT_TIMEOUT)
+            marches = (parse_command(game, self, line) for line in section)
+            return marches
+        except asyncio.TimeoutError:
+            sys.stderr.write('{} timed out!\n'.format(self.name))
+            self.remove_control()
+            return []
+        except EOFError:
+            sys.stderr.write('{} stopped writing unexpectedly.\n'
+                             .format(self.name))
+            self.remove_control()
+            return []
 
 
 class Game:
@@ -296,38 +348,49 @@ class Game:
         # TODO this could work in a better fashion ...
         read_map(self, mapfile)
 
+    @asyncio.coroutine
     def play(self):
         steps = 0
-        while steps < self.max_steps and not self.winner():
+
+        for player in self.players.values():
+            yield from player.start_process()
+
+        try:
+            while steps < self.maxsteps and not self.winner():
+                self.log(steps)
+                yield from self.get_commands()
+                self.step()
+                self.remove_losers()
+                steps += 1
+                print('Completed step', steps, file=sys.stder)
             self.log(steps)
-            self.get_commands()
-            self.step()
-            self.remove_losers()
-            steps += 1
-            sys.stderr.write("Completed step {}\n".format(steps))
-        self.log(steps)
+
+        finally:
+            for player in self.players.values():
+                player.stop_process()
 
     def log(self, step):
-            self.logfile.writelines(["# STEP: " + str(step) + "\n",
-                                    show_visible(self.forts.values()) + "\n",
-                                    "\n"])
+        self.logfile.writelines(["# STEP: " + str(step) + "\n",
+                                 show_visible(self.forts.values()) + "\n",
+                                 "\n"])
 
     def winner(self):
+        """Returns None in case of a draw."""
         if len(self.players) > 1:
             return None
-        for player in self.players.values():
-            return player
+        return next(self.players.values())
 
     def remove_losers(self):
         for player in list(self.players.values()):
             if player.is_defeated():
                 del self.players[player.name]
 
+    @asyncio.coroutine
     def get_commands(self):
-        for player in self.players.values():
-            player.send_state()
-        for player in self.players.values():
-            player.read_commands(self)
+        coroutines = (player.orders(self) for player in self.players.values())
+        orders = yield from asyncio.gather(*coroutines)
+        for march in chain(*orders):
+            march.dispatch()
 
     def step(self):
         for road in self.roads:
@@ -337,16 +400,22 @@ class Game:
 
 
 if __name__ == '__main__':
-    configfile = sys.argv[1]
+    # TODO use argparser
+    assert len(sys.args) > 1
+    config_file = sys.argv[1]
 
-    with open(configfile, 'r') as f:
+    with open(config_file, 'r') as f:
         config = json.load(f)
 
-    with open(config['mapfile'], 'r') as mapfile:
-        with open(config['logfile'], 'w') as logfile:
+    with open(config['mapfile'], 'r') as map_file:
+        with open(config['logfile'], 'w') as log_file:
             game = Game(config['players'],
-                        mapfile,
+                        map_file,
                         config['max_steps'],
-                        logfile)
-            game.play()
-            print("winner: {}".format(game.winner()))
+                        log_file)
+            loop = asyncio.get_event_loop()
+            try:
+                loop.run_until_complete(game.play())
+                print("winner: {}".format(game.winner()))
+            finally:
+                loop.close()
