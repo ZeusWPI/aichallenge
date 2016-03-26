@@ -168,6 +168,10 @@ class Road:
                 if march:
                     yield (origin, destination, ceil(steps / 2), march)
 
+    def __repr__(self):
+        return '<Road {forts}, {length} steps>'.format(
+            forts=tuple(self.headed_to.keys()), length=self.length)
+
 
 def build_road(game, fort1, fort2):
     road = Road(fort1, fort2)
@@ -229,6 +233,9 @@ class Fort:
         return ceil(dist / MARCH_SPEED)
 
     def __repr__(self):
+        return '<Fort {name}>'.format(**self.__dict__)
+
+    def __str__(self):
         return self.name
 
     def __hash__(self):
@@ -248,6 +255,10 @@ class March:
 
     def die(self):
         self.owner.marches.remove(self)
+
+    def __repr__(self):
+        return ('<March on {road} to {destination} by {owner} '
+                'with {size} soldiers>'.format(**self.__dict__))
 
 
 @asyncio.coroutine
@@ -334,6 +345,12 @@ class Player:
             self.remove_control()
             return []
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return '<Player {name}>'.format(**self.__dict__)
+
 
 class Game:
     def __init__(self, playermap, mapfile, max_steps, logfile):
@@ -401,7 +418,7 @@ class Game:
 
 if __name__ == '__main__':
     # TODO use argparser
-    assert len(sys.args) > 1
+    assert len(sys.argv) > 1
     config_file = sys.argv[1]
 
     with open(config_file, 'r') as f:
