@@ -49,8 +49,10 @@ def parse_march(game, string):
     origin, target, owner, size, steps = string.split(' ')
     origin = game.forts[origin]
     target = game.forts[target]
+    road = origin.roads[target]
     owner = game.players[owner]
-    March(origin.roads[target], target, owner, int(size)).dispatch(int(steps))
+    march = March(road, origin, target, owner, int(size))
+    march.dispatch(int(steps))
 
 
 def read_map(game, map_file):
@@ -64,9 +66,10 @@ def parse_command(game, player, string):
     try:
         origin, target, size = string.split(' ')
         origin, target = game.forts[origin], game.forts[target]
+        size = int(size)
         road = origin.roads[target]
-        if road and origin.owner == player:
-            return March(road, target, player, int(size))
+        if road and origin.owner == player and size >= 0:
+            return March(road, origin, target, player, size)
     except (KeyError, ValueError):
         # TODO add warning to bot and log warning
         pass
@@ -193,13 +196,6 @@ class Fort:
         if owner:
             owner.forts.add(self)
 
-    def dispatch(self, neighbour, size):
-        road = self.roads.get(neighbour)
-        size = min(size, self.garrison)
-        if road and size > 0:
-            road.march(neighbour, self.owner, size)
-            self.garrison -= size
-
     def step(self):
         self.resolve_siege()
         if self.owner:
@@ -245,21 +241,28 @@ class Fort:
 
 
 class March:
-    def __init__(self, road, destination, owner, size):
+    def __init__(self, road, origin, destination, owner, size):
         self.road = road
+        self.origin = origin
         self.destination = destination
         self.owner = owner
         self.size = size
         self.owner.marches.add(self)
 
     def dispatch(self, steps=None):
+        if self.size > self.origin.garrison:
+            # TODO add warning to bot that it's trying to sent more soldiers
+            # than available
+            pass
+        size = min(self.size, self.origin.garrison)
+        self.origin.garrison -= size
         self.road.add_march(self, steps)
 
     def die(self):
         self.owner.marches.remove(self)
 
     def __repr__(self):
-        return ('<March on {road} to {destination} by {owner} '
+        return ('<March from {origin} to {destination} by {owner} '
                 'with {size} soldiers>'.format(**self.__dict__))
 
 
