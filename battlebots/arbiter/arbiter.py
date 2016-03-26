@@ -387,8 +387,15 @@ class Game:
         # TODO this could work in a better fashion ...
         read_map(self, mapfile)
 
-    @asyncio.coroutine
     def play(self):
+        loop = asyncio.get_event_loop()
+        try:
+            loop.run_until_complete(self.play_async())
+        finally:
+            loop.close()
+
+    @asyncio.coroutine
+    def play_async(self):
         steps = 0
 
         for player in self.players.values():
@@ -414,7 +421,9 @@ class Game:
                                  "\n"])
 
     def winner(self):
-        """Returns None in case of a draw."""
+        """
+        Returns the player instance of the winner or None in case of a draw.
+        """
         if len(self.players) > 1:
             return None
         return next(self.players.values())
@@ -449,13 +458,7 @@ if __name__ == '__main__':
 
     with open(config['mapfile'], 'r') as map_file:
         with open(config['logfile'], 'w') as log_file:
-            game = Game(config['players'],
-                        map_file,
-                        config['max_steps'],
+            game = Game(config['players'], map_file, config['max_steps'],
                         log_file)
-            loop = asyncio.get_event_loop()
-            try:
-                loop.run_until_complete(game.play())
-                print("winner: {}".format(game.winner()))
-            finally:
-                loop.close()
+            game.play()
+            print('Winner: {}'.format(game.winner()))
