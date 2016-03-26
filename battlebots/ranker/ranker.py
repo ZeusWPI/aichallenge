@@ -81,10 +81,12 @@ def battle():
             game.play()
         logging.info('Stopping match')
 
-        # Save match outcome to database
         winner = game.winner()
         if winner:
             winner = bot1 if winner.name == bot1.name else bot2
+        logging.info('{} won'.format(winner) if winner else 'Draw')
+
+        # Save match outcome to database
         match = Match(winner=winner, start_time=timings.start_time,
                       end_time=timings.end_time)
         # TODO extract errors from arbiter and add them here
