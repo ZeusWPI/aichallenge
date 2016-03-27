@@ -429,7 +429,7 @@ class Game:
             yield from player.start_process()
 
         try:
-            while steps < self.max_steps and not self.winner():
+            while steps < self.max_steps and len(self.players) > 1:
                 self.log(steps)
                 yield from self.get_commands()
                 self.step()
@@ -451,7 +451,7 @@ class Game:
         """
         Returns the player instance of the winner or None in case of a draw.
         """
-        if len(self.players) > 1:
+        if len(self.players) != 1:
             return None
         return next(iter(self.players.values()))
 
