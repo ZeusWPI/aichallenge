@@ -73,9 +73,12 @@ class Bot(Base):
 
     @property
     def full_name(self):
-        return '%s (%s)' % (self.name, self.user.nickname)
+        """Return bot and owner name without spaces (but NBSPs)."""
+        return ('{bot} ({owner})'
+                .format(bot=self.name, owner=self.user.nickname)
+                .replace(' ', ' '))
 
-    def compile(self):
+    def compile(self, timeout=20):
         """Return True if compilation succeeds, False otherwise."""
 
         # TODO run in sandbox & async
@@ -83,7 +86,7 @@ class Bot(Base):
         with _in_dir(self.code_path):
             try:
                 sp.run(self.compile_cmd, stdout=sp.PIPE, stderr=sp.PIPE,
-                       shell=True, check=True, timeout=20)
+                       shell=True, check=True, timeout=timeout)
                 return True
             except sp.SubprocessError as error:
                 self.compile_errors = str(error)

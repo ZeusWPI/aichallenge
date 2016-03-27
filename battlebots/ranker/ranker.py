@@ -65,11 +65,12 @@ def battle():
 
     logging.info('Starting graph generation')
     graph = generate_graph([bot1.full_name, bot2.full_name])
-    logging.info('Graph generated: %s', graph)
+    logging.info('Graph generated: %s', ' | '.join(graph))
 
+    bot2_name = bot2.full_name + ('²' if bot1 == bot2 else '')
     playermap = {
         bot1.full_name: bot1.sandboxed_run_cmd,
-        bot2.full_name: bot2.sandboxed_run_cmd
+        bot2_name: bot2.sandboxed_run_cmd
     }
 
     with tempfile.TemporaryFile('w+') as tmp_logfile:

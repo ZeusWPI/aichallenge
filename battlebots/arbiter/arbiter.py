@@ -319,7 +319,7 @@ class Player:
         self.name = name
         self.forts = set()
         self.marches = set()
-        self.cmd = '{} {}'.format(cmd, name).encode('utf8')
+        self.cmd = "{} '{}'".format(cmd, name).encode('utf8')
         self.in_control = True
 
     @asyncio.coroutine
