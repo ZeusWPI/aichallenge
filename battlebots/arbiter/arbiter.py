@@ -329,7 +329,11 @@ class Player:
             self.cmd, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
 
     def stop_process(self):
-        self.process.kill()
+        try:
+            self.process.kill()
+        except ProcessLookupError:
+            # TODO add warning to bot that process stopped unexpectedly
+            pass
         self.process._transport.close()
 
     def capture(self, fort):
@@ -352,7 +356,12 @@ class Player:
         state = show_visible(self.forts)
         encoded = (state + '\n').encode('utf-8')
         self.process.stdin.write(encoded)
-        yield from self.process.stdin.drain()
+        try:
+            yield from self.process.stdin.drain()
+        except ConnectionResetError:
+            # TODO add warning to bot that process stopped unexpectedly
+            self.remove_control()
+            return []
 
         # Read bot's marches
         try:
@@ -361,10 +370,17 @@ class Player:
             marches = (parse_command(game, self, line) for line in section)
             return marches
         except asyncio.TimeoutError:
+            # TODO add warning to bot timed out
             sys.stderr.write('{} timed out!\n'.format(self.name))
             self.remove_control()
             return []
+        except ValueError:
+            # TODO add warning to bot that it gave a syntax error in it's
+            # output
+            self.remove_control()
+            return []
         except EOFError:
+            # TODO add warning to bot that it stopped writing early
             sys.stderr.write('{} stopped writing unexpectedly.\n'
                              .format(self.name))
             self.remove_control()
