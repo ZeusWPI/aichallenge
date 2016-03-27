@@ -478,12 +478,16 @@ class Game:
 
 
 if __name__ == '__main__':
-    # TODO use argparser
-    assert len(sys.argv) > 1
-    config_file = sys.argv[1]
+    import argparse
 
-    with open(config_file, 'r') as f:
-        config = json.load(f)
+    parser = argparse.ArgumentParser(description='Let some bots battle.')
+    parser.add_argument('config_file', help='a file containing all battle and '
+                        'bot configuration in JSON format')
+
+    args = parser.parse_args()
+
+    with open(args.config_file, 'r') as config_file:
+        config = json.load(config_file)
 
     with open(config['mapfile'], 'r') as map_file:
         with open(config['logfile'], 'w') as log_file:
