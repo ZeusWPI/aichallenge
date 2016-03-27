@@ -7,7 +7,6 @@ import json
 import logging
 from math import ceil, sqrt
 import shlex
-import sys
 
 MARCH_SPEED = 1
 NO_PLAYER_NAME = 'neutral'
@@ -326,7 +325,7 @@ class Player:
     @asyncio.coroutine
     def start_process(self):
         # TODO save stderr as user feedback
-        print('Starting command: {}'.format(self.cmd), file=sys.stderr)
+        logging.info('Starting command: {}'.format(self.cmd))
         self.process = yield from asyncio.create_subprocess_shell(
             self.cmd, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
 
@@ -339,8 +338,7 @@ class Player:
         stderr = yield from self.process.stderr.read()
         if stderr:
             stderr = stderr.decode('utf8')
-            print('Stderr of {} was {}'.format(self.name, stderr),
-                  file=sys.stderr)
+            logging.warning('Stderr of {} was {}'.format(self.name, stderr))
         self.process._transport.close()
 
     def capture(self, fort):
@@ -353,7 +351,7 @@ class Player:
         return not self.in_control or (not self.forts and not self.marches)
 
     def remove_control(self):
-        sys.stderr.write("Removing control from {}.\n".format(self.name))
+        logging.warning('Removing control from {}'.format(self.name))
         self.in_control = False
 
     @asyncio.coroutine
@@ -366,7 +364,7 @@ class Player:
             yield from self.process.stdin.drain()
         except ConnectionResetError:
             # TODO add warning to bot that process stopped unexpectedly
-            print('{} stopped unexpectedly'.format(self.name), file=sys.stderr)
+            logging.warning('{} stopped unexpectedly'.format(self.name))
             self.remove_control()
             return []
 
@@ -378,19 +376,19 @@ class Player:
             return marches
         except asyncio.TimeoutError:
             # TODO add warning to bot timed out
-            sys.stderr.write('{} timed out!\n'.format(self.name))
+            logging.warning('{} timed out!'.format(self.name))
             self.remove_control()
             return []
         except ValueError:
             # TODO add warning to bot that it gave a syntax error in it's
             # output
-            print('{} gave a syntax error'.format(self.name), file=sys.stderr)
+            logging.warning('{} gave a syntax error'.format(self.name))
             self.remove_control()
             return []
         except EOFError:
             # TODO add warning to bot that it stopped writing early
-            sys.stderr.write('{} stopped writing unexpectedly.\n'
-                             .format(self.name))
+            logging.warning('{} stopped writing unexpectedly.'
+                            .format(self.name))
             self.remove_control()
             return []
 
@@ -435,7 +433,7 @@ class Game:
                 self.step()
                 yield from self.remove_losers()
                 steps += 1
-                print('Completed step', steps, file=sys.stderr)
+                logging.info('Completed step {}'.format(steps))
             self.log(steps)
 
         finally:
