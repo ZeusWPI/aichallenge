@@ -10,4 +10,5 @@ from battlebots import config
 __root_dir = os.path.dirname(os.path.dirname(__file__))
 os.environ['PYTHONPATH'] = __root_dir
 
-logging.basicConfig(level=config.LOG_LEVEL)
+logging.basicConfig(format='%(levelname)s: %(message)s',
+                    level=config.LOG_LEVEL)

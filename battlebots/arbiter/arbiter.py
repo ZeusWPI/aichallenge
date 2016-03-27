@@ -1,13 +1,13 @@
 #! /usr/bin/python3
-
-from itertools import chain, count, islice, takewhile
-from collections import defaultdict
-from math import ceil, sqrt
-import json
-import shlex
-import sys
 import asyncio
 from asyncio import subprocess as sp
+from collections import defaultdict
+from itertools import chain, count, islice, takewhile
+import json
+import logging
+from math import ceil, sqrt
+import shlex
+import sys
 
 MARCH_SPEED = 1
 NO_PLAYER_NAME = 'neutral'
@@ -483,8 +483,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Let some bots battle.')
     parser.add_argument('config_file', help='a file containing all battle and '
                         'bot configuration in JSON format')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='whether to show debugging info')
 
     args = parser.parse_args()
+
+    log_level = logging.DEBUG if args.verbose else logging.WARNING
+    logging.basicConfig(format='%(levelname)s: %(message)s', level=log_level)
 
     with open(args.config_file, 'r') as config_file:
         config = json.load(config_file)
