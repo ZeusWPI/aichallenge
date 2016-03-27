@@ -4,6 +4,7 @@ from itertools import chain, count, islice, takewhile
 from collections import defaultdict
 from math import ceil, sqrt
 import json
+import shlex
 import sys
 import asyncio
 from asyncio import subprocess as sp
@@ -319,12 +320,13 @@ class Player:
         self.name = name
         self.forts = set()
         self.marches = set()
-        self.cmd = "{} '{}'".format(cmd, name).encode('utf8')
+        self.cmd = "{} {}".format(cmd, shlex.quote(name)).encode('utf8')
         self.in_control = True
 
     @asyncio.coroutine
     def start_process(self):
         # TODO save stderr as user feedback
+        print('Starting command: {}'.format(self.cmd), file=sys.stderr)
         self.process = yield from asyncio.create_subprocess_shell(
             self.cmd, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
 
