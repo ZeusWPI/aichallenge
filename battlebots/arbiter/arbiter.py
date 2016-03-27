@@ -330,12 +330,17 @@ class Player:
         self.process = yield from asyncio.create_subprocess_shell(
             self.cmd, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
 
+    @asyncio.coroutine
     def stop_process(self):
         try:
             self.process.kill()
         except ProcessLookupError:
-            # TODO add warning to bot that process stopped unexpectedly
             pass
+        stderr = yield from self.process.stderr.read()
+        if stderr:
+            stderr = stderr.decode('utf8')
+            print('Stderr of {} was {}'.format(self.name, stderr),
+                  file=sys.stderr)
         self.process._transport.close()
 
     def capture(self, fort):
@@ -345,10 +350,9 @@ class Player:
         self.forts.add(fort)
 
     def is_defeated(self):
-        return (not self.forts) and (not self.marches)
+        return not self.in_control or (not self.forts and not self.marches)
 
     def remove_control(self):
-        self.stop_process()
         sys.stderr.write("Removing control from {}.\n".format(self.name))
         self.in_control = False
 
@@ -362,6 +366,7 @@ class Player:
             yield from self.process.stdin.drain()
         except ConnectionResetError:
             # TODO add warning to bot that process stopped unexpectedly
+            print('{} stopped unexpectedly'.format(self.name), file=sys.stderr)
             self.remove_control()
             return []
 
@@ -379,6 +384,7 @@ class Player:
         except ValueError:
             # TODO add warning to bot that it gave a syntax error in it's
             # output
+            print('{} gave a syntax error'.format(self.name), file=sys.stderr)
             self.remove_control()
             return []
         except EOFError:
@@ -427,14 +433,14 @@ class Game:
                 self.log(steps)
                 yield from self.get_commands()
                 self.step()
-                self.remove_losers()
+                yield from self.remove_losers()
                 steps += 1
                 print('Completed step', steps, file=sys.stderr)
             self.log(steps)
 
         finally:
             for player in self.players.values():
-                player.stop_process()
+                yield from player.stop_process()
 
     def log(self, step):
         self.logfile.writelines(["# STEP: " + str(step) + "\n",
@@ -449,9 +455,11 @@ class Game:
             return None
         return next(iter(self.players.values()))
 
+    @asyncio.coroutine
     def remove_losers(self):
         for player in list(self.players.values()):
             if player.is_defeated():
+                yield from player.stop_process()
                 del self.players[player.name]
 
     @asyncio.coroutine
