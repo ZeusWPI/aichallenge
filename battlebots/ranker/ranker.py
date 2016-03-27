@@ -29,7 +29,6 @@ class Timed(ContextDecorator):
 
 def generate_graph(player_names):
     script = os.path.join(config.BASE_DIR, 'scripts', 'generate_graph.sh')
-    # TODO: shadow names
     input_ = b'\n'.join(name.encode('utf8') for name in player_names)
     try:
         process = sp.run([script, str(GRAPH_WANDERLUST)], input=input_,
@@ -65,13 +64,12 @@ def battle():
     logging.info('Compilation done')
 
     logging.info('Starting graph generation')
-    graph = generate_graph(['bot1', 'bot2'])
+    graph = generate_graph([bot1.full_name, bot2.full_name])
     logging.info('Graph generated: %s', graph)
 
-    # TODO: shadow names
     playermap = {
-        'bot1': bot1.sandboxed_run_cmd,
-        'bot2': bot2.sandboxed_run_cmd
+        bot1.full_name: bot1.sandboxed_run_cmd,
+        bot2.full_name: bot2.sandboxed_run_cmd
     }
 
     with tempfile.TemporaryFile('w+') as tmp_logfile:
@@ -83,7 +81,7 @@ def battle():
 
         winner = game.winner()
         if winner:
-            winner = bot1 if winner.name == bot1.name else bot2
+            winner = bot1 if winner.name == bot1.full_name else bot2
         logging.info('{} won'.format(winner) if winner else 'Draw')
 
         # Save match outcome to database
