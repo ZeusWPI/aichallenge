@@ -1,5 +1,6 @@
 import logging
 import os.path
+import re
 import shutil
 import subprocess as sp
 from contextlib import contextmanager
@@ -73,10 +74,10 @@ class Bot(Base):
 
     @property
     def full_name(self):
-        """Return bot and owner name without spaces (but NBSPs)."""
-        return ('{bot} ({owner})'
-                .format(bot=self.name, owner=self.user.nickname)
-                .replace(' ', ' '))
+        """Return bot and owner name without spaces (but underscores)."""
+        full_name_with_spaces = '{bot} ({owner})'.format(
+            bot=self.name, owner=self.user.nickname)
+        return re.sub(r'\s+', '_', full_name_with_spaces)
 
     def compile(self, timeout=20):
         """Return True if compilation succeeds, False otherwise."""
