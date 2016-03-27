@@ -63,15 +63,15 @@ def battle():
         return
     logging.info('Compilation done')
 
-    logging.info('Starting graph generation')
-    graph = generate_graph([bot1.full_name, bot2.full_name])
-    logging.info('Graph generated: %s', ' | '.join(graph))
-
     bot2_name = bot2.full_name + ('²' if bot1 == bot2 else '')
     playermap = {
         bot1.full_name: bot1.sandboxed_run_cmd,
         bot2_name: bot2.sandboxed_run_cmd
     }
+
+    logging.info('Starting graph generation')
+    graph = generate_graph(playermap.keys())
+    logging.info('Graph generated: %s', ' | '.join(graph))
 
     with tempfile.TemporaryFile('w+') as tmp_logfile:
         game = arbiter.Game(playermap, graph, MAX_STEPS, tmp_logfile)
