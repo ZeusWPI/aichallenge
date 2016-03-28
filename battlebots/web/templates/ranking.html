@@ -11,8 +11,8 @@
       </tr>
       {% for bot in bots %}
         <tr>
-          <td><a href="{{ url_for('bot_page', user=current_user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
-          <td><a href="{{ url_for('user_page', user=current_user.nickname) }}">{{ current_user.nickname }}</a></td>
+          <td><a href="{{ url_for('bot_page', user=bot.user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
+          <td><a href="{{ url_for('user_page', user=bot.user.nickname) }}">{{ bot.user.nickname }}</a></td>
         </tr>
       {% endfor %}
     </table>
