@@ -2,7 +2,7 @@ from flask import flash, redirect, render_template, abort
 from flask.ext import login
 
 from battlebots.database import models, session
-from battlebots.database.models import Bot, Match
+from battlebots.database.models import Bot, Match, User
 from battlebots.web import app
 from battlebots.web.forms.bots import BotForm
 
@@ -37,9 +37,10 @@ def remove_bot(user, botname):
     return redirect('/bots')
 
 
-@app.route('/bots/<botname>', methods=('GET',))
-def bot_page(botname):
-    bot = session.query(Bot).filter_by(name=botname).one()
+@app.route('/bots/<user>/<botname>', methods=('GET',))
+def bot_page(user, botname):
+    user = session.query(User).filter_by(nickname=user).one()
+    bot = session.query(Bot).filter_by(user=user, name=botname).one()
     return render_template('bots/bot.html', bot=bot)
 
 
