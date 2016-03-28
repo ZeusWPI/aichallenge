@@ -66,7 +66,7 @@ class Bot(Base):
     # objects
 
     def __repr__(self):
-        return '<Bot {} ({})>'.format(self.name, self.user.nickname)
+        return '<Bot {}>'.format(self.full_name)
 
     @property
     def code_path(self):

@@ -44,37 +44,41 @@ def generate_graph(player_names):
     return [line.decode('utf8') for line in process.stdout.splitlines()]
 
 
+def find_participants(n=2):
+    bots = list(db.query(Bot).order_by(func.random()).limit(n))
+
+    if len(bots) != n:
+        raise LookupError('Not enough bots found in database')
+
+    logging.info('Letting %s fight', bots)
+    return bots
+
+
 def battle():
-    bot1 = db.query(Bot).order_by(func.random()).first()
-    bot2 = db.query(Bot).order_by(func.random()).first()
-    if not bot1 or not bot2:
-        logging.error('No bots found in database')
-        return
-    logging.info('Letting %r and %r fight', bot1, bot2)
+    bots = find_participants()
+    bot_map = {bot.full_name: bot for bot in bots}
 
     logging.info('Starting compilation')
     # TODO compile async
-    compilation_success = all(bot.compile() for bot in (bot1, bot2))
+    compilation_success = all(bot.compile() for bot in bots)
     if not compilation_success:
         # Save errors on bots
-        db.add_all((bot1, bot2))
+        db.add_all(bots)
         db.commit()
         logging.warn('Compilation failed')
         return
     logging.info('Compilation done')
 
-    bot2_name = bot2.full_name + ('²' if bot1 == bot2 else '')
-    playermap = {
-        bot1.full_name: bot1.sandboxed_run_cmd,
-        bot2_name: bot2.sandboxed_run_cmd
-    }
-
     logging.info('Starting graph generation')
-    graph = generate_graph(playermap.keys())
+    graph = generate_graph(bot_map.keys())
     logging.info('Graph generated: %s', ' | '.join(graph))
 
     with tempfile.TemporaryFile('w+') as tmp_logfile:
-        game = arbiter.Game(playermap, graph, MAX_STEPS, tmp_logfile)
+        cmd_map = {name: bot.sandboxed_run_cmd
+                   for name, bot in bot_map.items()}
+        game = arbiter.Game(cmd_map, graph, MAX_STEPS, tmp_logfile)
+        player_map = game.players.copy()
+
         logging.info('Starting match')
         with Timed() as timings:
             game.play()
@@ -82,15 +86,16 @@ def battle():
 
         winner = game.winner()
         if winner:
-            winner = bot1 if winner.name == bot1.full_name else bot2
+            winner = bot_map.get(winner.name)
         logging.info('{} won'.format(winner) if winner else 'Draw')
 
         # Save match outcome to database
         match = Match(winner=winner, start_time=timings.start_time,
                       end_time=timings.end_time)
-        # TODO extract errors from arbiter and add them here
-        for bot in {bot1, bot2}:
-            match.participations.append(MatchParticipation(bot=bot, errors=''))
+        for name, bot in bot_map.items():
+            warnings = '\n'.join(player_map[name].warnings)
+            participation = MatchParticipation(bot=bot, errors=warnings)
+            match.participations.append(participation)
         db.add(match)
         db.commit()
 

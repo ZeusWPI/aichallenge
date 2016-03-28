@@ -321,6 +321,7 @@ class Player:
         self.marches = set()
         self.cmd = "{} {}".format(cmd, shlex.quote(name)).encode('utf8')
         self.in_control = True
+        self.warnings = []
 
     @asyncio.coroutine
     def start_process(self):
@@ -338,7 +339,7 @@ class Player:
         stderr = yield from self.process.stderr.read()
         if stderr:
             stderr = stderr.decode('utf8')
-            logging.warning('Stderr of {} was {}'.format(self.name, stderr))
+            self.warning('Stderr of {} was {}'.format(self.name, stderr))
         self.process._transport.close()
 
     def capture(self, fort):
@@ -351,7 +352,7 @@ class Player:
         return not self.in_control or (not self.forts and not self.marches)
 
     def remove_control(self):
-        logging.warning('Removing control from {}'.format(self.name))
+        self.warning('Removing control from {}'.format(self.name))
         self.in_control = False
 
     @asyncio.coroutine
@@ -363,9 +364,7 @@ class Player:
         try:
             yield from self.process.stdin.drain()
         except ConnectionResetError:
-            # TODO add warning to bot that process stopped unexpectedly
-            logging.warning('{} stopped unexpectedly'.format(self.name))
-            self.remove_control()
+            self.error('{} stopped unexpectedly'.format(self.name))
             return []
 
         # Read bot's marches
@@ -375,22 +374,23 @@ class Player:
             marches = (parse_command(game, self, line) for line in section)
             return marches
         except asyncio.TimeoutError:
-            # TODO add warning to bot timed out
-            logging.warning('{} timed out!'.format(self.name))
-            self.remove_control()
+            self.error('{} timed out'.format(self.name))
             return []
         except ValueError:
-            # TODO add warning to bot that it gave a syntax error in it's
-            # output
-            logging.warning('{} gave a syntax error'.format(self.name))
-            self.remove_control()
+            self.error('{} gave a syntax error'.format(self.name))
             return []
         except EOFError:
-            # TODO add warning to bot that it stopped writing early
-            logging.warning('{} stopped writing unexpectedly.'
-                            .format(self.name))
-            self.remove_control()
+            self.error('{} stopped writing unexpectedly'.format(self.name))
             return []
+
+    def warning(self, message):
+        logging.warning(message)
+        self.warnings.append(message)
+
+    def error(self, message):
+        logging.error(message)
+        self.warnings.append('ERROR: {}'.format(message))
+        self.remove_control()
 
     def __str__(self):
         return self.name
