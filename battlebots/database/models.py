@@ -100,6 +100,15 @@ class Bot(Base):
         # TODO
         return 'cd "%s" && %s' % (self.code_path, self.run_cmd)
 
+    @property
+    def win_percentage(self):
+        all_matches = len(self.matches)
+        if all_matches is not 0:
+            won_matches = len(self.matches_won)
+            return round(won_matches / all_matches * 100, 2)
+        else:
+            return None
+
 
 class Match(Base):
     __tablename__ = 'match'
