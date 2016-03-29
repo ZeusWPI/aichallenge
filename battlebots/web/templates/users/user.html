@@ -1,0 +1,24 @@
+{% extends "layout.html" -%}
+{% set active_page = "None" %}
+
+{% block content -%}
+  <div class="content">
+    <div class="jumbotron">
+      <h1>{{ user.nickname }}</h1>
+    </div>
+
+    <table class="table table-striped table-hover">
+      <caption>Bots</caption>
+      <tr>
+        <th>Bot</th>
+        <th>Ranking</th>
+      </tr>
+      {% for bot in user.bots %}
+        <tr>
+          <td><a href="{{ url_for('bot_page', user=user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
+          <td>No ranking available yet.</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{%- endblock %}

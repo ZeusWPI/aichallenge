@@ -3,11 +3,11 @@
 
 {% block content -%}
   <div class="content">
-    <h2>My bots</h2>
     <table class="table table-striped table-hover">
+    <caption>My bots</caption>
       {% for bot in bots %}
         <tr>
-          <td>{{ bot.name }}</td>
+          <td><a href="{{ url_for('bot_page', user=current_user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
           <td class="pull-right">
             <form method="post" action="{{ url_for('remove_bot', user=current_user.nickname, botname=bot.name) }}">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />

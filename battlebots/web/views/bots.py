@@ -1,18 +1,17 @@
 from flask import flash, redirect, render_template, abort
 from flask.ext import login
 
-
 from battlebots.database import models, session
-from battlebots.database.models import Bot
+from battlebots.database.models import Bot, Match, User
 from battlebots.web import app
-from battlebots.web.bots.forms import BotForm
+from battlebots.web.forms.bots import BotForm
 
 
 @app.route('/bots/', methods=('GET',))
 @login.login_required
 def bots():
-    bots = session.query(Bot).filter_by(user=login.current_user)
-    return render_template('bots/index.html', bots=bots)
+    bots_ = session.query(Bot).filter_by(user=login.current_user)
+    return render_template('bots/index.html', bots=bots_)
 
 
 @app.route('/bots/new', methods=('GET', 'POST'))
@@ -36,3 +35,16 @@ def remove_bot(user, botname):
     models.remove_bot(login.current_user, botname)
     flash('Removed bot "%s" succesfully!' % botname)
     return redirect('/bots')
+
+
+@app.route('/bots/<user>/<botname>', methods=('GET',))
+def bot_page(user, botname):
+    user = session.query(User).filter_by(nickname=user).one()
+    bot = session.query(Bot).filter_by(user=user, name=botname).one()
+    return render_template('bots/bot.html', bot=bot)
+
+
+@app.route('/matches/<matchid>')
+def match_page(matchid):
+    match = session.query(Match).filter_by(id=matchid).one()
+    return render_template('bots/match.html', match=match)

@@ -1,0 +1,42 @@
+{% extends "layout.html" -%}
+{% set active_page = "None" %}
+
+{% block content -%}
+  <div class="content">
+    <h1>{{ bot.name }}</h1>
+    <h2>Owner: <a href="{{ url_for('user_page', user=bot.user.nickname) }}">{{ bot.user.nickname }}</a></h2>
+
+    <table class="table table-striped table-hover">
+    <caption>Matches</caption>
+      <tr>
+        <th>Time</th>
+        <th>Against</th>
+        <th>Outcome</th>
+        <th></th>
+      </tr>
+      {% for match in bot.matches %}
+        <tr>
+          <td>{{ match.end_time.strftime('%d/%m %H:%M') }}</td>
+          <td>
+            {% for participant in match.bots %}
+              <a href="{{ url_for('bot_page', user=participant.user.nickname, botname=participant.name) }}">
+                {{ participant.name }}
+              </a>
+            {% endfor %}
+          </td>
+          <td>
+            {% set winner = match.winner %}
+            {% if winner %}
+              <a href="{{ url_for('bot_page', user=winner.user.nickname, botname=winner.name) }}">{{ winner.name }}</a> won
+            {% else %}
+              Draw
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('match_page', matchid=match.id) }}">View</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{%- endblock %}
