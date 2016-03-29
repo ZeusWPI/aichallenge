@@ -23,6 +23,8 @@ NICKNAME_LENGTH = (1, 32)
 PASSWORD_LENGTH = (1, 32)
 BOTNAME_LENTGH = (1, 32)
 
+DEFAULT_SCORE = 1
+
 
 class User(Base, UserMixin):
     __tablename__ = 'user'
@@ -54,6 +56,7 @@ class Bot(Base):
     user = relationship(User, backref='bots')
     name = db.Column(db.String(BOTNAME_LENTGH[1]), nullable=False,
                      index=True, unique=True)
+    score = db.Column(db.Integer, nullable=False, default=DEFAULT_SCORE)
     matches = relationship('Match', secondary='match_participation',
                            back_populates='bots')
     matches_won = relationship('Match', back_populates='winner')
