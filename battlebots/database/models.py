@@ -56,6 +56,7 @@ class Bot(Base):
                      index=True, unique=True)
     matches = relationship('Match', secondary='match_participation',
                            back_populates='bots')
+    matches_won = relationship('Match', back_populates='winner')
     compile_cmd = db.Column(db.String(200))
     run_cmd = db.Column(db.String(200), nullable=False)
 
@@ -116,7 +117,7 @@ class Match(Base):
     bots = relationship(Bot, secondary='match_participation',
                         back_populates='matches')
     winner_id = db.Column(db.Integer, db.ForeignKey('bot.id'))
-    winner = relationship(Bot, backref='matches_won')
+    winner = relationship(Bot, back_populates='matches_won')
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
 
