@@ -52,21 +52,40 @@ class User(Base, UserMixin):
 class Bot(Base):
     __tablename__ = 'bot'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id'),
+        nullable=False)
+
     user = relationship(User, backref='bots')
-    name = db.Column(db.String(BOTNAME_LENTGH[1]), nullable=False,
-                     index=True, unique=True)
-    score = db.Column(db.Integer, nullable=False,
-                      default=DEFAULT_SCORE, index=True)
-    matches = relationship('Match', secondary='match_participation',
-                           back_populates='bots')
+
+    name = db.Column(
+        db.String(BOTNAME_LENTGH[1]),
+        nullable=False,
+        index=True,
+        unique=True)
+
+    score = db.Column(
+        db.Integer,
+        nullable=False,
+        default=DEFAULT_SCORE,
+        index=True)
+
+    matches = relationship(
+        'Match',
+        secondary='match_participation',
+        back_populates='bots')
+
     matches_won = relationship('Match', back_populates='winner')
+
     compile_cmd = db.Column(db.String(200))
     run_cmd = db.Column(db.String(200), nullable=False)
 
     # These two fields can be filled in by the compiler/ranker/arbiter
     compile_errors = db.Column(db.Text)
     run_errors = db.Column(db.Text)
+
     # TODO make run_errors an association proxy to errors of MatchParticipation
     # objects
 
@@ -118,8 +137,12 @@ class Bot(Base):
 class Match(Base):
     __tablename__ = 'match'
     id = db.Column(db.Integer, primary_key=True)
-    bots = relationship(Bot, secondary='match_participation',
-                        back_populates='matches')
+
+    bots = relationship(
+        Bot,
+        secondary='match_participation',
+        back_populates='matches')
+
     winner_id = db.Column(db.Integer, db.ForeignKey('bot.id'))
     winner = relationship(Bot, back_populates='matches_won')
     start_time = db.Column(db.DateTime, nullable=False)
@@ -141,14 +164,24 @@ class Match(Base):
 
 class MatchParticipation(Base):
     __tablename__ = 'match_participation'
-    match_id = db.Column(db.Integer, db.ForeignKey('match.id'),
-                         primary_key=True)
-    bot_id = db.Column(db.Integer, db.ForeignKey('bot.id'), primary_key=True)
 
-    match = relationship(Match, backref=backref('participations',
-                                                cascade='all, delete-orphan'))
-    bot = relationship(Bot, backref=backref('participations',
-                                            cascade='all, delete-orphan'))
+    match_id = db.Column(
+        db.Integer,
+        db.ForeignKey('match.id'),
+        primary_key=True)
+
+    bot_id = db.Column(
+        db.Integer,
+        db.ForeignKey('bot.id'),
+        primary_key=True)
+
+    match = relationship(
+        Match,
+        backref=backref('participations', cascade='all, delete-orphan'))
+
+    bot = relationship(
+        Bot,
+        backref=backref('participations', cascade='all, delete-orphan'))
 
     errors = db.Column(db.Text)
 
@@ -170,8 +203,11 @@ def add_bot(user, form):
         code_path = os.path.join(parent, filename)
         file.save(code_path)
 
-    bot = Bot(user=user, name=form.botname.data,
-              compile_cmd=form.compile_cmd.data, run_cmd=form.run_cmd.data)
+    bot = Bot(
+        user=user,
+        name=form.botname.data,
+        compile_cmd=form.compile_cmd.data,
+        run_cmd=form.run_cmd.data)
 
     session.add(bot)
     session.commit()
