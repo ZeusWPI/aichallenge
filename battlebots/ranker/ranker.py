@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from contextlib import ContextDecorator
 from datetime import datetime
+from time import sleep
 import logging
 import os.path
 import subprocess as sp
@@ -104,8 +105,14 @@ def battle():
         match.save_log(tmp_logfile.read())
 
 
+def battle_loop():
+    while True:
+        battle()
+        sleep(180)
+
+
 if __name__ == '__main__':
     try:
-        battle()
+        battle_loop()
     except KeyboardInterrupt:
         logging.info('Stopping ranker')
