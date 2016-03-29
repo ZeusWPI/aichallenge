@@ -24,6 +24,7 @@ PASSWORD_LENGTH = (1, 32)
 BOTNAME_LENTGH = (1, 32)
 
 DEFAULT_SCORE = 1
+K_FACTOR = 10
 
 
 class User(Base, UserMixin):
@@ -132,6 +133,10 @@ class Bot(Base):
             return round(won_matches / all_matches * 100, 2)
         else:
             return None
+
+    @property
+    def loss_percentage(self):
+        return 100 - self.win_percentage
 
 
 class Match(Base):
