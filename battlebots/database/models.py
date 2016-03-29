@@ -56,7 +56,8 @@ class Bot(Base):
     user = relationship(User, backref='bots')
     name = db.Column(db.String(BOTNAME_LENTGH[1]), nullable=False,
                      index=True, unique=True)
-    score = db.Column(db.Integer, nullable=False, default=DEFAULT_SCORE)
+    score = db.Column(db.Integer, nullable=False,
+                      default=DEFAULT_SCORE, index=True)
     matches = relationship('Match', secondary='match_participation',
                            back_populates='bots')
     matches_won = relationship('Match', back_populates='winner')
