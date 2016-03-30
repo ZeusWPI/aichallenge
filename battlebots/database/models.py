@@ -108,6 +108,7 @@ class Bot(Base):
             try:
                 sp.run(self.compile_cmd, stdout=sp.PIPE, stderr=sp.PIPE,
                        shell=True, check=True, timeout=timeout)
+                self.compiled = True
                 return True
             except sp.SubprocessError as error:
                 self.compile_errors = str(error)
