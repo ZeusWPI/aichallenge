@@ -58,5 +58,5 @@ class RegisterForm(Form):
             DataRequired(),
             EqualTo('password', message="Passwords must match.")
         ])
-    
+
     submit = SubmitField('Sign up')
