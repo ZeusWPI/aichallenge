@@ -14,7 +14,7 @@ class NewBotForm(Form):
             Length(*BOTNAME_LENTGH),
             NonDuplicate(Bot, 'name')
         ])
-    
+
     files = FileField('Files', validators=[DataRequired(), MaxFileAmount()])
     compile_cmd = StringField('Compile Command', validators=[Optional()])
     run_cmd = StringField('Run Command', validators=[DataRequired()])

@@ -48,6 +48,7 @@ def update_bot(user, botname):
     if form.validate_on_submit():
         bot.compile_cmd = form.compile_cmd.data
         bot.run_cmd = form.run_cmd.data
+        bot.compiled = False if bot.compile_cmd else bot.compiled
 
         files = request.files.getlist('files')
         parent = p.join(config.BOT_CODE_DIR, user.nickname, bot.name)
@@ -93,7 +94,9 @@ def add_bot(user, form):
         user=user,
         name=form.botname.data,
         compile_cmd=form.compile_cmd.data,
-        run_cmd=form.run_cmd.data)
+        run_cmd=form.run_cmd.data,
+        compiled=False if form.compile_cmd.data else True
+    )
 
     db.add(bot)
 

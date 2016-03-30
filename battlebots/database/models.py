@@ -76,6 +76,7 @@ class Bot(Base):
 
     compile_cmd = db.Column(db.String(200))
     run_cmd = db.Column(db.String(200), nullable=False)
+    compiled = db.Column(db.Boolean, nullable=False, default=False)
 
     # These two fields can be filled in by the compiler/ranker/arbiter
     compile_errors = db.Column(db.Text)
