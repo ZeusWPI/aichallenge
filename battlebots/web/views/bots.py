@@ -41,8 +41,9 @@ def update_bot(user, botname):
     user = session.query(User).filter_by(nickname=user).one()
     bot = session.query(Bot).filter_by(user=user, name=botname).one()
 
-    form.compile_cmd.data = bot.compile_cmd
-    form.run_cmd.data = bot.run_cmd
+    if not form.compile_cmd.data and not form.run_cmd.data:
+        form.compile_cmd.data = bot.compile_cmd
+        form.run_cmd.data = bot.run_cmd
 
     if form.validate_on_submit():
         bot.compile_cmd = form.compile_cmd.data
