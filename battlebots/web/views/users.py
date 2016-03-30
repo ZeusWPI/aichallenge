@@ -1,10 +1,11 @@
 from flask import render_template, request, redirect, url_for, flash, abort
 from flask.ext.login import login_required, login_user, logout_user
 
+from battlebots.database import session
+from battlebots.database import acces as db
 from battlebots.database.models import User
 from battlebots.web import app, lm
 from battlebots.web.forms.users import LoginForm, RegisterForm
-from battlebots.database import session
 
 
 @app.route('/users/<user>')
@@ -49,8 +50,7 @@ def register():
     req = request
     if form.validate_on_submit():
         user = User(form.nickname.data, form.email.data, form.password.data)
-        session.add(user)
-        session.commit()
+        db.add(user)
         flash('Thanks for registering!')
         return redirect(url_for('login'))
     elif request.method == "POST":

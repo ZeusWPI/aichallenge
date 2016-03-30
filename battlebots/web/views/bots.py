@@ -6,6 +6,7 @@ from werkzeug import secure_filename
 
 from battlebots import config
 from battlebots.database import models, session
+from battlebots.database import acces as db
 from battlebots.database.models import Bot, Match, User
 from battlebots.web import app
 from battlebots.web.forms.bots import BotForm
@@ -36,7 +37,7 @@ def new_bot():
 def remove_bot(user, botname):
     if user != login.current_user.nickname:
         abort(400)  # Should not happen
-    models.remove_bot(login.current_user, botname)
+    db.remove_bot(login.current_user, botname)
     flash('Removed bot "%s" succesfully!' % botname)
     return redirect('/bots')
 
@@ -72,5 +73,4 @@ def add_bot(user, form):
         compile_cmd=form.compile_cmd.data,
         run_cmd=form.run_cmd.data)
 
-    session.add(bot)
-    session.commit()
+    db.add(bot)

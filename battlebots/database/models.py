@@ -1,7 +1,5 @@
-import logging
 import os.path
 import re
-import shutil
 import subprocess as sp
 from contextlib import contextmanager
 
@@ -13,7 +11,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 from battlebots import config
-from battlebots.database import engine, session
+from battlebots.database import engine
 from battlebots.ranker.elo import DEFAULT_SCORE
 
 Base = declarative_base()
@@ -189,21 +187,6 @@ class MatchParticipation(Base):
     def __repr__(self):
         return ('<MatchParticipation of {bot} in {match}; errors: {errors}>'
                 .format(bot=self.bot, match=self.match, errors=self.errors))
-
-
-def remove_bot(user, botname):
-    code_dir = os.path.join(config.BOT_CODE_DIR, user.nickname, botname)
-    try:
-        shutil.rmtree(code_dir)
-    except FileNotFoundError:
-        # Don't crash if for some reason this dir doesn't exist anymore
-        logging.warning('Code dir of bot %s:%s not found (%s)'
-                        % (user.nickname, botname, code_dir))
-        pass
-
-    bot = session.query(Bot).filter_by(user=user, name=botname).one()
-    session.delete(bot)
-    session.commit()
 
 
 @contextmanager
