@@ -15,7 +15,7 @@ def home():
 
 @app.route('/ranking')
 def ranking():
-    bots = session.query(Bot).order_by(Bot.score).filter_by(user=current_user)
+    bots = session.query(Bot).order_by(Bot.score)
     ranked_bots = enumerate(bots)
     return render_template('ranking.html', bots=ranked_bots)
 
