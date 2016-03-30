@@ -6,16 +6,23 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         {{ bot.name }}
-        <a class="pull-right" href="{{ url_for('update_bot', user=current_user.nickname, botname=bot.name) }}">
-          <span class="glyphicon glyphicon-edit"></span>
-        </a>
+        {% if bot.user == current_user %}
+          <a class="pull-right" href="{{ url_for('update_bot', user=current_user.nickname, botname=bot.name) }}">
+            <span class="glyphicon glyphicon-edit"></span>
+          </a>
+        {% endif %}
       </div>
       <div class="panel-body">
-       <p>
-         Owner: <a href="{{ url_for('user_page', user=bot.user.nickname) }}">{{ bot.user.nickname }}</a><br>
-         Compile command: {{ bot.compile_cmd }}<br>
-         Run command: {{ bot.run_cmd }}<br>
-       </p>
+        <div class="col-md-4">
+         Owner:<br>
+         Compile command:<br>
+         Run command:<br>
+        </div>
+        <div class="col-md-6">
+         <a href="{{ url_for('user_page', user=bot.user.nickname) }}">{{ bot.user.nickname }}</a><br>
+         {{ bot.compile_cmd }}<br>
+         {{ bot.run_cmd }}<br>
+        </div>
       </div>
     </div>
 
