@@ -5,15 +5,10 @@
   <div class="content">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3>
-          {{ bot.name }}
-          <a>
-            <span class="glyphicon glyphicon-trash pull-right"></span>
-          </a>
-          <a href="{{ url_for('bot_page', user=current_user.nickname, botname=bot.name) }}">
-            <span class="glyphicon glyphicon-edit pull-right"></span>
-          </a>
-        </h3>
+        {{ bot.name }}
+        <a class="pull-right" href="{{ url_for('update_bot', user=current_user.nickname, botname=bot.name) }}">
+          <span class="glyphicon glyphicon-edit"></span>
+        </a>
       </div>
       <div class="panel-body">
        <p>
