@@ -101,7 +101,7 @@ def make_files(files, parent):
     if p.exists(parent):
         shutil.rmtree(parent)
 
-    os.makedirs(parent, exist_ok=True)
+    os.makedirs(parent)
 
     for file in files:
         filename = secure_filename(file.filename)
