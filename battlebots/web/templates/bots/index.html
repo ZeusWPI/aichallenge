@@ -4,7 +4,10 @@
 {% block content -%}
   <div class="content">
     <table class="table table-striped table-hover">
-    <caption>My bots</caption>
+      <caption>
+        My bots
+        <a href="{{ url_for('new_bot') }}" class="pull-right">Upload <span class="glyphicon glyphicon-upload"></span></a>
+      </caption>
       {% for bot in bots %}
         <tr>
           <td>
@@ -16,18 +19,19 @@
           <td class="pull-right">
             <form method="post" action="{{ url_for('remove_bot', user=current_user.nickname, botname=bot.name) }}">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-              <input class="btn btn-danger" type="submit" value="Delete">
+              <button type="submit" class="btn btn-danger">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+              </button>
             </form>
           </td>
 
           <td class="pull-right">
             <a class="btn btn-info" href="{{ url_for('update_bot', user=current_user.nickname, botname=bot.name) }}">
-              Update
+              <span class="glyphicon glyphicon-edit"></span>
             </a>
           </td>
         </tr>
       {% endfor %}
     </table>
-    <p><a href="{{ url_for('new_bot') }}">Upload new bot</a></p>
   </div>
 {%- endblock %}
