@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, abort
 from flask.ext.login import login_required, login_user, logout_user
 
 from battlebots.database import session
-from battlebots.database import acces as db
+from battlebots.database import access as db
 from battlebots.database.models import User
 from battlebots.web import app, lm
 from battlebots.web.forms.users import LoginForm, RegisterForm

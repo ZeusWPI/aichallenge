@@ -8,7 +8,7 @@ from werkzeug import secure_filename
 
 from battlebots import config
 from battlebots.database import session
-from battlebots.database import acces as db
+from battlebots.database import access as db
 from battlebots.database.models import Bot, Match, User
 from battlebots.web import app
 from battlebots.web.forms.bots import NewBotForm, UpdateBotForm
