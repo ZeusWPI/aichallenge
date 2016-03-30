@@ -7,10 +7,17 @@ from battlebots.database.models import BOTNAME_LENTGH
 from battlebots.web.validators import MaxFileAmount
 
 
-class BotForm(Form):
+class NewBotForm(Form):
     botname = StringField('Name', validators=[DataRequired(),
                                               Length(*BOTNAME_LENTGH)])
     files = FileField('Files', validators=[DataRequired(), MaxFileAmount()])
     compile_cmd = StringField('Compile Command', validators=[Optional()])
     run_cmd = StringField('Run Command', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+
+class UpdateBotForm(Form):
+    files = FileField('Files', validators=[DataRequired(), MaxFileAmount()])
+    compile_cmd = StringField('Compile Command', validators=[Optional()])
+    run_cmd = StringField('Run Command', validators=[DataRequired()])
+    submit = SubmitField('Update')

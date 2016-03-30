@@ -1,15 +1,17 @@
 import os
+import os.path as p
+import shutil
 
 from flask import flash, redirect, render_template, abort, request
 from flask.ext import login
 from werkzeug import secure_filename
 
 from battlebots import config
-from battlebots.database import models, session
+from battlebots.database import session
 from battlebots.database import acces as db
 from battlebots.database.models import Bot, Match, User
 from battlebots.web import app
-from battlebots.web.forms.bots import BotForm
+from battlebots.web.forms.bots import NewBotForm, UpdateBotForm
 
 
 @app.route('/bots/', methods=('GET',))
@@ -22,7 +24,7 @@ def bots():
 @app.route('/bots/new', methods=('GET', 'POST'))
 @login.login_required
 def new_bot():
-    form = BotForm()
+    form = NewBotForm()
     if form.validate_on_submit():
         # TODO handle errors (like multiple bots with same name)
         add_bot(login.current_user, form)
@@ -30,6 +32,30 @@ def new_bot():
         return redirect('/bots')
 
     return render_template('bots/new.html', form=form)
+
+
+@app.route('/bots/<user>/<botname>/update', methods=('GET', 'POST'))
+@login.login_required
+def update_bot(user, botname):
+    form = UpdateBotForm()
+    user = session.query(User).filter_by(nickname=user).one()
+    bot = session.query(Bot).filter_by(user=user, name=botname).one()
+
+    form.compile_cmd.data = bot.compile_cmd
+    form.run_cmd.data = bot.run_cmd
+
+    if form.validate_on_submit():
+        bot.compile_cmd = form.compile_cmd.data
+        bot.run_cmd = form.run_cmd.data
+
+        files = request.files.getlist('files')
+        parent = p.join(config.BOT_CODE_DIR, user.nickname, bot.name)
+        make_files(files, parent)
+
+        flash('Update bot "%s" succesfully!' % bot.name)
+        return redirect('/bots')
+
+    return render_template('bots/update.html', form=form)
 
 
 @app.route('/bots/<user>/<botname>', methods=('POST',))
@@ -58,14 +84,9 @@ def match_page(matchid):
 def add_bot(user, form):
     # Save code to <BOT_CODE_DIR>/<user>/<botname>/<codename>
     files = request.files.getlist('files')
-    parent = os.path.join(config.BOT_CODE_DIR, user.nickname, form.botname.data)
-    os.makedirs(parent, exist_ok=True)
+    parent = p.join(config.BOT_CODE_DIR, user.nickname, form.botname.data)
 
-    #  TODO replace files
-    for file in files:
-        filename = secure_filename(file.filename)
-        code_path = os.path.join(parent, filename)
-        file.save(code_path)
+    make_files(files, parent)
 
     bot = Bot(
         user=user,
@@ -74,3 +95,15 @@ def add_bot(user, form):
         run_cmd=form.run_cmd.data)
 
     db.add(bot)
+
+
+def make_files(files, parent):
+    if p.exists(parent):
+        shutil.rmtree(parent)
+
+    os.makedirs(parent, exist_ok=True)
+
+    for file in files:
+        filename = secure_filename(file.filename)
+        code_path = os.path.join(parent, filename)
+        file.save(code_path)
