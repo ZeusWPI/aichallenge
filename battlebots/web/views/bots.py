@@ -1,6 +1,10 @@
-from flask import flash, redirect, render_template, abort
-from flask.ext import login
+import os
 
+from flask import flash, redirect, render_template, abort, request
+from flask.ext import login
+from werkzeug import secure_filename
+
+from battlebots import config
 from battlebots.database import models, session
 from battlebots.database.models import Bot, Match, User
 from battlebots.web import app
@@ -20,7 +24,7 @@ def new_bot():
     form = BotForm()
     if form.validate_on_submit():
         # TODO handle errors (like multiple bots with same name)
-        models.add_bot(login.current_user, form)
+        add_bot(login.current_user, form)
         flash('Uploaded bot "%s" succesfully!' % form.botname.data)
         return redirect('/bots')
 
@@ -48,3 +52,25 @@ def bot_page(user, botname):
 def match_page(matchid):
     match = session.query(Match).filter_by(id=matchid).one()
     return render_template('bots/match.html', match=match)
+
+
+def add_bot(user, form):
+    # Save code to <BOT_CODE_DIR>/<user>/<botname>/<codename>
+    files = request.files.getlist('files')
+    parent = os.path.join(config.BOT_CODE_DIR, user.nickname, form.botname.data)
+    os.makedirs(parent, exist_ok=True)
+
+    #  TODO replace files
+    for file in files:
+        filename = secure_filename(file.filename)
+        code_path = os.path.join(parent, filename)
+        file.save(code_path)
+
+    bot = Bot(
+        user=user,
+        name=form.botname.data,
+        compile_cmd=form.compile_cmd.data,
+        run_cmd=form.run_cmd.data)
+
+    session.add(bot)
+    session.commit()

@@ -7,8 +7,6 @@ from contextlib import contextmanager
 
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import request
-from werkzeug import secure_filename
 import sqlalchemy as db
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -191,28 +189,6 @@ class MatchParticipation(Base):
     def __repr__(self):
         return ('<MatchParticipation of {bot} in {match}; errors: {errors}>'
                 .format(bot=self.bot, match=self.match, errors=self.errors))
-
-
-def add_bot(user, form):
-    # Save code to <BOT_CODE_DIR>/<user>/<botname>/<codename>
-    files = request.files.getlist('files')
-    parent = os.path.join(config.BOT_CODE_DIR, user.nickname, form.botname.data)
-    os.makedirs(parent, exist_ok=True)
-
-    #  TODO replace files
-    for file in files:
-        filename = secure_filename(file.filename)
-        code_path = os.path.join(parent, filename)
-        file.save(code_path)
-
-    bot = Bot(
-        user=user,
-        name=form.botname.data,
-        compile_cmd=form.compile_cmd.data,
-        run_cmd=form.run_cmd.data)
-
-    session.add(bot)
-    session.commit()
 
 
 def remove_bot(user, botname):
