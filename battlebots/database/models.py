@@ -16,15 +16,13 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from battlebots import config
 from battlebots.database import engine, session
+from battlebots.ranker.elo import DEFAULT_SCORE
 
 Base = declarative_base()
 
 NICKNAME_LENGTH = (1, 32)
 PASSWORD_LENGTH = (1, 32)
 BOTNAME_LENTGH = (1, 32)
-
-DEFAULT_SCORE = 1000
-K_FACTOR = 10
 
 
 class User(Base, UserMixin):
@@ -198,8 +196,7 @@ class MatchParticipation(Base):
 def add_bot(user, form):
     # Save code to <BOT_CODE_DIR>/<user>/<botname>/<codename>
     files = request.files.getlist('files')
-    parent = os.path.join(config.BOT_CODE_DIR, user.nickname,
-                          form.botname.data)
+    parent = os.path.join(config.BOT_CODE_DIR, user.nickname, form.botname.data)
     os.makedirs(parent, exist_ok=True)
 
     #  TODO replace files
