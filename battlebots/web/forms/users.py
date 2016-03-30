@@ -18,7 +18,7 @@ class LoginForm(Form):
         if not rv:
             return rv
 
-        user = session.query(User).filter_by(nickname=self.nickname.data).first()
+        user = session.query(User).filter_by(nickname=self.nickname.data).one()
         if user is None:
             self.nickname.errors.append('User unknown.')
             return False
@@ -32,8 +32,31 @@ class LoginForm(Form):
 
 
 class RegisterForm(Form):
-    nickname = StringField('Name', validators=[DataRequired(), Length(*NICKNAME_LENGTH), NonDuplicate('nickname')])
-    email = StringField('E-mail', validators=[DataRequired(), Email(), NonDuplicate('email')])
-    password = PasswordField('Password', validators=[DataRequired(), Length(*PASSWORD_LENGTH)])
-    password_check = PasswordField('Re-enter password', validators=[DataRequired(), EqualTo('password', message="Passwords must match.")])
+    nickname = StringField(
+        'Name',
+        validators=[
+            DataRequired(),
+            Length(*NICKNAME_LENGTH),
+            NonDuplicate(User, 'nickname')
+        ])
+
+    email = StringField(
+        'E-mail',
+        validators=[
+            DataRequired(),
+            Email(),
+            NonDuplicate(User, 'email')
+        ])
+
+    password = PasswordField(
+        'Password',
+        validators=[DataRequired(), Length(*PASSWORD_LENGTH)])
+
+    password_check = PasswordField(
+        'Re-enter password',
+        validators=[
+            DataRequired(),
+            EqualTo('password', message="Passwords must match.")
+        ])
+    
     submit = SubmitField('Sign up')

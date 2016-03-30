@@ -7,13 +7,14 @@ MAX_FILE_AMOUNT = 50
 
 
 class NonDuplicate(object):
-    def __init__(self, attribute):
+    def __init__(self, class_, attribute):
+        self.class_ = class_
         self.attribute = attribute
 
     def __call__(self, _, field):
 
-        user = session.query(User).filter(
-            getattr(User, self.attribute) == field.data
+        user = session.query(self.class_).filter(
+            getattr(self.class_, self.attribute) == field.data
         ).first()
 
         if user is not None:
