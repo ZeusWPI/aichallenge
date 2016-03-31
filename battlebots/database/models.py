@@ -2,6 +2,7 @@ import os.path
 import re
 import subprocess as sp
 from contextlib import contextmanager
+from itertools import dropwhile
 
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -11,7 +12,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 from battlebots import config
-from battlebots.database import engine
+from battlebots.database import engine, session
 from battlebots.ranker.elo import DEFAULT_SCORE
 
 Base = declarative_base()
@@ -135,7 +136,13 @@ class Bot(Base):
     @property
     def loss_percentage(self):
         return 100 - self.win_percentage
-    
+
+    @property
+    def rank(self):
+        bots = enumerate(session.query(Bot).order_by(Bot.score).all())
+        print(bots)
+        return next(dropwhile(lambda bot: bot[1] != self, bots))[0]
+
 
 class Match(Base):
     __tablename__ = 'match'

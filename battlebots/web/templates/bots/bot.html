@@ -15,12 +15,14 @@
       <div class="panel-body">
         <div class="col-md-4">
           Owner:<br>
+          Rank:<br>
           Score:<br>
           Compile command:<br>
           Run command:<br>
         </div>
         <div class="col-md-6">
           <a href="{{ url_for('user_page', user=bot.user.nickname) }}">{{ bot.user.nickname }}</a><br>
+          {{ bot.rank }}<br>
           {{ bot.score }}<br>
           {{ bot.compile_cmd }}<br>
           {{ bot.run_cmd }}<br>
