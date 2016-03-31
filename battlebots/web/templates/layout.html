@@ -87,6 +87,9 @@
             <!-- Navbar-rightside, used for login/logout/account-acces -->
             <ul class="nav navbar-nav navbar-right">
               {% if current_user.is_authenticated %}
+                <li>
+                  <a href="{{ url_for('profile', user=current_user.nickname) }}">Profile</a>
+                </li>
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
               {% else %}
                 <li class="{{ 'active' if active_page == 'login' else '' }}">

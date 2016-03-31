@@ -11,11 +11,13 @@
       <caption>Bots</caption>
       <tr>
         <th>Bot</th>
+        <th>Score</th>
         <th>Ranking</th>
       </tr>
       {% for bot in user.bots %}
         <tr>
           <td><a href="{{ url_for('bot_page', user=user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
+          <td>{{ bot.score }}</td>
           <td>{{ bot.rank }}</td>
         </tr>
       {% endfor %}

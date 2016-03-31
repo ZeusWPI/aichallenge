@@ -14,6 +14,12 @@ def user_page(user):
     return render_template('users/user.html', user=user)
 
 
+@login_required
+@app.route('/profile/<user>')
+def profile(user):
+    return user_page(user)
+
+
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     form = LoginForm()
