@@ -79,6 +79,8 @@ class Bot(Base):
     run_cmd = db.Column(db.String(200), nullable=False)
     compiled = db.Column(db.Boolean, nullable=False, default=False)
 
+    errors = association_proxy('participations', 'errors')
+
     # These two fields can be filled in by the compiler/ranker/arbiter
     compile_errors = db.Column(db.Text)
     run_errors = db.Column(db.Text)
@@ -158,7 +160,7 @@ class Match(Base):
     end_time = db.Column(db.DateTime, nullable=False)
 
     errors = association_proxy('participations', 'errors')
-    
+
     def __repr__(self):
         return '<Match between {bots}; {winner} won; log: {logfile}>'.format(
             bots=self.bots, winner=self.winner, logfile=self.logfile)

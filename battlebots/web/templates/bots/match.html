@@ -11,7 +11,12 @@
         Draw
       {% endif %}
     </h1>
-
+    Errors:
+    {% if match.errors %}
+      <br>{{ match.errors }}<br>
+    {% else %}
+      None<br>
+    {% endif %}
     {{ match.end_time.strftime('%d/%m %H:%M') }}
 
     <table class="table table-striped table-hover">
