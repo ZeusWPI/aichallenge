@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import sqlalchemy as db
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
-
+from sqlalchemy.ext.associationproxy import association_proxy
 
 from battlebots import config
 from battlebots.database import engine, session
@@ -140,7 +140,6 @@ class Bot(Base):
     @property
     def rank(self):
         bots = enumerate(session.query(Bot).order_by(Bot.score).all())
-        print(bots)
         return next(dropwhile(lambda bot: bot[1] != self, bots))[0]
 
 
@@ -158,6 +157,8 @@ class Match(Base):
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
 
+    errors = association_proxy('participations', 'errors')
+    
     def __repr__(self):
         return '<Match between {bots}; {winner} won; log: {logfile}>'.format(
             bots=self.bots, winner=self.winner, logfile=self.logfile)
