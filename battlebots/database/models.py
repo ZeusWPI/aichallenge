@@ -102,8 +102,10 @@ class Bot(Base):
     def compile(self, timeout=20):
         """Return True if compilation succeeds, False otherwise."""
 
+        if self.compiled:
+            return True
+
         # TODO run in sandbox & async
-        # TODO set some "already compiled" flag so we don't compile each time
         with _in_dir(self.code_path):
             try:
                 sp.run(self.compile_cmd, stdout=sp.PIPE, stderr=sp.PIPE,
@@ -133,7 +135,7 @@ class Bot(Base):
     @property
     def loss_percentage(self):
         return 100 - self.win_percentage
-
+    
 
 class Match(Base):
     __tablename__ = 'match'
