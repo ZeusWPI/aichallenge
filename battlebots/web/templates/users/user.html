@@ -16,7 +16,7 @@
       {% for bot in user.bots %}
         <tr>
           <td><a href="{{ url_for('bot_page', user=user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
-          <td>No ranking available yet.</td>
+          <td>{{ bot.rank }}</td>
         </tr>
       {% endfor %}
     </table>
