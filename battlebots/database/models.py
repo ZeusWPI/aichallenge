@@ -1,6 +1,7 @@
 import logging
 import os.path
 import re
+import shlex
 import shutil
 import subprocess as sp
 from contextlib import contextmanager
@@ -86,19 +87,28 @@ class Bot(Base):
         # TODO set some "already compiled" flag so we don't compile each time
         with _in_dir(self.code_path):
             try:
-                sp.run(self.compile_cmd, stdout=sp.PIPE, stderr=sp.PIPE,
-                       shell=True, check=True, timeout=timeout)
+                sp.run(self.sandboxed_compile_cmd, check=True, timeout=timeout,
+                       stdout=sp.PIPE, stderr=sp.PIPE)
                 return True
             except sp.SubprocessError as error:
-                self.compile_errors = str(error)
-                self.compile_errors += 'STDOUT:\n' + error.stdout
-                self.compile_errors += 'STDERR:\n' + error.stderr
+                error = '{error}\nStdout: {stdout}Stderr: {stderr}'.format(
+                    error=error,
+                    stdout=error.stdout.decode('utf8'),
+                    stderr=error.stderr.decode('utf8'))
+                logging.warning(error)
+                self.compile_errors = error
                 return False
 
     @property
+    def sandboxed_compile_cmd(self):
+        return self._sandboxed(self.compile_cmd)
+
+    @property
     def sandboxed_run_cmd(self):
-        # TODO
-        return 'cd "%s" && %s' % (self.code_path, self.run_cmd)
+        return self._sandboxed(self.run_cmd)
+
+    def _sandboxed(self, command):
+        return [config.SANDBOX_CMD, self.code_path] + shlex.split(command)
 
 
 class Match(Base):
