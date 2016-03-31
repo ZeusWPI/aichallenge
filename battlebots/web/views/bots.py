@@ -37,6 +37,9 @@ def new_bot():
 @app.route('/bots/<user>/<botname>/update', methods=('GET', 'POST'))
 @login.login_required
 def update_bot(user, botname):
+    if user != login.current_user.nickname:
+        abort(400)  # Should not happen
+        
     form = UpdateBotForm()
     user = session.query(User).filter_by(nickname=user).one()
     bot = session.query(Bot).filter_by(user=user, name=botname).one()
