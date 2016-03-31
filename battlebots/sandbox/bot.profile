@@ -11,7 +11,7 @@ tracelog
 
 # Make a shadow fs for /dev, /etc and /tmp
 private-dev
-private-etc hostname  # Needs at least one file/dir argument
+private-etc hostname
 private-tmp
 # Disable system management commands
 include /etc/firejail/disable-mgmt.inc
