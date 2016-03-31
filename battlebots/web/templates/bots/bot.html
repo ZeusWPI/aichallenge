@@ -19,6 +19,7 @@
           Score:<br>
           Compile command:<br>
           Run command:<br>
+          Errors encountered:<br>
         </div>
         <div class="col-md-6">
           <a href="{{ url_for('user_page', user=bot.user.nickname) }}">{{ bot.user.nickname }}</a><br>
@@ -26,6 +27,7 @@
           {{ bot.score }}<br>
           {{ bot.compile_cmd }}<br>
           {{ bot.run_cmd }}<br>
+          {{ bot.errors }}
         </div>
       </div>
     </div>
