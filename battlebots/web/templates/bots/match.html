@@ -19,12 +19,14 @@
       <tr>
         <th>Bot</th>
         <th>Rank</th>
+        <th>Score</th>
         <th>Owner</th>
       </tr>
       {% for bot in match.bots %}
         <tr>
           <td><a href="{{ url_for('bot_page', user=bot.user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
           <td>{{ bot.rank }}</td>
+          <td>{{ bot.score }}</td>
           <td><a href="{{ url_for('user_page', user=bot.user.nickname) }}">{{ bot.user.nickname }}</a></td>
         </tr>
       {% endfor %}
