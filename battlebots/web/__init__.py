@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.config.from_object('battlebots.config')
 app.jinja_env.filters['markdown'] = (lambda text:
                                      jinja2.Markup(markdown.markdown(text)))
+app.jinja_env.tests['not_equalto'] = lambda value, other: value != other
 
 lm = LoginManager(app)
 lm.init_app(app)

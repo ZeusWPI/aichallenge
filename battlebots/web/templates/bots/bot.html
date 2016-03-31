@@ -42,7 +42,7 @@
         <tr>
           <td>{{ match.end_time.strftime('%d/%m %H:%M') }}</td>
           <td>
-            {% for participant in match.bots %}
+            {% for participant in match.bots | select('equalto', bot)%}
               <a href="{{ url_for('bot_page', user=participant.user.nickname, botname=participant.name) }}">
                 {{ participant.name }}
               </a>
