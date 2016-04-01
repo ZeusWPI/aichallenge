@@ -11,8 +11,8 @@
       <caption>Bots</caption>
       <tr>
         <th>Bot</th>
-        <th>Ranking</th>
         <th>Score</th>
+        <th><a href="{{ url_for('ranking') }}">Rank</a></th>
         <th>Errors</th>
       </tr>
       {% for bot in user.bots %}
