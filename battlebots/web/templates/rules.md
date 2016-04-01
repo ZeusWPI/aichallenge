@@ -165,11 +165,11 @@ stappen nog geen winnaar is, eindigt het spel in gelijkstand.
 # Getting started
 
 Een bot schrijven is op zich triviaal. Het is niet meer dan een programma
-schrijven die informatie zoals [hierboven beschreven](#formaat-speelveld)
-inleest via standaard invoer, en die commando's stuurt zoals [hierboven
-beschreven](#formaat-commandos) schrijft naar standaard uitvoer. We zullen je
-bot oproepen met één argument: de naam die we toekennen aan je bot. Op die
-manier weet je welke forten van jou zijn.
+schrijven (in eender welke programmeertaal) die informatie zoals [hierboven
+beschreven](#formaat-speelveld) inleest via standaard invoer, en die commando's
+stuurt zoals [hierboven beschreven](#formaat-commandos) schrijft naar standaard
+uitvoer. We zullen je bot oproepen met één argument: de naam die we toekennen
+aan je bot. Op die manier weet je welke forten van jou zijn.
 
 Mocht dit niet duidelijk zijn, kan je altijd eens kijken naar de voorbeeld-bots
 op [de GitHub
