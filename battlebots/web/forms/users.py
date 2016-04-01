@@ -1,7 +1,8 @@
 from flask.ext.wtf import Form
 from wtforms import (StringField, BooleanField, PasswordField, SubmitField)
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms.validators import DataRequired, Length, Email, EqualTo, NoneOf
 
+from battlebots.arbiter import arbiter
 from battlebots.database.models import User, PASSWORD_LENGTH, NICKNAME_LENGTH
 from battlebots.web.validators import NonDuplicate
 from battlebots.database import session
@@ -37,7 +38,8 @@ class RegisterForm(Form):
         validators=[
             DataRequired(),
             Length(*NICKNAME_LENGTH),
-            NonDuplicate(User, 'nickname')
+            NonDuplicate(User, 'nickname'),
+            NoneOf([arbiter.NO_PLAYER_NAME]),
         ])
 
     email = StringField(
