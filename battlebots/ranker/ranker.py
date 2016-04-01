@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+"""The fight is never over."""
+
 from contextlib import ContextDecorator
 from datetime import datetime
 from time import sleep
@@ -7,6 +10,7 @@ import os.path
 import subprocess as sp
 import tempfile
 
+import daemon
 from sqlalchemy.sql.expression import func
 
 from battlebots.database.models import Bot, Match, MatchParticipation
@@ -106,13 +110,32 @@ def battle():
 
 
 def battle_loop():
-    while True:
-        battle()
-        sleep(180)
+    try:
+        while True:
+            battle()
+            sleep(180)
+    except KeyboardInterrupt:
+        logging.info('Stopping ranker')
+
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-d', '--daemonize', action='store_true',
+                        help='whether to run the ranker as a daemon')
+
+    args = parser.parse_args()
+
+    if args.daemonize:
+        log_file = logging.FileHandler(config.RANKER_LOG)
+        logging.getLogger().addHandler(log_file)
+
+        with daemon.DaemonContext(files_preserve=[log_file.stream]):
+            battle_loop()
+    else:
+        battle_loop()
 
 
 if __name__ == '__main__':
-    try:
-        battle_loop()
-    except KeyboardInterrupt:
-        logging.info('Stopping ranker')
+    main()
