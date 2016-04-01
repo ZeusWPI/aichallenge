@@ -315,20 +315,33 @@ def async_read_section(stream):
 
 
 class Player:
-    def __init__(self, name, cmd):
+    """
+    When `run_in_shell` is `True`, cmd should be a string, otherwise cmd should
+    be an array of strings. This is the same distinction the subprocess module
+    makes with the `shell` flag.
+    """
+    def __init__(self, name, cmd, run_in_shell=False):
         self.name = name
         self.forts = set()
         self.marches = set()
-        self.cmd = "{} {}".format(cmd, shlex.quote(name)).encode('utf8')
+        self.cmd = cmd
+        self.run_in_shell = run_in_shell
         self.in_control = True
         self.warnings = []
 
     @asyncio.coroutine
     def start_process(self):
-        # TODO save stderr as user feedback
-        logging.info('Starting command: {}'.format(self.cmd))
-        self.process = yield from asyncio.create_subprocess_shell(
-            self.cmd, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
+        if self.run_in_shell:
+            cmd = ("{} {}".format(self.cmd, shlex.quote(self.name))
+                   .encode('utf8'))
+            logging.info('Starting command: {}'.format(cmd))
+            self.process = yield from asyncio.create_subprocess_shell(
+                cmd, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
+        else:
+            cmd = self.cmd + [self.name]
+            logging.info('Starting command: {}'.format(cmd))
+            self.process = yield from asyncio.create_subprocess_exec(
+                *cmd, stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
 
     @asyncio.coroutine
     def stop_process(self):
@@ -400,11 +413,12 @@ class Player:
 
 
 class Game:
-    def __init__(self, playermap, mapfile, max_steps, logfile):
+    def __init__(self, playermap, mapfile, max_steps, logfile,
+                 run_in_shell=False):
         self.max_steps = max_steps
         self.logfile = logfile
 
-        self.players = {name: Player(name, cmd)
+        self.players = {name: Player(name, cmd, run_in_shell)
                         for name, cmd in playermap.items()}
 
         self.forts = {}
@@ -495,6 +509,6 @@ if __name__ == '__main__':
     with open(config['mapfile'], 'r') as map_file:
         with open(config['logfile'], 'w') as log_file:
             game = Game(config['players'], map_file, config['max_steps'],
-                        log_file)
+                        log_file, run_in_shell=True)
             game.play()
             print('Winner: {}'.format(game.winner()))

@@ -1,3 +1,4 @@
+import logging
 import os.path
 import re
 import subprocess as sp
@@ -11,7 +12,7 @@ from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.associationproxy import association_proxy
 
-from battlebots import config
+from battlebots import config, sandbox
 from battlebots.database import engine, session
 from battlebots.ranker.elo import DEFAULT_SCORE
 
@@ -108,23 +109,30 @@ class Bot(Base):
         if self.compiled:
             return True
 
-        # TODO run in sandbox & async
+        # TODO run in async
+
         with _in_dir(self.code_path):
             try:
-                sp.run(self.compile_cmd, stdout=sp.PIPE, stderr=sp.PIPE,
-                       shell=True, check=True, timeout=timeout)
+                sp.run(self.sandboxed_compile_cmd, check=True, timeout=timeout,
+                       stdout=sp.PIPE, stderr=sp.PIPE)
                 self.compiled = True
                 return True
             except sp.SubprocessError as error:
-                self.compile_errors = str(error)
-                self.compile_errors += 'STDOUT:\n' + error.stdout
-                self.compile_errors += 'STDERR:\n' + error.stderr
+                error = '{error}\nStdout: {stdout}Stderr: {stderr}'.format(
+                    error=error,
+                    stdout=error.stdout.decode('utf8'),
+                    stderr=error.stderr.decode('utf8'))
+                logging.warning(error)
+                self.compile_errors = error
                 return False
 
     @property
+    def sandboxed_compile_cmd(self):
+        return sandbox.sandboxed(self.compile_cmd, self.code_path)
+
+    @property
     def sandboxed_run_cmd(self):
-        # TODO
-        return 'cd "%s" && %s' % (self.code_path, self.run_cmd)
+        return sandbox.sandboxed(self.run_cmd, self.code_path)
 
     @property
     def win_percentage(self):

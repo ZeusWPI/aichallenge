@@ -66,7 +66,7 @@ def battle():
         # Save errors on bots
         db.add_all(bots)
         db.commit()
-        logging.warn('Compilation failed')
+        logging.warning('Compilation failed')
         return
     logging.info('Compilation done')
 
