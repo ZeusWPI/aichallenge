@@ -1,5 +1,5 @@
 {% extends "layout.html" -%}
-{% set active_page = "None" %}
+{% set active_page = match.winner.name if match.winner else 'Draw' %}
 
 {% block content -%}
   <div class="content">
