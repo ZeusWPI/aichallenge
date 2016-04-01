@@ -158,10 +158,8 @@ helsingor laten marcheren, en 10 soldaten uit helsingor naar boyard verzenden.
 ## Speleinde
 
 Het spel eindigt, zoals eerder vermeld, als er 1 speler alle forten veroverd
-heeft, en alle troepen van de tegenstander uitgeschakeld heeft. Merk wel op dat
-we spelletjes die te lang duren (de twee spelers zijn even sterk of gewoon erg
-lui) hardhandig zullen stopzetten met een lekkere CTRL-C of gelijkaardig
-signaal.
+heeft, en alle troepen van de tegenstander uitgeschakeld heeft. Als er na 500
+stappen nog geen winnaar is, eindigt het spel in gelijkstand.
 
 
 # Getting started
