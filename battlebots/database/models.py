@@ -1,7 +1,6 @@
 import logging
 import os.path
 import re
-import shlex
 import shutil
 import subprocess as sp
 from contextlib import contextmanager
@@ -14,8 +13,7 @@ import sqlalchemy as db
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
-
-from battlebots import config
+from battlebots import config, sandbox
 from battlebots.database import engine, session
 
 Base = declarative_base()
@@ -83,7 +81,7 @@ class Bot(Base):
     def compile(self, timeout=20):
         """Return True if compilation succeeds, False otherwise."""
 
-        # TODO run in sandbox & async
+        # TODO run in async
         # TODO set some "already compiled" flag so we don't compile each time
         with _in_dir(self.code_path):
             try:
@@ -101,14 +99,11 @@ class Bot(Base):
 
     @property
     def sandboxed_compile_cmd(self):
-        return self._sandboxed(self.compile_cmd)
+        return sandbox.sandboxed(self.compile_cmd, self.code_path)
 
     @property
     def sandboxed_run_cmd(self):
-        return self._sandboxed(self.run_cmd)
-
-    def _sandboxed(self, command):
-        return [config.SANDBOX_CMD, self.code_path] + shlex.split(command)
+        return sandbox.sandboxed(self.run_cmd, self.code_path)
 
 
 class Match(Base):

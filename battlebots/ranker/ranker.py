@@ -3,7 +3,6 @@ from contextlib import ContextDecorator
 from datetime import datetime
 import logging
 import os.path
-import shlex
 import subprocess as sp
 import tempfile
 
@@ -75,8 +74,7 @@ def battle():
     logging.info('Graph generated: %s', ' | '.join(graph))
 
     with tempfile.TemporaryFile('w+') as tmp_logfile:
-        cmd_map = {name: ' '.join(shlex.quote(arg) for arg in
-                                  bot.sandboxed_run_cmd)
+        cmd_map = {name: bot.sandboxed_run_cmd
                    for name, bot in bot_map.items()}
         game = arbiter.Game(cmd_map, graph, MAX_STEPS, tmp_logfile)
         player_map = game.players.copy()
