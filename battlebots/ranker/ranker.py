@@ -2,6 +2,7 @@
 
 """The fight is never over."""
 
+import asyncio
 from contextlib import ContextDecorator
 from datetime import datetime
 from time import sleep
@@ -59,7 +60,7 @@ def find_participants(n=2):
     return bots
 
 
-def battle():
+def battle(loop):
     bots = find_participants()
     bot_map = {bot.full_name: bot for bot in bots}
 
@@ -86,7 +87,7 @@ def battle():
 
         logging.info('Starting match')
         with Timed() as timings:
-            game.play()
+            loop.run_until_complete(game.play_async())
         logging.info('Stopping match')
 
         winner = game.winner()
@@ -110,12 +111,15 @@ def battle():
 
 
 def battle_loop():
+    loop = asyncio.get_event_loop()
     try:
         while True:
-            battle()
-            sleep(180)
+            battle(loop)
+            sleep(1)
     except KeyboardInterrupt:
         logging.info('Stopping ranker')
+    finally:
+        loop.close()
 
 
 def main():

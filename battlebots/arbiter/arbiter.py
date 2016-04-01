@@ -426,13 +426,6 @@ class Game:
         # TODO this could work in a better fashion ...
         read_map(self, mapfile)
 
-    def play(self):
-        loop = asyncio.get_event_loop()
-        try:
-            loop.run_until_complete(self.play_async())
-        finally:
-            loop.close()
-
     @asyncio.coroutine
     def play_async(self):
         steps = 0
@@ -510,5 +503,9 @@ if __name__ == '__main__':
         with open(config['logfile'], 'w') as log_file:
             game = Game(config['players'], map_file, config['max_steps'],
                         log_file, run_in_shell=True)
-            game.play()
-            print('Winner: {}'.format(game.winner()))
+            loop = asyncio.get_event_loop()
+            try:
+                loop.run_until_complete(game.play_async())
+                print('Winner: {}'.format(game.winner()))
+            finally:
+                loop.close()
