@@ -53,7 +53,6 @@ def logout():
 @app.route('/register', methods=('GET', 'POST'))
 def register():
     form = RegisterForm()
-    req = request
     if form.validate_on_submit():
         user = User(form.nickname.data, form.email.data, form.password.data)
         db.add(user)
