@@ -167,9 +167,15 @@ stappen nog geen winnaar is, eindigt het spel in gelijkstand.
 Een bot schrijven is op zich triviaal. Het is niet meer dan een programma
 schrijven die informatie zoals [hierboven beschreven](#formaat-speelveld)
 inleest via standaard invoer, en die commando's stuurt zoals [hierboven
-beschreven](#formaat-commandos) schrijft naar standaard uitvoer.
+beschreven](#formaat-commandos) schrijft naar standaard uitvoer. We zullen je
+bot oproepen met één argument: de naam die we toekennen aan je bot. Op die
+manier weet je welke forten van jou zijn.
 
-Stel dat je een dergelijk programma hebt geschreven, bijvoorbeeld genaamd
+Mocht dit niet duidelijk zijn, kan je altijd eens kijken naar de voorbeeld-bots
+op [de GitHub
+repo](https://github.com/ZeusWPI/aichallenge/tree/master/battlebots/testbots).
+
+Stel dat je nu een dergelijk programma hebt geschreven, bijvoorbeeld genaamd
 `bot.py`, dan willen we deze natuurlijk testen door deze te laten vechten tegen
 andere bots of tegen zichzelf. Hiervoor schrijven we eerste een klein
 configuratie-bestandje in JSON, bijvoorbeeld `config.json`:
