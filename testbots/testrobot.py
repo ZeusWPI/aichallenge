@@ -200,8 +200,7 @@ class Mind:
         self.commands.add(Command(origin, destination, amount))
 
     def __in_safety(self, my_fort):
-        neutral_player = Game.players.get('neutral', [])
-        return all(n.owner not in [self.player] + neutral_player
+        return all(n.owner not in (self.player, Game.players.get('neutral'))
                    for n in my_fort.neighbours)
 
     def __threatened(self, my_fort):
