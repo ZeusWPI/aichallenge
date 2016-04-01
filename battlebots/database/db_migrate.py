@@ -1,9 +1,9 @@
 import imp
 from migrate.versioning import api
 
-from battlebots import SQLALCHEMY_DATABASE_URI
-from battlebots import SQLALCHEMY_MIGRATE_REPO
-from battlebots import db
+from battlebots.config import SQLALCHEMY_DATABASE_URI
+from battlebots.config import SQLALCHEMY_MIGRATE_REPO
+from battlebots.database.models import Base as db
 
 print('Migrating the database')
 v = api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)

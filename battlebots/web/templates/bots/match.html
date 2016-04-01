@@ -1,0 +1,40 @@
+{% extends "layout.html" -%}
+{% set active_page = "None" %}
+
+{% block content -%}
+  <div class="content">
+    <h1>
+      {% set winner = match.winner %}
+      {% if winner %}
+        <a href="{{ url_for('bot_page', user=winner.user.nickname, botname=winner.name) }}">{{ winner.name }}</a> won
+      {% else %}
+        Draw
+      {% endif %}
+    </h1>
+    Errors:
+    {% if match.errors %}
+      <br>{{ match.errors }}<br>
+    {% else %}
+      None<br>
+    {% endif %}
+    {{ match.end_time.strftime('%d/%m %H:%M') }}
+
+    <table class="table table-striped table-hover">
+      <caption>Participants</caption>
+      <tr>
+        <th>Bot</th>
+        <th>Rank</th>
+        <th>Score</th>
+        <th>Owner</th>
+      </tr>
+      {% for bot in match.bots %}
+        <tr>
+          <td><a href="{{ url_for('bot_page', user=bot.user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
+          <td>{{ bot.rank }}</td>
+          <td>{{ bot.score }}</td>
+          <td><a href="{{ url_for('user_page', user=bot.user.nickname) }}">{{ bot.user.nickname }}</a></td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{%- endblock %}

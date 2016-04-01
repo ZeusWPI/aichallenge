@@ -8,7 +8,12 @@
 
 {# List for every element that should appear in the navigation bar (1) the controller function, (2) the name that should
    be shown, and (3) whether it's required to be logged in to see this element. #}
-{% set navbar = [('home', 'Home', False), ('rules', 'Rules', False), ('bots', 'My bots', False)] -%}
+{% set navbar = [
+  ('home', 'Home', False),
+  ('rules', 'Rules', False),
+  ('bots', 'My bots', False),
+  ('ranking', 'Ranking', False)
+] -%}
 
 
 {# Macro for easier form rendering #}
@@ -37,12 +42,12 @@
   <meta name="description" content="Zeus WPI's Badass Battle Bots">
 
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
 
   <title>Badass Battle Bots - {{ active_page|capitalize }}</title>
 </head>
@@ -82,6 +87,9 @@
             <!-- Navbar-rightside, used for login/logout/account-acces -->
             <ul class="nav navbar-nav navbar-right">
               {% if current_user.is_authenticated %}
+                <li>
+                  <a href="{{ url_for('profile', user=current_user.nickname) }}">Profile</a>
+                </li>
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
               {% else %}
                 <li class="{{ 'active' if active_page == 'login' else '' }}">

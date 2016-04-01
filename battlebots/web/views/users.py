@@ -1,21 +1,23 @@
 from flask import render_template, request, redirect, url_for, flash, abort
 from flask.ext.login import login_required, login_user, logout_user
 
+from battlebots.database import session
+from battlebots.database import access as db
 from battlebots.database.models import User
 from battlebots.web import app, lm
-from battlebots.web.forms import LoginForm, RegisterForm
-from battlebots.database import session
+from battlebots.web.forms.users import LoginForm, RegisterForm
 
 
-@app.route('/home')
-@app.route('/')
-def home():
-    return render_template('home.md')
+@app.route('/users/<user>')
+def user_page(user):
+    user = session.query(User).filter_by(nickname=user).one()
+    return render_template('users/user.html', user=user)
 
 
-@app.route('/rules')
-def rules():
-    return render_template('rules.md')
+@login_required
+@app.route('/profile/<user>')
+def profile(user):
+    return user_page(user)
 
 
 @app.route('/login', methods=('GET', 'POST'))
@@ -37,7 +39,7 @@ def login():
     elif request.method == 'POST':
         flash('Failed to log in. Please check your credentials.')
 
-    return render_template('login.html', form=form)
+    return render_template('users/login.html', form=form)
 
 
 @app.route("/logout")
@@ -54,15 +56,14 @@ def register():
     req = request
     if form.validate_on_submit():
         user = User(form.nickname.data, form.email.data, form.password.data)
-        session.add(user)
-        session.commit()
+        db.add(user)
         flash('Thanks for registering!')
         return redirect(url_for('login'))
     elif request.method == "POST":
         flash('Registering failed. Please supply all information', 'error')
-        return render_template("register.html", form=form, error=form.errors)
+        return render_template("users/register.html", form=form, error=form.errors)
 
-    return render_template('register.html', form=form)
+    return render_template('users/register.html', form=form)
 
 
 @lm.unauthorized_handler

@@ -1,20 +1,20 @@
 import logging
 import os.path
 import re
-import shutil
 import subprocess as sp
 from contextlib import contextmanager
+from itertools import dropwhile
 
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import request
-from werkzeug import secure_filename
 import sqlalchemy as db
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.associationproxy import association_proxy
 
 from battlebots import config, sandbox
 from battlebots.database import engine, session
+from battlebots.ranker.elo import DEFAULT_SCORE
 
 Base = declarative_base()
 
@@ -49,18 +49,43 @@ class User(Base, UserMixin):
 class Bot(Base):
     __tablename__ = 'bot'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id'),
+        nullable=False)
+
     user = relationship(User, backref='bots')
-    name = db.Column(db.String(BOTNAME_LENTGH[1]), nullable=False,
-                     index=True, unique=True)
-    matches = relationship('Match', secondary='match_participation',
-                           back_populates='bots')
+
+    name = db.Column(
+        db.String(BOTNAME_LENTGH[1]),
+        nullable=False,
+        index=True,
+        unique=True)
+
+    score = db.Column(
+        db.Integer,
+        nullable=False,
+        default=DEFAULT_SCORE,
+        index=True)
+
+    matches = relationship(
+        'Match',
+        secondary='match_participation',
+        back_populates='bots')
+
+    matches_won = relationship('Match', back_populates='winner')
+
     compile_cmd = db.Column(db.String(200))
     run_cmd = db.Column(db.String(200), nullable=False)
+    compiled = db.Column(db.Boolean, nullable=False, default=False)
+
+    errors = association_proxy('participations', 'errors')
 
     # These two fields can be filled in by the compiler/ranker/arbiter
     compile_errors = db.Column(db.Text)
     run_errors = db.Column(db.Text)
+
     # TODO make run_errors an association proxy to errors of MatchParticipation
     # objects
 
@@ -81,12 +106,16 @@ class Bot(Base):
     def compile(self, timeout=20):
         """Return True if compilation succeeds, False otherwise."""
 
+        if self.compiled:
+            return True
+
         # TODO run in async
-        # TODO set some "already compiled" flag so we don't compile each time
+
         with _in_dir(self.code_path):
             try:
                 sp.run(self.sandboxed_compile_cmd, check=True, timeout=timeout,
                        stdout=sp.PIPE, stderr=sp.PIPE)
+                self.compiled = True
                 return True
             except sp.SubprocessError as error:
                 error = '{error}\nStdout: {stdout}Stderr: {stderr}'.format(
@@ -105,16 +134,40 @@ class Bot(Base):
     def sandboxed_run_cmd(self):
         return sandbox.sandboxed(self.run_cmd, self.code_path)
 
+    @property
+    def win_percentage(self):
+        all_matches = len(self.matches)
+        if all_matches is not 0:
+            won_matches = len(self.matches_won)
+            return round(won_matches / all_matches * 100, 2)
+        else:
+            return None
+
+    @property
+    def loss_percentage(self):
+        return 100 - self.win_percentage
+
+    @property
+    def rank(self):
+        bots = enumerate(session.query(Bot).order_by(Bot.score).all())
+        return next(dropwhile(lambda bot: bot[1] != self, bots))[0]
+
 
 class Match(Base):
     __tablename__ = 'match'
     id = db.Column(db.Integer, primary_key=True)
-    bots = relationship(Bot, secondary='match_participation',
-                        back_populates='matches')
+
+    bots = relationship(
+        Bot,
+        secondary='match_participation',
+        back_populates='matches')
+
     winner_id = db.Column(db.Integer, db.ForeignKey('bot.id'))
-    winner = relationship(Bot, backref='matches_won')
+    winner = relationship(Bot, back_populates='matches_won')
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
+
+    errors = association_proxy('participations', 'errors')
 
     def __repr__(self):
         return '<Match between {bots}; {winner} won; log: {logfile}>'.format(
@@ -132,55 +185,30 @@ class Match(Base):
 
 class MatchParticipation(Base):
     __tablename__ = 'match_participation'
-    match_id = db.Column(db.Integer, db.ForeignKey('match.id'),
-                         primary_key=True)
-    bot_id = db.Column(db.Integer, db.ForeignKey('bot.id'), primary_key=True)
 
-    match = relationship(Match, backref=backref('participations',
-                                                cascade='all, delete-orphan'))
-    bot = relationship(Bot, backref=backref('participations',
-                                            cascade='all, delete-orphan'))
+    match_id = db.Column(
+        db.Integer,
+        db.ForeignKey('match.id'),
+        primary_key=True)
+
+    bot_id = db.Column(
+        db.Integer,
+        db.ForeignKey('bot.id'),
+        primary_key=True)
+
+    match = relationship(
+        Match,
+        backref=backref('participations', cascade='all, delete-orphan'))
+
+    bot = relationship(
+        Bot,
+        backref=backref('participations', cascade='all, delete-orphan'))
 
     errors = db.Column(db.Text)
 
     def __repr__(self):
         return ('<MatchParticipation of {bot} in {match}; errors: {errors}>'
                 .format(bot=self.bot, match=self.match, errors=self.errors))
-
-
-def add_bot(user, form):
-    # Save code to <BOT_CODE_DIR>/<user>/<botname>/<codename>
-    files = request.files.getlist('files')
-    parent = os.path.join(config.BOT_CODE_DIR, user.nickname,
-                          form.botname.data)
-    os.makedirs(parent, exist_ok=True)
-
-    #  TODO replace files
-    for file in files:
-        filename = secure_filename(file.filename)
-        code_path = os.path.join(parent, filename)
-        file.save(code_path)
-
-    bot = Bot(user=user, name=form.botname.data,
-              compile_cmd=form.compile_cmd.data, run_cmd=form.run_cmd.data)
-
-    session.add(bot)
-    session.commit()
-
-
-def remove_bot(user, botname):
-    code_dir = os.path.join(config.BOT_CODE_DIR, user.nickname, botname)
-    try:
-        shutil.rmtree(code_dir)
-    except FileNotFoundError:
-        # Don't crash if for some reason this dir doesn't exist anymore
-        logging.warning('Code dir of bot %s:%s not found (%s)'
-                        % (user.nickname, botname, code_dir))
-        pass
-
-    bot = session.query(Bot).filter_by(user=user, name=botname).one()
-    session.delete(bot)
-    session.commit()
 
 
 @contextmanager
