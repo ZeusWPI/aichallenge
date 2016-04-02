@@ -278,7 +278,8 @@ class March:
     def dispatch(self, steps=None):
         if self.size > self.origin.garrison:
             self.owner.warning('{} is trying to send more soldiers than '
-                               'available. Sending all remaining soldiers.')
+                               'available. Sending all remaining soldiers.'
+                               .format(self.owner))
         size = min(self.size, self.origin.garrison)
         self.origin.garrison -= size
         self.road.add_march(self, steps)
