@@ -31,25 +31,25 @@
       </div>
     </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">Errors encountered</div>
-      <div class="panel-body">
-        <table>
+    {% if bot.errors %}
+      <div class="panel panel-default">
+        <div class="panel-heading">Errors encountered</div>
+        <table class="table">
           {% for error in bot.errors[:2] %}
             <tr>
               <td>
-                {% for line in error.split('\n') %}
+                {% for line in error.strip().split('\n') %}
                   {{ line }}<br>
                 {% endfor %}
               </td>
             </tr>
           {% endfor %}
           {% if bot.errors|length > 2 %}
-          <tr><td>&hellip; (another {{ bot.errors|length - 2 }} matches gave errors)</td></tr>
+            <tr><td>&hellip; (another {{ bot.errors|length - 2 }} matches gave errors)</td></tr>
           {% endif %}
         </table>
       </div>
-    </div>
+    {% endif %}
 
     <table class="table table-striped table-hover">
     <caption>Matches</caption>
