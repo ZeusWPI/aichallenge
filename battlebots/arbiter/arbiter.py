@@ -365,7 +365,7 @@ class Player:
         return not self.in_control or (not self.forts and not self.marches)
 
     def remove_control(self):
-        self.warning('Removing control from {}'.format(self.name))
+        logging.info('Removing control from {}'.format(self.name))
         self.in_control = False
 
     @asyncio.coroutine
