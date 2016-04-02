@@ -2,7 +2,6 @@ import logging
 import os.path
 import re
 import subprocess as sp
-from contextlib import contextmanager
 from itertools import dropwhile
 
 from flask.ext.login import UserMixin
@@ -114,21 +113,19 @@ class Bot(Base):
             return True
 
         # TODO run async
-
-        with _in_dir(self.code_path):
-            try:
-                sp.run(self.sandboxed_compile_cmd, check=True, timeout=timeout,
-                       stdout=sp.PIPE, stderr=sp.PIPE)
-                self.compiled = True
-                return True
-            except sp.SubprocessError as error:
-                error = '{error}\nStdout: {stdout}Stderr: {stderr}'.format(
-                    error=error,
-                    stdout=error.stdout.decode('utf8'),
-                    stderr=error.stderr.decode('utf8'))
-                logging.warning(error)
-                self.compile_errors = error
-                return False
+        try:
+            sp.run(self.sandboxed_compile_cmd, check=True, timeout=timeout,
+                   stdout=sp.PIPE, stderr=sp.PIPE)
+            self.compiled = True
+            return True
+        except sp.SubprocessError as error:
+            error = '{error}\nStdout: {stdout}Stderr: {stderr}'.format(
+                error=error,
+                stdout=error.stdout.decode('utf8'),
+                stderr=error.stderr.decode('utf8'))
+            logging.warning(error)
+            self.compile_errors = error
+            return False
 
     @property
     def sandboxed_compile_cmd(self):
@@ -213,14 +210,6 @@ class MatchParticipation(Base):
     def __repr__(self):
         return ('<MatchParticipation of {bot} in {match}; errors: {errors}>'
                 .format(bot=self.bot, match=self.match, errors=self.errors))
-
-
-@contextmanager
-def _in_dir(directory):
-    prev_dir = os.getcwd()
-    os.chdir(directory)
-    yield
-    os.chdir(prev_dir)
 
 
 Base.metadata.create_all(engine)
