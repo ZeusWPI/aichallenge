@@ -9,8 +9,8 @@ def sandboxed(command, directory):
         return ['true']
 
     return ['/usr/bin/firejail',
+            '--quiet',
             '--profile={}/bot.profile'.format(PROFILE_DIR),
             '--private={}'.format(directory),
             '--whitelist={}'.format(directory),
-            '--quiet',
             '--'] + shlex.split(command)
