@@ -59,7 +59,7 @@
         <th>Outcome</th>
         <th></th>
       </tr>
-      {% for match in bot.matches %}
+      {% for match in bot.matches[::-1] %}
         <tr>
           <td>{{ match.end_time.strftime('%d/%m %H:%M') }}</td>
           <td>
