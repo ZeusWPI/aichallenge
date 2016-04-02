@@ -39,7 +39,7 @@ def new_bot():
 def update_bot(user, botname):
     if user != login.current_user.nickname:
         abort(400)  # Should not happen
-        
+
     form = UpdateBotForm()
     user = session.query(User).filter_by(nickname=user).one()
     bot = session.query(Bot).filter_by(user=user, name=botname).one()
@@ -83,7 +83,11 @@ def bot_page(user, botname):
 @app.route('/matches/<matchid>')
 def match_page(matchid):
     match = session.query(Match).filter_by(id=matchid).one()
-    return render_template('bots/match.html', match=match)
+    my_participations = [participation
+                         for participation in match.participations
+                         if participation.bot.user == login.current_user]
+    return render_template('bots/match.html', match=match,
+                           my_participations=my_participations)
 
 
 def add_bot(user, form):
