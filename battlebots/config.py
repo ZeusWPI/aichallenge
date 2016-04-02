@@ -10,4 +10,5 @@ RANKER_LOG = path.join(BASE_DIR, 'ranker.log')
 SECRET_KEY = 'badass'
 LOG_LEVEL = logging.INFO
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(DB_DIR, 'database.db')
+DB_PATH = path.join(DB_DIR, 'database.db')
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DB_PATH
