@@ -63,18 +63,44 @@ def read_map(game, map_file):
 
 
 def parse_command(game, player, string):
-    try:
-        origin, target, size = string.split(' ')
-        origin, target = game.forts[origin], game.forts[target]
-        size = int(size)
-        road = origin.roads[target]
-        if road and origin.owner == player and size >= 0:
-            return March(road, origin, target, player, size)
-    except (KeyError, ValueError):
-        # TODO add warning to bot and log warning
-        pass
+    """Returns a Match object if parsing succeeds, else None."""
 
-    return None
+    try:
+        origin, target, size = string.strip().split(' ')
+    except ValueError:
+        player.warning('A march command should have three parts, got "{}"'
+                       .format(string))
+        return None
+    try:
+        origin = game.forts[origin]
+    except KeyError:
+        player.warning('Couldn\'t find fort "{}"'.format(origin))
+        return None
+    try:
+        target = game.forts[target]
+    except KeyError:
+        player.warning('Couldn\'t find fort "{}"'.format(target))
+        return None
+    try:
+        size = int(size)
+    except ValueError:
+        player.warning('"{}" isn\'t a number'.format(size))
+        return None
+    try:
+        road = origin.roads[target]
+    except KeyError:
+        player.warning('Couldn\'t find road from {} to {}'
+                       .format(origin, target))
+        return None
+    if size < 0:
+        player.warning('Can\'t send a negative amount of soldiers.')
+        return None
+    if origin.owner != player:
+        player.warning('Can\'t send soldiers from the fort that is not your '
+                       'own.')
+        return None
+
+    return March(road, origin, target, player, size)
 
 
 def show_player(player):
@@ -251,9 +277,8 @@ class March:
 
     def dispatch(self, steps=None):
         if self.size > self.origin.garrison:
-            # TODO add warning to bot that it's trying to sent more soldiers
-            # than available
-            pass
+            self.owner.warning('{} is trying to send more soldiers than '
+                               'available. Sending all remaining soldiers.')
         size = min(self.size, self.origin.garrison)
         self.origin.garrison -= size
         self.road.add_march(self, steps)
