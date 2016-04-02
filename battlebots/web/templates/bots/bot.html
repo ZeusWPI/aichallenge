@@ -35,7 +35,7 @@
       <div class="panel panel-default">
         <div class="panel-heading">Errors encountered</div>
         <table class="table">
-          {% for error in bot.errors[:2] %}
+          {% for error in bot.errors[:-3:-1] %}
             <tr>
               <td>
                 {% for line in error.strip().split('\n') %}

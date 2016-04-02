@@ -23,7 +23,6 @@
           <td>{{ bot.score }}</td>
           <td>{{ bot.rank }}</td>
           {% if user == current_user %}
-            <td>{{ bot.errors }}</td>
             <td>
               {% if bot.errors %}
                 <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"
