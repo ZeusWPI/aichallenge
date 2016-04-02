@@ -18,9 +18,11 @@
       <div class="panel panel-default">
         <div class="panel-heading">Errors encountered by {{ participation.bot.name }}</div>
         <div class="panel-body">
-          {% for line in participation.errors.strip().split('\n') %}
-            {{ line }}<br>
-          {% endfor %}
+          {% if participation.errors %}
+            {% for line in participation.errors.strip().split('\n') %}
+              {{ line }}<br>
+            {% endfor %}
+          {% endif %}
         </div>
       </div>
     {% endfor %}
