@@ -43,10 +43,11 @@
     {% endif %}
 
     {% if bot.errors %}
+      {% set errors = bot.errors|select('not_equalto', None)|select('not_equalto', '')|list %}
       <div class="panel panel-default">
         <div class="panel-heading">Errors encountered during matches</div>
         <table class="table">
-          {% for error in bot.errors[:-3:-1]|select('not_equalto', None) %}
+          {% for error in errors[:-3:-1] %}
             <tr>
               <td>
                 {% for line in error.strip().split('\n') %}
@@ -55,7 +56,7 @@
               </td>
             </tr>
           {% endfor %}
-          {% if bot.errors|length > 2 %}
+          {% if errors|length > 2 %}
             <tr><td>&hellip; (another {{ bot.errors|length - 2 }} matches gave errors)</td></tr>
           {% endif %}
         </table>
