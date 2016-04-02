@@ -13,14 +13,24 @@
         <th>Bot</th>
         <th>Score</th>
         <th><a href="{{ url_for('ranking') }}">Rank</a></th>
-        <th>Errors</th>
+        {% if user == current_user %}
+          <th>Errors</th>
+        {% endif %}
       </tr>
       {% for bot in user.bots %}
         <tr>
           <td><a href="{{ url_for('bot_page', user=user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
           <td>{{ bot.score }}</td>
           <td>{{ bot.rank }}</td>
-          <td>{{ bot.errors }}</td>
+          {% if user == current_user %}
+            <td>{{ bot.errors }}</td>
+            <td>
+              {% if bot.errors %}
+                <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"
+                  title="Bot gave errors while compiling or running"></span>
+              {% endif %}
+            </td>
+          {% endif %}
         </tr>
       {% endfor %}
     </table>
