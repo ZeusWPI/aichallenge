@@ -31,9 +31,20 @@
       </div>
     </div>
 
+    {% if bot.compile_errors %}
+      <div class="panel panel-default">
+        <div class="panel-heading">Errors encountered while compiling</div>
+        <p>
+          {% for line in bot.compile_errors.strip().split('\n') %}
+            {{ line }}<br>
+          {% endfor %}
+        </p>
+      </div>
+    {% endif %}
+
     {% if bot.errors %}
       <div class="panel panel-default">
-        <div class="panel-heading">Errors encountered</div>
+        <div class="panel-heading">Errors encountered during matches</div>
         <table class="table">
           {% for error in bot.errors[:-3:-1]|select('not_equalto', None) %}
             <tr>

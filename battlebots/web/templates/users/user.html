@@ -24,7 +24,7 @@
           <td>{{ bot.rank }}</td>
           {% if user == current_user %}
             <td>
-              {% if bot.errors %}
+              {% if bot.compile_errors or bot.errors %}
                 <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"
                   title="Bot gave errors while compiling or running"></span>
               {% endif %}
