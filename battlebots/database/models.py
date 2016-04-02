@@ -98,10 +98,14 @@ class Bot(Base):
 
     @property
     def full_name(self):
+        """Return bot and owner name."""
+        return '{bot} ({owner})'.format(bot=self.name,
+                                        owner=self.user.nickname)
+
+    @property
+    def safe_full_name(self):
         """Return bot and owner name without spaces (but underscores)."""
-        full_name_with_spaces = '{bot} ({owner})'.format(
-            bot=self.name, owner=self.user.nickname)
-        return re.sub(r'\s+', '_', full_name_with_spaces)
+        return re.sub(r'\s+', '_', self.full_name)
 
     def compile(self, timeout=20):
         """Return True if compilation succeeds, False otherwise."""
@@ -109,7 +113,7 @@ class Bot(Base):
         if self.compiled:
             return True
 
-        # TODO run in async
+        # TODO run async
 
         with _in_dir(self.code_path):
             try:

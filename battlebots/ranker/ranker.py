@@ -62,7 +62,7 @@ def find_participants(n=2):
 
 def battle(loop):
     bots = find_participants()
-    bot_map = {bot.full_name: bot for bot in bots}
+    bot_map = {bot.safe_full_name: bot for bot in bots}
 
     logging.info('Starting compilation')
     # TODO compile async
