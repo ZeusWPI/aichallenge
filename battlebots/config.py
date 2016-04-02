@@ -11,5 +11,3 @@ SECRET_KEY = 'badass'
 LOG_LEVEL = logging.INFO
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(DB_DIR, 'database.db')
-SQLALCHEMY_MIGRATE_REPO = path.join(DB_DIR, 'db_repository')
-SQLALCHEMY_TRACK_MODIFICATIONS = False
