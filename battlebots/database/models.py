@@ -170,8 +170,8 @@ class Match(Base):
     errors = association_proxy('participations', 'errors')
 
     def __repr__(self):
-        return '<Match between {bots}; {winner} won; log: {logfile}>'.format(
-            bots=self.bots, winner=self.winner, logfile=self.logfile)
+        return '<Match on {start_time} between {bots}; {winner} won>'.format(
+            start_time=self.start_time, bots=self.bots, winner=self.winner)
 
     @property
     def log_path(self):
