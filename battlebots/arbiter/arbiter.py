@@ -423,8 +423,9 @@ class Player:
             return []
 
     def warning(self, message):
-        logging.warning(message)
-        self.warnings.append(message)
+        if message not in self.warnings:
+            logging.warning(message)
+            self.warnings.append(message)
 
     def error(self, message):
         logging.error(message)
