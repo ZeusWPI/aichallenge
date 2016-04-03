@@ -1,0 +1,99 @@
+{% extends "layout.html" -%}
+{% set active_page = bot.full_name %}
+
+{% block content -%}
+  <div class="content">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        {{ bot.name }}
+        {% if bot.user == current_user %}
+          <a class="pull-right" href="{{ url_for('update_bot', user=current_user.nickname, botname=bot.name) }}">
+            <span class="glyphicon glyphicon-edit"></span>
+          </a>
+        {% endif %}
+      </div>
+      <div class="panel-body">
+        <div class="col-md-4">
+          Owner:<br>
+          Rank:<br>
+          Score:<br>
+          Compile command:<br>
+          Run command:<br>
+        </div>
+        <div class="col-md-6">
+          <a href="{{ url_for('user_page', user=bot.user.nickname) }}">{{ bot.user.nickname }}</a><br>
+          {{ bot.rank }}<br>
+          {{ bot.score | round(1) }}<br>
+          {{ bot.compile_cmd }}<br>
+          {{ bot.run_cmd }}<br>
+        </div>
+
+      </div>
+    </div>
+
+    {% if bot.compile_errors %}
+      <div class="panel panel-default">
+        <div class="panel-heading">Errors encountered while compiling</div>
+        <p>
+          {% for line in bot.compile_errors.strip().split('\n') %}
+            {{ line }}<br>
+          {% endfor %}
+        </p>
+      </div>
+    {% endif %}
+
+    {% if bot.errors %}
+      {% set errors = bot.errors|select('not_equalto', None)|select('not_equalto', '')|list %}
+      <div class="panel panel-default">
+        <div class="panel-heading">Errors encountered during matches</div>
+        <table class="table">
+          {% for error in errors[:-3:-1] %}
+            <tr>
+              <td>
+                {% for line in error.strip().split('\n') %}
+                  {{ line }}<br>
+                {% endfor %}
+              </td>
+            </tr>
+          {% endfor %}
+          {% if errors|length > 2 %}
+            <tr><td>&hellip; (another {{ bot.errors|length - 2 }} matches gave errors)</td></tr>
+          {% endif %}
+        </table>
+      </div>
+    {% endif %}
+
+    <table class="table table-striped table-hover">
+    <caption>Matches</caption>
+      <tr>
+        <th>Time</th>
+        <th>Against</th>
+        <th>Outcome</th>
+        <th></th>
+      </tr>
+      {% for match in bot.matches[::-1] %}
+        <tr>
+          <td>{{ match.end_time.strftime('%d/%m %H:%M') }}</td>
+          <td>
+            {% for participant in match.bots | select('not_equalto', bot)%}
+              <a href="{{ url_for('bot_page', user=participant.user.nickname, botname=participant.name) }}">
+                {{ participant.name }}
+              </a>
+            {% endfor %}
+          </td>
+          <td>
+            {% set winner = match.winner %}
+            {% if winner %}
+              <a href="{{ url_for('bot_page', user=winner.user.nickname, botname=winner.name) }}">{{ winner.name }}</a> won
+            {% else %}
+              Draw
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('match_page', matchid=match.id) }}">View</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{%- endblock %}

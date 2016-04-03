@@ -1,0 +1,37 @@
+{% extends "layout.html" -%}
+{% set active_page = user.nickname %}
+
+{% block content -%}
+  <div class="content">
+    <div class="jumbotron">
+      <h1>{{ user.nickname }}</h1>
+    </div>
+
+    <table class="table table-striped table-hover">
+      <caption>Bots</caption>
+      <tr>
+        <th>Bot</th>
+        <th>Score</th>
+        <th><a href="{{ url_for('ranking') }}">Rank</a></th>
+        {% if user == current_user %}
+          <th>Errors</th>
+        {% endif %}
+      </tr>
+      {% for bot in user.bots %}
+        <tr>
+          <td><a href="{{ url_for('bot_page', user=user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
+          <td>{{ bot.score | round(1) }}</td>
+          <td>{{ bot.rank }}</td>
+          {% if user == current_user %}
+            <td>
+              {% if bot.compile_errors or bot.errors %}
+                <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"
+                  title="Bot gave errors while compiling or running"></span>
+              {% endif %}
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{%- endblock %}

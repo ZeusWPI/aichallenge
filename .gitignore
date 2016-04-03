@@ -1,3 +1,10 @@
+database.db
+
+# Where bot code of participants is saved
+battlebots/bots/
+# Where logs of matches are saved
+battlebots/logs/
+
 # IntelliJ files
 .idea/*
 *.iml

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% set active_page = "bots" %}
+
+{% block content -%}
+  <div class="content">
+    <h1>Update bot</h1>
+
+    <div class="jumbotron">
+      <form action="" method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {{ render_field(form.files, multiple="") }}<br>
+        {{ render_field(form.compile_cmd) }}<br>
+        {{ render_field(form.run_cmd) }}<br>
+        {{ form.submit(class="btn btn-default") }}
+      </form>
+    </div>
+  </div>
+{%- endblock %}

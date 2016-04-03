@@ -1,0 +1,23 @@
+#graph {
+    max-height: 90vh;
+}
+
+#legend {
+    width: 100px;
+    position: absolute;
+    right: 0;
+    top: 25px;
+}
+
+#controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#file-chooser {
+    position: absolute;
+    left: 0;
+    top: 0;
+}

@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+{% set active_page = "bots" %}
+
+{% block content -%}
+  <div class="content">
+    <h1>New bot</h1>
+
+    <div class="jumbotron">
+      <form action="" method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {{ render_field(form.botname) }}<br>
+        {{ render_field(form.files, multiple="") }}<br>
+        {{ render_field(form.compile_cmd) }}<br>
+        {{ render_field(form.run_cmd) }}<br>
+        {{ form.submit(class="btn btn-default") }}
+      </form>
+    </div>
+
+    <h3>Compile en run command?</h3>
+    <p>
+      We laten je toe een resem files up te loaden die je bot moet voorstellen. <br>
+      Nu moeten wij wel weten hoe we je bot in gang steken, ziedaar het run commando. <br>
+      Gebruik je een taal die gecompileerd moet worden? <br>
+      Geef het compileercommando ook mee! <br>
+      Als je wil, kan je zelfs een makefile mee uploaden, en gewoon de makefile laten uitvoeren in je commando.
+    </p>
+
+    <div class="panel panel-info">
+      <div class="panel-heading">Voorbeelden</div>
+      <table class="table">
+        <tr>
+          <th></th>
+          <th>Compile command</th>
+          <th>Run command</th>
+        </tr>
+        <tr>
+          <th>C</th>
+          <td><code>gcc -o coolbot coolbot.c</code></td>
+          <td><code>./coolbot</code></td>
+        </tr>
+        <tr>
+          <th>Python</th>
+          <td style="color: gray">(leeg)</td>
+          <td><code>python3 de_beste_bot_ooit.py</code></td>
+        </tr>
+        <tr>
+          <th>Java</th>
+          <td><code>javac Bot.java</code></td>
+          <td><code>java Bot</code></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">Beschikbare compilers en interpreters</div>
+      <table class="table">
+        <tr>
+          <th></th>
+          <th>Compiler/interpreter commando</th>
+          <th>Versie</th>
+        </tr>
+        <tr>
+          <th>C/C++</th>
+          <td><code>gcc/g++</code></td>
+          <td>4.9.2</td>
+        </tr>
+        <tr>
+          <th>Java</th>
+          <td><code>javac</code>/<code>java</code></td>
+          <td>OpenJDK 1.7.0_95</td>
+        </tr>
+        <tr>
+          <th>Python 3</th>
+          <td><code>python3</code></td>
+          <td>3.4.2</td>
+        </tr>
+        <tr>
+          <th>Python 2</th>
+          <td><code>python2</code></td>
+          <td>2.7.9</td>
+        </tr>
+        <tr>
+          <th>Ruby</th>
+          <td><code>ruby</code></td>
+          <td>2.4.0</td>
+        </tr>
+      </table>
+    </div>
+
+    <p>
+      Staat hier geen compiler of interpreter voor je favoriete programmeertaal? Stuur gerust een mail naar
+      <a href="mailto:battlebots@zeus.ugent.be">battlebots@zeus.ugent.be</a> en we installeren het meteen!
+    </p>
+  </div>
+{%- endblock %}

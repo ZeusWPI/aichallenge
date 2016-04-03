@@ -1,0 +1,107 @@
+{% extends "layout.html" -%}
+{% set active_page = match.winner.name if match.winner else 'Draw' %}
+
+{% block stylesheets -%}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/controls.css') }}">
+{%- endblock %}
+
+{% block javascripts -%}
+  <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/visualize.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/controls.js') }}"></script>
+  <script type="text/javascript">
+    var log = "{{ match.log.replace('\n', '\\n') }}";
+    $(document).ready(function() {
+      visualizeLog(log);
+    });
+  </script>
+{%- endblock %}
+
+{% block content -%}
+  <div class="content">
+    <h1>
+      {% set winner = match.winner %}
+      {% if winner %}
+        <a href="{{ url_for('bot_page', user=winner.user.nickname, botname=winner.name) }}">{{ winner.name }}</a> won
+      {% else %}
+        Draw
+      {% endif %}
+    </h1>
+
+    <p><strong>{{ match.end_time.strftime('%d/%m %H:%M') }}</strong></p>
+
+    {% for participation in my_participations %}
+      {% if participation.bot.user == current_user and participation.errors %}
+        <div class="panel panel-default">
+          <div class="panel-heading">Errors encountered by {{ participation.bot.name }}</div>
+          <div class="panel-body">
+            {% if participation.errors %}
+              {% for line in participation.errors.strip().split('\n') %}
+                {{ line }}<br>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <table class="table table-striped table-hover">
+      <caption>Participants</caption>
+      <tr>
+        <th>Bot</th>
+        <th>Rank</th>
+        <th>Score</th>
+        <th>Owner</th>
+      </tr>
+      {% for bot in match.bots %}
+        <tr>
+          <td><a href="{{ url_for('bot_page', user=bot.user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
+          <td>{{ bot.rank }}</td>
+          <td>{{ bot.score | round(1) }}</td>
+          <td><a href="{{ url_for('user_page', user=bot.user.nickname) }}">{{ bot.user.nickname }}</a></td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <hr>
+
+  <div id="visualization" class="row">
+    <svg id="graph" preserveAspectRatio="xMidYMid" viewBox="0 0 1 1">
+      <g id="roads" />
+      <g id="forts" />
+      <g id="marches" />
+    </svg>
+    <svg id="legend"></svg>
+    <div id="controls">
+      <div id="control-label">
+        <h1>Turn</h1>
+        <label data-bind="#control-slider"></label>
+      </div>
+      <div>
+        <input type="range" id="control-slider" />
+        <div>
+          <div id="speed">
+            <span class="title">
+              Step duration: <label data-bind="#speed-slider"></label> ms
+            </span>
+            <input type="range" id="speed-slider" min="100" max="2000" value="500" />
+          </div>
+          <div id="steps">
+            <button data-step="-10">-10</button>
+            <button data-step="-5">-5</button>
+            <button data-step="-1">-1</button>
+            <button id="playpause">
+              <!-- Can be changed to anything, as long as the classes are added -->
+              <span class="play">play</span>
+              <span class="pause">pause</span>
+            </button>
+            <button data-step="1">+1</button>
+            <button data-step="5">+5</button>
+            <button data-step="10">+10</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endblock %}

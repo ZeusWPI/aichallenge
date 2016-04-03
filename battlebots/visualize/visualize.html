@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Visualize</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="visualize.js"></script>
+    <script type="text/javascript" src="controls.js"></script>
+    <link rel="stylesheet" type="text/css" href="visualize.css" />
+    <link rel="stylesheet" type="text/css" href="controls.css" />
+  </head>
+  <body>
+    <input type="file" id="file-chooser" />
+    <div id="content">
+      <svg id="graph" preserveAspectRatio="xMidYMid" viewBox="0 0 1 1">
+        <g id="roads" />
+        <g id="forts" />
+        <g id="marches" />
+      </svg>
+      <svg id="legend"></svg>
+      <div id="controls">
+        <div id="control-label">
+          <h1>Turn</h1>
+          <label data-bind="#control-slider"></label>
+        </div>
+        <div>
+          <input type="range" id="control-slider" />
+          <div>
+            <div id="speed">
+              <span class="title">
+                Step duration: <label data-bind="#speed-slider"></label> ms
+              </span>
+              <input type="range" id="speed-slider" min="100" max="2000" value="500" />
+            </div>
+            <div id="steps">
+              <button data-step="-10">-10</button>
+              <button data-step="-5">-5</button>
+              <button data-step="-1">-1</button>
+              <button id="playpause">
+                <!-- Can be changed to anything, as long as the classes are added -->
+                <span class="play">play</span>
+                <span class="pause">pause</span>
+              </button>
+              <button data-step="1">+1</button>
+              <button data-step="5">+5</button>
+              <button data-step="10">+10</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
