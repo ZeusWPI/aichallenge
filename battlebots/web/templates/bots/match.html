@@ -15,16 +15,18 @@
     <p><strong>{{ match.end_time.strftime('%d/%m %H:%M') }}</strong></p>
 
     {% for participation in my_participations %}
-      <div class="panel panel-default">
-        <div class="panel-heading">Errors encountered by {{ participation.bot.name }}</div>
-        <div class="panel-body">
-          {% if participation.errors %}
-            {% for line in participation.errors.strip().split('\n') %}
-              {{ line }}<br>
-            {% endfor %}
-          {% endif %}
+      {% if participation.bot.user == current_user and participation.errors %}
+        <div class="panel panel-default">
+          <div class="panel-heading">Errors encountered by {{ participation.bot.name }}</div>
+          <div class="panel-body">
+            {% if participation.errors %}
+              {% for line in participation.errors.strip().split('\n') %}
+                {{ line }}<br>
+              {% endfor %}
+            {% endif %}
+          </div>
         </div>
-      </div>
+      {% endif %}
     {% endfor %}
 
     <table class="table table-striped table-hover">
