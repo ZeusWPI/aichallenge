@@ -18,44 +18,48 @@
   box-sizing: border-box;
   padding: 5px;
   padding-left: 210px; }
-  #controls > div:last-child #steps button {
-    width: 50px;
-    display: inline-block;
-    padding: 6px 12px;
-    vertical-align: middle;
-    cursor: pointer;
-    border-radius: 4px;
-    text-align: center;
-    color: #333;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    font-size: 14px; }
-    #controls > div:last-child #steps button:focus {
-      outline: none; }
-    #controls > div:last-child #steps button:active {
-      background-color: #e6e6e6;
-      border-color: #adadad; }
-    #controls > div:last-child #steps button[disabled] {
-      cursor: not-allowed;
-      filter: alpha(opacity=65);
-      -webkit-box-shadow: none;
-      box-shadow: none;
-      opacity: .65; }
-  #controls > div:last-child #steps #speed {
+  #controls > div:last-child #steps {
+    padding: 25px;
+    padding-left: 50px; }
+    #controls > div:last-child #steps button {
+      width: 60px;
+      display: inline-block;
+      padding: 6px 12px;
+      vertical-align: middle;
+      cursor: pointer;
+      border-radius: 4px;
+      text-align: center;
+      color: #333;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      font-size: 14px; }
+      #controls > div:last-child #steps button:focus {
+        outline: none; }
+      #controls > div:last-child #steps button:active {
+        background-color: #e6e6e6;
+        border-color: #adadad; }
+      #controls > div:last-child #steps button[disabled] {
+        cursor: not-allowed;
+        filter: alpha(opacity=65);
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        opacity: .65; }
+    #controls > div:last-child #steps #playpause .play {
+      display: block; }
+    #controls > div:last-child #steps #playpause .pause {
+      display: none; }
+    #controls > div:last-child #steps #playpause.active .play {
+      display: none; }
+    #controls > div:last-child #steps #playpause.active .pause {
+      display: block; }
+  #controls > div:last-child #speed {
     width: 200px;
+    padding: 15px;
     float: right; }
 #controls #control-slider {
   width: 100%;
   display: block; }
 #controls .title {
-  display: block; }
-#controls #playpause .play {
-  display: block; }
-#controls #playpause .pause {
-  display: none; }
-#controls #playpause.active .play {
-  display: none; }
-#controls #playpause.active .pause {
   display: block; }
 
 /*# sourceMappingURL=controls.css.map */
