@@ -160,7 +160,7 @@ var draw = function(game, step){
 
   var speed = parseInt($("#speed-slider").val());
 
-  var fig = d3.select("#visualisation");
+  var fig = d3.select("#graph");
 
   fig.transition()
       .duration(speed)

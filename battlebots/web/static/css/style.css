@@ -87,6 +87,17 @@ body {
     vertical-align: middle;
 }
 
+#visualization {
+    position: relative;
+}
+#visualization #legend {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 200px;
+    padding: 15px;
+}
+
 footer {
     padding-bottom: 15px;
 }
