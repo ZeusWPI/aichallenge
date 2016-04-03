@@ -2,7 +2,6 @@
 {% set active_page = match.winner.name if match.winner else 'Draw' %}
 
 {% block stylesheets -%}
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/visualize.css') }}">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/controls.css') }}">
 {%- endblock %}
 
@@ -11,7 +10,7 @@
   <script type="text/javascript" src="{{ url_for('static', filename='js/visualize.js') }}"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/controls.js') }}"></script>
   <script type="text/javascript">
-    var blub = "{{ match.log.replace('\n', '\\n') }}";
+    var log = "{{ match.log.replace('\n', '\\n') }}";
     $(document).ready(function() {
       visualizeLog(log);
     });
@@ -65,7 +64,7 @@
     </table>
   </div>
 
-  <div id="content">
+  <div id="content" class="row">
     <svg id="visualisation" preserveAspectRatio="xMidYMid" viewBox="0 0 1 1">
       <g id="roads" />
       <g id="forts" />
