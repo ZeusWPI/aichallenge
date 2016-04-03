@@ -178,6 +178,11 @@ class Match(Base):
     def log_path(self):
         return os.path.join(config.MATCH_LOG_DIR, str(self.id))
 
+    @property
+    def log(self):
+        with open(self.log_path) as log_file:
+            return log_file.read()
+
     def save_log(self, content):
         os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
         with open(self.log_path, 'w') as logfile:

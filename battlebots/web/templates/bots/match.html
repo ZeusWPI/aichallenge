@@ -1,6 +1,23 @@
 {% extends "layout.html" -%}
 {% set active_page = match.winner.name if match.winner else 'Draw' %}
 
+{% block stylesheets -%}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/visualize.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/controls.css') }}">
+{%- endblock %}
+
+{% block javascripts -%}
+  <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/visualize.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/controls.js') }}"></script>
+  <script type="text/javascript">
+    var blub = "{{ match.log.replace('\n', '\\n') }}";
+    $(document).ready(function() {
+      visualizeLog(log);
+    });
+  </script>
+{%- endblock %}
+
 {% block content -%}
   <div class="content">
     <h1>
@@ -44,5 +61,42 @@
         </tr>
       {% endfor %}
     </table>
+  </div>
+
+  <div id="content">
+    <svg id="visualisation" preserveAspectRatio="xMidYMid" viewBox="0 0 1 1">
+      <g id="roads" />
+      <g id="forts" />
+      <g id="marches" />
+    </svg>
+    <svg id="legend"></svg>
+    <div id="controls">
+      <div id="control-label">
+        <h1>Turn</h1>
+        <label data-bind="#control-slider"></label>
+      </div>
+      <div>
+        <input type="range" id="control-slider" />
+        <div id="steps">
+          <button data-step="-10">-10</button>
+          <button data-step="-5">-5</button>
+          <button data-step="-1">-1</button>
+          <button id="playpause">
+            <!-- Can be changed to anything, as long as the classes are added -->
+            <span class="play">play</span>
+            <span class="pause">pause</span>
+          </button>
+          <button data-step="1">+1</button>
+          <button data-step="5">+5</button>
+          <button data-step="10">+10</button>
+          <div id="speed">
+            <span class="title">
+              Step duration: <label data-bind="#speed-slider"></label> ms
+            </span>
+            <input type="range" id="speed-slider" min="100" max="2000" value="500" />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 {%- endblock %}
