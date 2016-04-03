@@ -7,5 +7,8 @@ INTERP = os.path.expanduser("~/env/bin/python")
 if sys.executable != INTERP:
     os.execl(INTERP, INTERP, *sys.argv)
 
-sys.path.append(os.path.dirname(os.getcwd()))
+from pathlib import Path
+repo_root = Path(__file__).resolve().parents[2]
+sys.path.append(str(repo_root))
 
+from battlebots.web import app as application
