@@ -79,15 +79,9 @@ class Game:
             print(command)
 
 
-while True:
-    game = Game(sys.argv[1])
-    game.play()
-
-
-
-
-
-
-
-
-
+try:
+    while True:
+        game = Game(sys.argv[1])
+        game.play()
+except EOFError:
+    pass
