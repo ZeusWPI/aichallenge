@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import contextlib
 import os
 
 import alembic
@@ -11,8 +10,7 @@ from battlebots.database.models import Base
 
 
 # Remove possibly existing old database
-with contextlib.suppress(FileNotFoundError):
-    os.remove(config.DB_PATH)
+Base.metadata.drop_all(engine)
 
 # Create tables in new datbase
 Base.metadata.create_all(engine)
