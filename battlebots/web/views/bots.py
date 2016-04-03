@@ -2,7 +2,7 @@ import os
 import os.path as p
 import shutil
 
-from flask import flash, redirect, render_template, abort, request
+from flask import flash, redirect, render_template, abort, request, url_for
 from flask.ext import login
 from werkzeug import secure_filename
 
@@ -29,7 +29,7 @@ def new_bot():
         # TODO handle errors (like multiple bots with same name)
         add_bot(login.current_user, form)
         flash('Uploaded bot "%s" succesfully!' % form.botname.data)
-        return redirect('/bots')
+        return redirect(url_for('bots'))
 
     return render_template('bots/new.html', form=form)
 
@@ -58,7 +58,7 @@ def update_bot(user, botname):
         make_files(files, parent)
 
         flash('Update bot "%s" succesfully!' % bot.name)
-        return redirect('/bots')
+        return redirect(url_for('bots'))
 
     return render_template('bots/update.html', form=form)
 
@@ -70,7 +70,7 @@ def remove_bot(user, botname):
         abort(400)  # Should not happen
     db.remove_bot(login.current_user, botname)
     flash('Removed bot "%s" succesfully!' % botname)
-    return redirect('/bots')
+    return redirect(url_for('bots'))
 
 
 @app.route('/bots/<user>/<botname>', methods=('GET',))
