@@ -215,6 +215,3 @@ class MatchParticipation(Base):
     def __repr__(self):
         return ('<MatchParticipation of {bot} in {match}; errors: {errors}>'
                 .format(bot=self.bot, match=self.match, errors=self.errors))
-
-
-Base.metadata.create_all(engine)
