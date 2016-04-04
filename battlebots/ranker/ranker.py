@@ -133,15 +133,10 @@ def main():
     args = parser.parse_args()
 
     if args.daemonize:
-        log_file = logging.FileHandler(config.RANKER_LOG)
-        logging.getLogger().addHandler(log_file)
-
+        log_file = open(config.RANKER_LOG, 'a+')
         pid_file = PIDLockFile(os.path.join(config.REPO_ROOT, 'ranker.pid'))
 
-        daemon_context = daemon.DaemonContext(files_preserve=[log_file.stream],
-                                              pidfile=pid_file)
-
-        with daemon_context:
+        with daemon.DaemonContext(stderr=log_file, pidfile=pid_file):
             battle_loop()
     else:
         battle_loop()
