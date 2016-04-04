@@ -22,7 +22,7 @@ def new_bot():
         # TODO handle errors (like multiple bots with same name)
         add_bot(login.current_user, form)
         flash('Uploaded bot "%s" succesfully!' % form.botname.data)
-        return redirect(url_for('bots'))
+        return redirect(url_for('profile'))
 
     return render_template('bots/new.html', form=form)
 
@@ -60,7 +60,7 @@ def update_bot(username, botname):
         make_files(files, parent)
 
         flash('Update bot "%s" succesfully!' % bot.name)
-        return redirect(url_for('bots'))
+        return redirect(url_for('profile'))
 
     return render_template('bots/update.html', form=form)
 
@@ -73,7 +73,7 @@ def remove_bot(username, botname):
 
     db.remove_bot(login.current_user, botname)
     flash('Removed bot "%s" succesfully!' % botname)
-    return redirect(url_for('bots'))
+    return redirect(url_for('profile'))
 
 
 @app.route('/bots/<username>/<botname>', methods=('GET',))
