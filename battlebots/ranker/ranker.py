@@ -5,20 +5,20 @@
 import asyncio
 from contextlib import ContextDecorator
 from datetime import datetime
-from time import sleep
 import logging
 import os.path
 import subprocess as sp
 import tempfile
+from time import sleep
 
 import daemon
 from lockfile.pidlockfile import PIDLockFile
 from sqlalchemy.sql.expression import func
 
-from battlebots.database.models import Bot, Match, MatchParticipation
-from battlebots.database import session as db
-from battlebots import config
+from battlebots import backports, config
 from battlebots.arbiter import arbiter
+from battlebots.database import session as db
+from battlebots.database.models import Bot, Match, MatchParticipation
 
 GRAPH_WANDERLUST = 0
 GRAPH_GENERATION_TIMEOUT = 20  # seconds
@@ -38,9 +38,10 @@ def generate_graph(player_names):
     script = os.path.join(config.BASE_DIR, 'scripts', 'generate_graph.sh')
     input_ = b'\n'.join(name.encode('utf8') for name in player_names)
     try:
-        process = sp.run([script, str(GRAPH_WANDERLUST)], input=input_,
-                         stdout=sp.PIPE, stderr=sp.PIPE, check=True,
-                         timeout=GRAPH_GENERATION_TIMEOUT)
+        process = backports.sp_run([script, str(GRAPH_WANDERLUST)],
+                                   input=input_, stdout=sp.PIPE,
+                                   stderr=sp.PIPE, check=True,
+                                   timeout=GRAPH_GENERATION_TIMEOUT)
     except sp.SubprocessError as error:
         logging.error('Graph generation failed.')
         logging.error(error)

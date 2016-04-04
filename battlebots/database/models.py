@@ -11,8 +11,8 @@ from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.associationproxy import association_proxy
 
-from battlebots import config, sandbox
-from battlebots.database import engine, session
+from battlebots import backports, config, sandbox
+from battlebots.database import session
 from battlebots.ranker.elo import DEFAULT_SCORE
 
 Base = declarative_base()
@@ -114,8 +114,8 @@ class Bot(Base):
 
         # TODO run async
         try:
-            sp.run(self.sandboxed_compile_cmd, check=True, timeout=timeout,
-                   stdout=sp.PIPE, stderr=sp.PIPE)
+            backports.sp_run(self.sandboxed_compile_cmd, check=True,
+                             timeout=timeout, stdout=sp.PIPE, stderr=sp.PIPE)
             self.compiled = True
             return True
         except sp.SubprocessError as error:
