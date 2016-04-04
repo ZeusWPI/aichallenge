@@ -20,7 +20,7 @@ def user_page(username):
 
     if user is None:
         flash('User with name {} does not exist.'.format(username))
-        return redirect('home')
+        return redirect(url_for('users'))
 
     return render_template('users/user.html', user=user)
 
