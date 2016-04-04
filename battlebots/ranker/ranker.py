@@ -12,6 +12,7 @@ import subprocess as sp
 import tempfile
 
 import daemon
+from lockfile.pidlockfile import PIDLockFile
 from sqlalchemy.sql.expression import func
 
 from battlebots.database.models import Bot, Match, MatchParticipation
@@ -135,7 +136,12 @@ def main():
         log_file = logging.FileHandler(config.RANKER_LOG)
         logging.getLogger().addHandler(log_file)
 
-        with daemon.DaemonContext(files_preserve=[log_file.stream]):
+        pid_file = PIDLockFile(os.path.join(config.REPO_ROOT, 'ranker.pid'))
+
+        daemon_context = daemon.DaemonContext(files_preserve=[log_file.stream],
+                                              pidfile=pid_file)
+
+        with daemon_context:
             battle_loop()
     else:
         battle_loop()
