@@ -8,6 +8,12 @@ from battlebots.web import app, lm
 from battlebots.web.forms.users import LoginForm, RegisterForm
 
 
+@app.route('/users/')
+def users():
+    users_ = session.query(User).order_by(User.nickname).all()
+    return render_template('users/users.html', users=users_)
+
+
 @app.route('/users/<username>')
 def user_page(username):
     user = session.query(User).filter_by(nickname=username).one_or_none()
