@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash, abort
-from flask.ext.login import login_required, login_user, logout_user
+from flask.ext.login import login_required, login_user, logout_user, current_user
 
 from battlebots.database import session
 from battlebots.database import access as db
@@ -26,9 +26,9 @@ def user_page(username):
 
 
 @login_required
-@app.route('/profile/<username>')
-def profile(username):
-    return user_page(username)
+@app.route('/profile')
+def profile():
+    return render_template('users/profile.html', user=current_user)
 
 
 @app.route('/login', methods=('GET', 'POST'))
