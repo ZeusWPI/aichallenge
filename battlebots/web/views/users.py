@@ -10,7 +10,12 @@ from battlebots.web.forms.users import LoginForm, RegisterForm
 
 @app.route('/users/<username>')
 def user_page(username):
-    user = session.query(User).filter_by(nickname=username).one()
+    user = session.query(User).filter_by(nickname=username).one_or_none()
+
+    if user is None:
+        flash('User with name {} does not exist.'.format(username))
+        return redirect('home')
+
     return render_template('users/user.html', user=user)
 
 
@@ -72,4 +77,4 @@ def unauthorized_handler():
 
 @lm.user_loader
 def load_user(id):
-    return session.query(User).filter(User.id == id).one()
+    return session.query(User).filter(User.id == id).one_or_none()

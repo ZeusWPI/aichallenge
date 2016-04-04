@@ -41,8 +41,18 @@ def update_bot(username, botname):
         abort(400)  # Should not happen
 
     form = UpdateBotForm()
-    user = session.query(User).filter_by(nickname=username).one()
-    bot = session.query(Bot).filter_by(user=user, name=botname).one()
+    user = session.query(User).filter_by(nickname=username).one_or_none()
+    bot = session.query(Bot).filter_by(user=user, name=botname).one_or_none()
+
+    if user is None:
+        flash('User {} does not exist.')
+        # TODO redirect to users page
+        redirect(url_for('bots'))
+
+    if bot is None:
+        flash('{} does not exist or does not belong to {}'
+              .format(botname, username))
+        return redirect(url_for('user_page', username=username))
 
     if not form.compile_cmd.data and not form.run_cmd.data:
         form.compile_cmd.data = bot.compile_cmd
@@ -76,15 +86,30 @@ def remove_bot(username, botname):
 
 @app.route('/bots/<username>/<botname>', methods=('GET',))
 def bot_page(username, botname):
-    user = session.query(User).filter_by(nickname=username).one()
-    bot = session.query(Bot).filter_by(user=user, name=botname).one()
+
+    user = session.query(User).filter_by(nickname=username).one_or_none()
+    if user is None:
+        flash('User {} does not exist.')
+        # TODO redirect to users page
+        return redirect(url_for('bots'))
+
+    bot = session.query(Bot).filter_by(user=user, name=botname).one_or_none()
+    if bot is None:
+        flash('{} does not exist or does not belong to {}'
+              .format(botname, username))
+        return redirect(url_for('user_page', username=username))
 
     return render_template('bots/bot.html', bot=bot)
 
 
 @app.route('/matches/<matchid>')
 def match_page(matchid):
-    match = session.query(Match).filter_by(id=matchid).one()
+    match = session.query(Match).filter_by(id=matchid).one_or_none()
+
+    if match is None:
+        flash('Match with id {} does not exist.'.format(matchid))
+        # TODO: redirect to matches page
+        return redirect(url_for('ranking'))
 
     my_participations = [participation
                          for participation in match.participations
