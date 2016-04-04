@@ -14,13 +14,6 @@ from battlebots.web import app
 from battlebots.web.forms.bots import NewBotForm, UpdateBotForm
 
 
-@app.route('/bots/', methods=('GET',))
-@login.login_required
-def bots():
-    bots_ = session.query(Bot).filter_by(user=login.current_user)
-    return render_template('bots/index.html', bots=bots_)
-
-
 @app.route('/bots/new', methods=('GET', 'POST'))
 @login.login_required
 def new_bot():
