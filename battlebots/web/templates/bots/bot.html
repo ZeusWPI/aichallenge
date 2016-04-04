@@ -31,36 +31,38 @@
       </div>
     </div>
 
-    {% if bot.compile_errors %}
-      <div class="panel panel-default">
-        <div class="panel-heading">Errors encountered while compiling</div>
-        <p>
-          {% for line in bot.compile_errors.strip().split('\n') %}
-            {{ line }}<br>
-          {% endfor %}
-        </p>
-      </div>
-    {% endif %}
+    {% if bot.user == current_user %}
+      {% if bot.compile_errors %}
+        <div class="panel panel-default">
+          <div class="panel-heading">Errors encountered while compiling</div>
+          <p>
+            {% for line in bot.compile_errors.strip().split('\n') %}
+              {{ line }}<br>
+            {% endfor %}
+          </p>
+        </div>
+      {% endif %}
 
-    {% if bot.errors %}
-      {% set errors = bot.errors|select('not_equalto', None)|select('not_equalto', '')|list %}
-      <div class="panel panel-default">
-        <div class="panel-heading">Errors encountered during matches</div>
-        <table class="table">
-          {% for error in errors[:-3:-1] %}
-            <tr>
-              <td>
-                {% for line in error.strip().split('\n') %}
-                  {{ line }}<br>
-                {% endfor %}
-              </td>
-            </tr>
-          {% endfor %}
-          {% if errors|length > 2 %}
-            <tr><td>&hellip; (another {{ bot.errors|length - 2 }} matches gave errors)</td></tr>
-          {% endif %}
-        </table>
-      </div>
+      {% if bot.errors %}
+        {% set errors = bot.errors|select('not_equalto', None)|select('not_equalto', '')|list %}
+        <div class="panel panel-default">
+          <div class="panel-heading">Errors encountered during matches</div>
+          <table class="table">
+            {% for error in errors[:-3:-1] %}
+              <tr>
+                <td>
+                  {% for line in error.strip().split('\n') %}
+                    {{ line }}<br>
+                  {% endfor %}
+                </td>
+              </tr>
+            {% endfor %}
+            {% if errors|length > 2 %}
+              <tr><td>&hellip; (another {{ bot.errors|length - 2 }} matches gave errors)</td></tr>
+            {% endif %}
+          </table>
+        </div>
+      {% endif %}
     {% endif %}
 
     <table class="table table-striped table-hover">
@@ -92,7 +94,7 @@
             {% endif %}
           </td>
           <td>
-            {% if participation.errors %}
+            {% if bot.user == current_user and participation.errors %}
               <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"
                 title="Bot gave errors during match"></span>
             {% endif %}
