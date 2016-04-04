@@ -10,7 +10,7 @@ Wanneer de oude vorst sterft zonder duidelijke erfgenaam, is het land in chaos.
 Velen wagen een worp naar de troon, maar slechts enkele maken een kans.
 Hiervoor moeten ze echter razendsnel beslissingen nemen, dus is er geen tijd om
 te wachten op het besluit van hun raadsheren. Gelukkig zijn enkele van de
-strijders om te troon goed gemoderniseerd, en beseffen dat niets zo snel
+strijders om de troon goed gemoderniseerd, en beseffen dat niets zo snel
 beslissingen kan nemen als een stevig doordachte Artificiële Intelligentie.
 Help jouw vorst met het bouwen van een bot om het land te veroveren!
 
