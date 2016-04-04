@@ -141,8 +141,12 @@ def main():
     if args.daemonize:
         log_file = open(config.RANKER_LOG, 'a+')
         pid_file = PIDLockFile(os.path.join(config.REPO_ROOT, 'ranker.pid'))
+        daemon_context = daemon.DaemonContext(
+            stderr=log_file,
+            pidfile=pid_file,
+            working_directory=os.environ['HOME'])
 
-        with daemon.DaemonContext(stderr=log_file, pidfile=pid_file):
+        with daemon_context:
             battle_loop()
     else:
         battle_loop()
