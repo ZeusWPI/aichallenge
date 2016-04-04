@@ -119,6 +119,7 @@ def battle_loop():
                 battle(loop)
                 sleep(1)
             except Exception:
+                logging.exception('Ranker encountered a fatal error')
                 # Keep trying after a while
                 sleep(300)
     except KeyboardInterrupt:
