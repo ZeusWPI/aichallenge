@@ -70,8 +70,10 @@
         <th>Against</th>
         <th>Outcome</th>
         <th></th>
+        <th></th>
       </tr>
-      {% for match in bot.matches[::-1] %}
+      {% for participation in bot.participations[::-1] %}
+        {% set match = participation.match %}
         <tr>
           <td>{{ match.end_time.strftime('%d/%m %H:%M') }}</td>
           <td>
@@ -87,6 +89,12 @@
               <a href="{{ url_for('bot_page', user=winner.user.nickname, botname=winner.name) }}">{{ winner.name }}</a> won
             {% else %}
               Draw
+            {% endif %}
+          </td>
+          <td>
+            {% if participation.errors %}
+              <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"
+                title="Bot gave errors during match"></span>
             {% endif %}
           </td>
           <td>
