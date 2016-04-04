@@ -84,7 +84,7 @@ def bot_page(username, botname):
     if user is None:
         flash('User {} does not exist.')
         # TODO redirect to users page
-        return redirect(url_for('bots'))
+        return redirect(url_for('users'))
 
     bot = session.query(Bot).filter_by(user=user, name=botname).one_or_none()
     if bot is None:

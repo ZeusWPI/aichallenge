@@ -11,6 +11,7 @@
 {% set navbar = [
   ('home', 'Home', False),
   ('rules', 'Rules', False),
+  ('matches', 'Matches', False),
   ('ranking', 'Ranking', False)
 ] -%}
 
@@ -88,8 +89,8 @@
             <!-- Navbar-rightside, used for login/logout/account-access -->
             <ul class="nav navbar-nav navbar-right">
               {% if current_user.is_authenticated %}
-                <li>
-                  <a href="{{ url_for('profile', username=current_user.nickname) }}">Profile</a>
+                <li class="{{ 'active' if active_page == 'profile' else '' }}">
+                  <a href="{{ url_for('profile') }}">Profile</a>
                 </li>
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
               {% else %}
