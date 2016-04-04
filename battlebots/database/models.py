@@ -7,6 +7,7 @@ from itertools import dropwhile
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlalchemy as db
+from sqlalchemy import desc
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -150,7 +151,7 @@ class Bot(Base):
 
     @property
     def rank(self):
-        bots = enumerate(session.query(Bot).order_by(Bot.score).all())
+        bots = enumerate(session.query(Bot).order_by(desc(Bot.score)).all())
         return next(dropwhile(lambda bot: bot[1] != self, bots))[0]
 
 
