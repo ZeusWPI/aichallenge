@@ -1,5 +1,5 @@
 from flask import render_template
-
+from sqlalchemy import desc
 
 from battlebots.web import app
 from battlebots.database import session
@@ -14,7 +14,7 @@ def home():
 
 @app.route('/ranking')
 def ranking():
-    bots = session.query(Bot).order_by(Bot.score)
+    bots = session.query(Bot).order_by(desc(Bot.score))
     ranked_bots = enumerate(bots)
     return render_template('ranking.html', bots=ranked_bots)
 
