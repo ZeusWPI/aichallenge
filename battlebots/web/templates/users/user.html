@@ -19,7 +19,7 @@
       </tr>
       {% for bot in user.bots %}
         <tr>
-          <td><a href="{{ url_for('bot_page', user=user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
+          <td><a href="{{ url_for('bot_page', username=user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
           <td>{{ bot.score | round(1) }}</td>
           <td>{{ bot.rank }}</td>
           {% if user == current_user %}

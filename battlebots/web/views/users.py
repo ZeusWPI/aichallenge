@@ -8,16 +8,16 @@ from battlebots.web import app, lm
 from battlebots.web.forms.users import LoginForm, RegisterForm
 
 
-@app.route('/users/<user>')
-def user_page(user):
-    user = session.query(User).filter_by(nickname=user).one()
+@app.route('/users/<username>')
+def user_page(username):
+    user = session.query(User).filter_by(nickname=username).one()
     return render_template('users/user.html', user=user)
 
 
 @login_required
-@app.route('/profile/<user>')
-def profile(user):
-    return user_page(user)
+@app.route('/profile/<username>')
+def profile(username):
+    return user_page(username)
 
 
 @app.route('/login', methods=('GET', 'POST'))

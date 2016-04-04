@@ -14,8 +14,8 @@
       {% for rank, bot in bots %}
         <tr>
           <td>{{ rank }}</td>
-          <td><a href="{{ url_for('bot_page', user=bot.user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
-          <td><a href="{{ url_for('user_page', user=bot.user.nickname) }}">{{ bot.user.nickname }}</a></td>
+          <td><a href="{{ url_for('bot_page', username=bot.user.nickname, botname=bot.name) }}">{{ bot.name }}</a></td>
+          <td><a href="{{ url_for('user_page', username=bot.user.nickname) }}">{{ bot.user.nickname }}</a></td>
           <td>{{ bot.score | round(1) }}</td>
         </tr>
       {% endfor %}

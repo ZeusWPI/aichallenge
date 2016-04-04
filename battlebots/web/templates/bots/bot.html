@@ -7,7 +7,7 @@
       <div class="panel-heading">
         {{ bot.name }}
         {% if bot.user == current_user %}
-          <a class="pull-right" href="{{ url_for('update_bot', user=current_user.nickname, botname=bot.name) }}">
+          <a class="pull-right" href="{{ url_for('update_bot', username=current_user.nickname, botname=bot.name) }}">
             <span class="glyphicon glyphicon-edit"></span>
           </a>
         {% endif %}
@@ -21,7 +21,7 @@
           Run command:<br>
         </div>
         <div class="col-md-6">
-          <a href="{{ url_for('user_page', user=bot.user.nickname) }}">{{ bot.user.nickname }}</a><br>
+          <a href="{{ url_for('user_page', username=bot.user.nickname) }}">{{ bot.user.nickname }}</a><br>
           {{ bot.rank }}<br>
           {{ bot.score | round(1) }}<br>
           {{ bot.compile_cmd }}<br>
@@ -80,7 +80,7 @@
           <td>{{ match.end_time.strftime('%d/%m %H:%M') }}</td>
           <td>
             {% for participant in match.bots | select('not_equalto', bot)%}
-              <a href="{{ url_for('bot_page', user=participant.user.nickname, botname=participant.name) }}">
+              <a href="{{ url_for('bot_page', username=participant.user.nickname, botname=participant.name) }}">
                 {{ participant.name }}
               </a>
             {% endfor %}
@@ -88,7 +88,7 @@
           <td>
             {% set winner = match.winner %}
             {% if winner %}
-              <a href="{{ url_for('bot_page', user=winner.user.nickname, botname=winner.name) }}">{{ winner.name }}</a> won
+              <a href="{{ url_for('bot_page', username=winner.user.nickname, botname=winner.name) }}">{{ winner.name }}</a> won
             {% else %}
               Draw
             {% endif %}

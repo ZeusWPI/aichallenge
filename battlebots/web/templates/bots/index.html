@@ -17,13 +17,13 @@
             {% endif %}
           </td>
           <td>
-            <a href="{{ url_for('bot_page', user=current_user.nickname, botname=bot.name) }}">
+            <a href="{{ url_for('bot_page', username=current_user.nickname, botname=bot.name) }}">
               {{ bot.name }}
             </a>
           </td>
 
           <td class="pull-right">
-            <form method="post" action="{{ url_for('remove_bot', user=current_user.nickname, botname=bot.name) }}">
+            <form method="post" action="{{ url_for('remove_bot', username=current_user.nickname, botname=bot.name) }}">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
               <button type="submit" class="btn btn-danger">
                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
@@ -32,7 +32,7 @@
           </td>
 
           <td class="pull-right">
-            <a class="btn btn-info" href="{{ url_for('update_bot', user=current_user.nickname, botname=bot.name) }}">
+            <a class="btn btn-info" href="{{ url_for('update_bot', username=current_user.nickname, botname=bot.name) }}">
               <span class="glyphicon glyphicon-edit"></span>
             </a>
           </td>

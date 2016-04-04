@@ -1,8 +1,7 @@
 from flask import render_template
-from flask.ext.login import current_user
 
 
-from battlebots.web import app, lm
+from battlebots.web import app
 from battlebots.database import session
 from battlebots.database.models import Bot
 

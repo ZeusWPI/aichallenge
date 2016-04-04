@@ -34,14 +34,14 @@ def new_bot():
     return render_template('bots/new.html', form=form)
 
 
-@app.route('/bots/<user>/<botname>/update', methods=('GET', 'POST'))
+@app.route('/bots/<username>/<botname>/update', methods=('GET', 'POST'))
 @login.login_required
-def update_bot(user, botname):
-    if user != login.current_user.nickname:
+def update_bot(username, botname):
+    if username != login.current_user.nickname:
         abort(400)  # Should not happen
 
     form = UpdateBotForm()
-    user = session.query(User).filter_by(nickname=user).one()
+    user = session.query(User).filter_by(nickname=username).one()
     bot = session.query(Bot).filter_by(user=user, name=botname).one()
 
     if not form.compile_cmd.data and not form.run_cmd.data:
@@ -63,26 +63,29 @@ def update_bot(user, botname):
     return render_template('bots/update.html', form=form)
 
 
-@app.route('/bots/<user>/<botname>', methods=('POST',))
+@app.route('/bots/<username>/<botname>', methods=('POST',))
 @login.login_required
-def remove_bot(user, botname):
-    if user != login.current_user.nickname:
+def remove_bot(username, botname):
+    if username != login.current_user.nickname:
         abort(400)  # Should not happen
+
     db.remove_bot(login.current_user, botname)
     flash('Removed bot "%s" succesfully!' % botname)
     return redirect(url_for('bots'))
 
 
-@app.route('/bots/<user>/<botname>', methods=('GET',))
-def bot_page(user, botname):
-    user = session.query(User).filter_by(nickname=user).one()
+@app.route('/bots/<username>/<botname>', methods=('GET',))
+def bot_page(username, botname):
+    user = session.query(User).filter_by(nickname=username).one()
     bot = session.query(Bot).filter_by(user=user, name=botname).one()
+
     return render_template('bots/bot.html', bot=bot)
 
 
 @app.route('/matches/<matchid>')
 def match_page(matchid):
     match = session.query(Match).filter_by(id=matchid).one()
+
     my_participations = [participation
                          for participation in match.participations
                          if participation.bot.user == login.current_user]
