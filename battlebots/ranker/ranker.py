@@ -115,8 +115,12 @@ def battle_loop():
     loop = asyncio.get_event_loop()
     try:
         while True:
-            battle(loop)
-            sleep(1)
+            try:
+                battle(loop)
+                sleep(1)
+            except Exception:
+                # Keep trying after a while
+                sleep(300)
     except KeyboardInterrupt:
         logging.info('Stopping ranker')
     finally:
