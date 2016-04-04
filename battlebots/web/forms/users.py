@@ -19,7 +19,7 @@ class LoginForm(Form):
         if not rv:
             return rv
 
-        user = session.query(User).filter_by(nickname=self.nickname.data).first()
+        user = session.query(User).filter_by(nickname=self.nickname.data).one_or_none()
         if user is None:
             self.nickname.errors.append('User unknown.')
             return False
