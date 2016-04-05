@@ -1,4 +1,5 @@
 import logging
+import os
 from os import path
 
 PRODUCTION = False
@@ -8,10 +9,16 @@ REPO_ROOT = path.dirname(BASE_DIR)
 DB_DIR = path.join(BASE_DIR, 'database')
 BOT_CODE_DIR = path.join(BASE_DIR, 'bots')
 MATCH_LOG_DIR = path.join(BASE_DIR, 'logs')
-RANKER_LOG = path.join(BASE_DIR, 'ranker.log')
-WEB_LOG = path.join(BASE_DIR, 'web.log')
+
+if PRODUCTION:
+    LOG_LEVEL = logging.WARNING
+    LOGS_HOME = path.join(os.environ['HOME'], 'log')
+else:
+    LOG_LEVEL = logging.INFO
+    LOGS_HOME = REPO_ROOT
+RANKER_LOG = path.join(LOGS_HOME, 'ranker.log')
+WEB_LOG = path.join(LOGS_HOME, 'web.log')
 
 SECRET_KEY = 'badass'
-LOG_LEVEL = logging.INFO
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(DB_DIR, 'database.db')
