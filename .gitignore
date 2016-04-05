@@ -1,4 +1,5 @@
 database.db
+ranker.pid
 
 # Where bot code of participants is saved
 battlebots/bots/
