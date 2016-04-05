@@ -1,11 +1,12 @@
 database.db
 ranker.pid
 *.log
+tmp
 
 # Where bot code of participants is saved
 battlebots/bots/
 # Where logs of matches are saved
-battlebots/logs/
+battlebots/matches/
 
 # IntelliJ files
 .idea/*
@@ -16,3 +17,7 @@ battlebots/logs/
 # SASS
 *.map
 .sass-cache/
+
+# Python shizzle
+*.pyc
+__pycache__
