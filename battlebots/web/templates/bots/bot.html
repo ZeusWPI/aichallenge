@@ -74,7 +74,8 @@
         <th></th>
         <th></th>
       </tr>
-      {% for participation in bot.participations[::-1] %}
+      {# TODO add pagination #}
+      {% for participation in bot.participations[:-40:-1] %}
         {% set match = participation.match %}
         <tr>
           <td>{{ match.end_time.strftime('%d/%m %H:%M') }}</td>

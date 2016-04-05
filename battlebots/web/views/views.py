@@ -21,7 +21,8 @@ def ranking():
 
 @app.route('/matches/')
 def matches():
-    matches_ = session.query(Match).order_by(Match.id)
+    # TODO add pagination
+    matches_ = session.query(Match).order_by(desc(Match.id)).limit(40)
     return render_template('matches.html', matches=matches_)
 
 
