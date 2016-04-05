@@ -8,7 +8,7 @@ BASE_DIR = path.abspath(path.dirname(__file__))
 REPO_ROOT = path.dirname(BASE_DIR)
 DB_DIR = path.join(BASE_DIR, 'database')
 BOT_CODE_DIR = path.join(BASE_DIR, 'bots')
-MATCH_LOG_DIR = path.join(BASE_DIR, 'logs')
+MATCH_LOG_DIR = path.join(BASE_DIR, 'matches')
 
 if PRODUCTION:
     LOG_LEVEL = logging.WARNING
