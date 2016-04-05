@@ -17,7 +17,7 @@ from sqlalchemy.sql.expression import func
 
 from battlebots import backports, config
 from battlebots.arbiter import arbiter
-from battlebots.database import session as db
+from battlebots.database import access, session as db
 from battlebots.database.models import Bot, Match, MatchParticipation
 
 GRAPH_WANDERLUST = 0
@@ -71,8 +71,7 @@ def battle(loop):
     compilation_success = all(bot.compile() for bot in bots)
     if not compilation_success:
         # Save errors on bots
-        db.add_all(bots)
-        db.commit()
+        access.add_all(bots)
         logging.warning('Compilation failed')
         return
     logging.info('Compilation done')
@@ -104,12 +103,12 @@ def battle(loop):
             warnings = '\n'.join(player_map[name].warnings)
             participation = MatchParticipation(bot=bot, errors=warnings)
             match.participations.append(participation)
-        db.add(match)
-        db.commit()
 
         # Store the log file to match.log_path
         tmp_logfile.seek(0)
         match.save_log(tmp_logfile.read())
+
+        access.add(match)
 
 
 def battle_loop():

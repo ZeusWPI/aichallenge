@@ -12,6 +12,11 @@ def add(instance):
         db.add(instance)
 
 
+def add_all(instances):
+    with scoped_session() as db:
+        db.add_all(instances)
+
+
 def delete(instance):
     with scoped_session() as db:
         db.delete(instance)
