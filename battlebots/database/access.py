@@ -3,18 +3,18 @@ import shutil
 import logging
 
 from battlebots import config
-from battlebots.database import session
+from battlebots.database import session, scoped_session
 from battlebots.database.models import Bot
 
 
 def add(instance):
-    session.add(instance)
-    session.commit()
+    with scoped_session() as db:
+        db.add(instance)
 
 
 def delete(instance):
-    session.delete(instance)
-    session.commit()
+    with scoped_session() as db:
+        db.delete(instance)
 
 
 def remove_bot(user, botname):
