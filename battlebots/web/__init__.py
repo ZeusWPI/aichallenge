@@ -8,6 +8,7 @@ import jinja2
 import markdown
 
 from battlebots import config
+from battlebots.database import Session
 
 app = Flask(__name__)
 app.config.from_object('battlebots.config')
@@ -26,6 +27,8 @@ if config.PRODUCTION:
     logging.getLogger('werkzeug').addHandler(log_file_handler)
     app.logger.addHandler(log_file_handler)
     # TODO add airbrake
+
+app.before_request(lambda: Session.remove())
 
 from battlebots.web import views  # NOQA
 from battlebots.web.views import bots  # NOQA
