@@ -280,8 +280,8 @@ class March:
             self.owner.warning('{} is trying to send more soldiers than '
                                'available. Sending all remaining soldiers.'
                                .format(self.owner))
-        size = min(self.size, self.origin.garrison)
-        self.origin.garrison -= size
+        self.size = min(self.size, self.origin.garrison)
+        self.origin.garrison -= self.size
         self.road.add_march(self, steps)
 
     def die(self):
