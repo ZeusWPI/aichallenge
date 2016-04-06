@@ -1,3 +1,4 @@
+{% import 'macros/pagination_controls.html' as pagination_controls %}
 {% extends "layout.html" -%}
 {% set active_page = 'matches' %}
 
@@ -7,6 +8,7 @@
       Matches
     </h1>
 
+    {{ pagination_controls.show_controls(paginated_matches, 'matches') }}
     <table class="table table-striped table-hover">
       <tr>
         <th></th>
@@ -14,7 +16,7 @@
         <th>Participants</th>
         <th>Outcome</th>
       </tr>
-      {% for match  in matches %}
+      {% for match in paginated_matches.items %}
         <tr>
           <td>
             <a href="{{ url_for('match_page', matchid=match.id) }}">View</a>
@@ -42,5 +44,7 @@
         </tr>
       {% endfor %}
     </table>
+    {{ pagination_controls.show_controls(paginated_matches, 'matches') }}
+
   </div>
 {%- endblock %}

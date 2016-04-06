@@ -12,6 +12,7 @@ from battlebots.database import access as db
 from battlebots.database.models import Bot, Match, User
 from battlebots.web import app
 from battlebots.web.forms.bots import NewBotForm, UpdateBotForm
+from battlebots.web.pagination_utils import paginate
 
 
 @app.route('/bots/new', methods=('GET', 'POST'))
@@ -89,8 +90,9 @@ def bot_page(username, botname):
         flash('{} does not exist or does not belong to {}'
               .format(botname, username))
         return redirect(url_for('user_page', username=username))
+    paginated_bot_participations_ = paginate(bot.participations)
 
-    return render_template('bots/bot.html', bot=bot)
+    return render_template('bots/bot.html', bot=bot, paginated_bot_participations=paginated_bot_participations_)
 
 
 @app.route('/matches/<matchid>')

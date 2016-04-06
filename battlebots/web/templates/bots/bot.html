@@ -1,3 +1,4 @@
+{% import "macros/pagination_controls.html" as pagination_controls %}
 {% extends "layout.html" -%}
 {% set active_page = bot.full_name %}
 
@@ -74,8 +75,7 @@
         <th></th>
         <th></th>
       </tr>
-      {# TODO add pagination #}
-      {% for participation in bot.participations[:-40:-1] %}
+      {% for participation in paginated_bot_participations.items %}
         {% set match = participation.match %}
         <tr>
           <td>{{ match.end_time.strftime('%d/%m %H:%M') }}</td>
@@ -106,5 +106,6 @@
         </tr>
       {% endfor %}
     </table>
+    {{ pagination_controls.show_controls(paginated_bot_participations, 'bot_page', username=bot.user.nickname, botname=bot.name) }}
   </div>
 {%- endblock %}

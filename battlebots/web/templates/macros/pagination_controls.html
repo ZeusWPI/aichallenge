@@ -1,0 +1,25 @@
+{% macro show_controls(pagination, endpoint) %}
+<div class="text-center">
+  <ul class="pagination">
+    <li{% if pagination.is_first_page %} class="disabled"{% endif %}>
+      <a href="{{ url_for(endpoint, page=pagination.current_page-1, **kwargs) }}" aria-label="Previous">
+        <span aria-hidden="true">«</span>
+      </a>
+    </li>
+    {%- for page in pagination.iter_pages() %}
+      {% if page %}
+        <li{% if page == pagination.current_page %} class="disabled"{% endif %}>
+          <a href="{{ url_for(endpoint, page=page, **kwargs) }}">{{ page }} <span class="sr-only">(current)</span></a>
+        </li>
+      {% else %}
+        <li class="disabled"><a href="#">…</a></li>
+      {% endif %}
+    {%- endfor %}
+    <li{% if pagination.is_last_page %} class="disabled"{% endif %}>
+      <a href="{{ url_for(endpoint, page=pagination.current_page+1, **kwargs) }}" aria-label="Next">
+        <span aria-hidden="true">»</span>
+      </a>
+    </li>
+  </ul>
+</div>
+{%- endmacro %}

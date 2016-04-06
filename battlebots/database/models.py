@@ -209,7 +209,7 @@ class MatchParticipation(Base):
 
     bot = relationship(
         Bot,
-        backref=backref('participations', cascade='all, delete-orphan'))
+        backref=backref('participations', cascade='all, delete-orphan', lazy='dynamic'))
 
     errors = db.Column(db.Text)
 
