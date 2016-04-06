@@ -104,11 +104,14 @@ def battle(loop):
             participation = MatchParticipation(bot=bot, errors=warnings)
             match.participations.append(participation)
 
+        # Saves match object, but also adds an ID so we know where to save the
+        # log of the match to.
+        db.expunge(match)
+        access.add(match)
+
         # Store the log file to match.log_path
         tmp_logfile.seek(0)
         match.save_log(tmp_logfile.read())
-
-        access.add(match)
 
 
 def battle_loop():
