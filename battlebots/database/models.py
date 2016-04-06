@@ -1,4 +1,5 @@
 import logging
+import gzip
 import os.path
 import re
 import subprocess as sp
@@ -177,17 +178,17 @@ class Match(Base):
 
     @property
     def log_path(self):
-        return os.path.join(config.MATCH_LOG_DIR, str(self.id))
+        return os.path.join(config.MATCH_LOG_DIR, str(self.id) + '.gz')
 
     @property
     def log(self):
-        with open(self.log_path) as log_file:
-            return log_file.read()
+        with gzip.open(self.log_path, 'rb') as log_file:
+            return log_file.read().decode('utf-8')
 
     def save_log(self, content):
         os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
-        with open(self.log_path, 'w') as logfile:
-            logfile.write(content)
+        with gzip.open(self.log_path, 'wb') as logfile:
+            logfile.write(content).encode('utf-8')
 
 
 class MatchParticipation(Base):
