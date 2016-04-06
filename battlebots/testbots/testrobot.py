@@ -146,8 +146,8 @@ class Mind:
 
     def orders(self) -> str:
         amount = "{} marches:".format(len(self.commands))
-        commands = (str(command) for command in self.commands)
-        return '\n'.join([amount, *commands])
+        commands = [str(command) for command in self.commands]
+        return '\n'.join([amount] + commands)
 
     def __collect_data(self):
         self.player = Game.players[self.name]

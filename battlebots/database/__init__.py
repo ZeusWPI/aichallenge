@@ -8,6 +8,7 @@ from battlebots import config
 
 
 engine = create_engine(config.SQLALCHEMY_DATABASE_URI, pool_recycle=3600)
+engine.dispose()
 session_factory = sessionmaker(bind=engine)
 Session = _scoped_session(session_factory)
 
