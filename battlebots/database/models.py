@@ -26,10 +26,20 @@ BOTNAME_LENTGH = (1, 32)
 class User(Base, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    nickname = db.Column(db.String(NICKNAME_LENGTH[1]), index=True,
-                         unique=True, nullable=False)
+
+    nickname = db.Column(
+        db.String(NICKNAME_LENGTH[1]),
+        index=True,
+        unique=True,
+        nullable=False)
+
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     password = db.Column(db.String(120), index=True, nullable=False)
+
+    bots = relationship(
+        'Bot',
+        back_populates='user',
+        cascade='all, delete-orphan')
 
     def __repr__(self):
         return '<User {}>'.format(self.nickname)
@@ -55,7 +65,7 @@ class Bot(Base):
         db.ForeignKey('user.id'),
         nullable=False)
 
-    user = relationship(User, backref='bots')
+    user = relationship(User, back_populates='bots')
 
     name = db.Column(
         db.String(BOTNAME_LENTGH[1]),
@@ -72,9 +82,13 @@ class Bot(Base):
     matches = relationship(
         'Match',
         secondary='match_participation',
-        back_populates='bots')
+        back_populates='bots',
+        cascade='all, delete-orphan')
 
-    matches_won = relationship('Match', back_populates='winner')
+    matches_won = relationship(
+        'Match',
+        back_populates='winner',
+        cascade='all, delete-orphan')
 
     compile_cmd = db.Column(db.String(200))
     run_cmd = db.Column(db.String(200), nullable=False)
