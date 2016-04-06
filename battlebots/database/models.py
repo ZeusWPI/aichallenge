@@ -188,7 +188,7 @@ class Match(Base):
     def save_log(self, content):
         os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
         with gzip.open(self.log_path, 'wb') as logfile:
-            logfile.write(content).encode('utf-8')
+            logfile.write(content.encode('utf-8'))
 
 
 class MatchParticipation(Base):
