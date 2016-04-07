@@ -25,8 +25,6 @@ def scoped_session():
         logging.exception("Database had to do a rollback.")
         session.rollback()
         raise
-    finally:
-        Session.remove()
 
 
 # Registers listeners (Don't remove this import!)
