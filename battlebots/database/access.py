@@ -22,6 +22,11 @@ def delete(instance):
         db.delete(instance)
 
 
+def merge(instance, load=True):
+    with scoped_session() as db:
+        db.merge(instance, load=load)
+
+
 def remove_bot(user, botname):
     code_dir = os.path.join(config.BOT_CODE_DIR, user.nickname, botname)
     try:
