@@ -3,7 +3,7 @@ import shutil
 import logging
 
 from battlebots import config
-from battlebots.database import session, scoped_session
+from battlebots.database import Session, scoped_session
 from battlebots.database.models import Bot
 
 
@@ -37,7 +37,8 @@ def remove_bot(user, botname):
                         % (user.nickname, botname, code_dir))
         pass
 
-    bot = session.query(Bot).filter_by(user=user, name=botname).one_or_none()
+    bot = Session.query(Bot).filter_by(user=user, name=botname).one_or_none()
+
     if bot is None:
         logging.warning(
             'Trying to remove a bot that does not exist. User:{}, Bot:{}'

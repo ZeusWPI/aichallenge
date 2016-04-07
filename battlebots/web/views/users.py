@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, abort
 from flask.ext.login import login_required, login_user, logout_user, current_user
 
-from battlebots.database import session
+from battlebots.database import Session
 from battlebots.database import access as db
 from battlebots.database.models import User
 from battlebots.web import app, lm
@@ -10,13 +10,13 @@ from battlebots.web.forms.users import LoginForm, RegisterForm
 
 @app.route('/users/')
 def users():
-    users_ = session.query(User).order_by(User.nickname).all()
+    users_ = Session.query(User).order_by(User.nickname).all()
     return render_template('users/users.html', users=users_)
 
 
 @app.route('/users/<username>')
 def user_page(username):
-    user = session.query(User).filter_by(nickname=username).one_or_none()
+    user = Session.query(User).filter_by(nickname=username).one_or_none()
 
     if user is None:
         flash('User with name {} does not exist.'.format(username))
@@ -35,7 +35,7 @@ def profile():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = session.query(User).filter_by(nickname=form.nickname.data).first()
+        user = Session.query(User).filter_by(nickname=form.nickname.data).first()
         if user is None:
             abort(513)  # shouldn't happen
 
@@ -83,4 +83,4 @@ def unauthorized_handler():
 
 @lm.user_loader
 def load_user(id):
-    return session.query(User).filter(User.id == id).one_or_none()
+    return Session.query(User).filter(User.id == id).one_or_none()

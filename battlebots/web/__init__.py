@@ -46,7 +46,15 @@ if config.PRODUCTION:
     )
 
 
-app.before_request(lambda: Session.remove())
+@app.before_request
+def before_request():
+    Session()
+
+
+@app.teardown_request
+def teardown_request(exception):
+    Session.commit()
+    Session.remove()
 
 from battlebots.web import views  # NOQA
 from battlebots.web.views import bots  # NOQA

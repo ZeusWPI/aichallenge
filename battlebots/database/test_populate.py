@@ -1,6 +1,6 @@
 import datetime as d
 
-from battlebots.database import session
+from battlebots.database import scoped_session
 from battlebots.database.models import User, Bot, Match, MatchParticipation
 
 user1 = User('tester1', 'test1@mail.com', 'test_pw_1')
@@ -17,7 +17,6 @@ mp2 = MatchParticipation(match=match1, bot=bot2)
 
 l = [user1, user2, bot1, bot1, match1]
 
-for x in l:
-    session.add(x)
-
-session.commit()
+with scoped_session() as db:
+    for x in l:
+        db.add(x)

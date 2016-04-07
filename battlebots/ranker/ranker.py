@@ -17,7 +17,8 @@ from sqlalchemy.sql.expression import func
 
 from battlebots import backports, config
 from battlebots.arbiter import arbiter
-from battlebots.database import access, session as db, scoped_session
+from battlebots.database import access as db
+from battlebots.database import scoped_session
 from battlebots.database.models import Bot, Match, MatchParticipation
 
 GRAPH_WANDERLUST = 0

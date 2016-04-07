@@ -7,7 +7,7 @@ from flask.ext import login
 from werkzeug import secure_filename
 
 from battlebots import config
-from battlebots.database import session
+from battlebots.database import Session
 from battlebots.database import access as db
 from battlebots.database.models import Bot, Match, User
 from battlebots.web import app
@@ -35,8 +35,8 @@ def update_bot(username, botname):
         abort(400)  # Should not happen
 
     form = UpdateBotForm()
-    user = session.query(User).filter_by(nickname=username).one_or_none()
-    bot = session.query(Bot).filter_by(user=user, name=botname).one_or_none()
+    user = Session.query(User).filter_by(nickname=username).one_or_none()
+    bot = Session.query(Bot).filter_by(user=user, name=botname).one_or_none()
 
     if user is None:
         flash('User {} does not exist.')
@@ -80,12 +80,12 @@ def remove_bot(username, botname):
 @app.route('/bots/<username>/<botname>', methods=('GET',))
 def bot_page(username, botname):
 
-    user = session.query(User).filter_by(nickname=username).one_or_none()
+    user = Session.query(User).filter_by(nickname=username).one_or_none()
     if user is None:
         flash('User {} does not exist.')
         return redirect(url_for('users'))
 
-    bot = session.query(Bot).filter_by(user=user, name=botname).one_or_none()
+    bot = Session.query(Bot).filter_by(user=user, name=botname).one_or_none()
     if bot is None:
         flash('{} does not exist or does not belong to {}'
               .format(botname, username))
@@ -97,7 +97,7 @@ def bot_page(username, botname):
 
 @app.route('/matches/<matchid>')
 def match_page(matchid):
-    match = session.query(Match).filter_by(id=matchid).one_or_none()
+    match = Session.query(Match).filter_by(id=matchid).one_or_none()
 
     if match is None:
         flash('Match with id {} does not exist.'.format(matchid))

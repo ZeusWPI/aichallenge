@@ -1,11 +1,11 @@
 from sqlalchemy import event
 
-from battlebots.database import session
+from battlebots.database import Session
 from battlebots.database.models import MatchParticipation
 from battlebots.ranker.elo import elo_diff
 
 
-@event.listens_for(session, 'before_commit')
+@event.listens_for(Session, 'before_commit')
 def update_bot_ratings(session):
     # If anyone finds a better way to update the ratings, please do
 

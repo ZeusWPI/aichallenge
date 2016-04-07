@@ -1,6 +1,6 @@
 from wtforms.validators import ValidationError
 
-from battlebots.database import session
+from battlebots.database import Session
 from battlebots.database.models import User
 
 MAX_FILE_AMOUNT = 50
@@ -13,7 +13,7 @@ class NonDuplicate(object):
 
     def __call__(self, _, field):
 
-        user = session.query(self.class_).filter(
+        user = Session.query(self.class_).filter(
             getattr(self.class_, self.attribute) == field.data
         ).first()
 

@@ -14,7 +14,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.associationproxy import association_proxy
 
 from battlebots import backports, config, sandbox
-from battlebots.database import session
+from battlebots.database import Session
 from battlebots.ranker.elo import DEFAULT_SCORE
 
 Base = declarative_base()
@@ -152,7 +152,7 @@ class Bot(Base):
 
     @property
     def rank(self):
-        bots = enumerate(session.query(Bot).order_by(desc(Bot.score)).all())
+        bots = enumerate(Session.query(Bot).order_by(desc(Bot.score)).all())
         return next(dropwhile(lambda bot: bot[1] != self, bots))[0]
 
 
