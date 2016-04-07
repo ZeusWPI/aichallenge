@@ -11,21 +11,20 @@ engine = create_engine(config.SQLALCHEMY_DATABASE_URI, pool_recycle=3600)
 engine.dispose()
 session_factory = sessionmaker(bind=engine)
 Session = _scoped_session(session_factory)
-session = None
+session = Session()
 
 
 @contextmanager
 def scoped_session():
     """Provide a transactional scope around a series of operations."""
     try:
-        Session()
-        yield Session
+        yield session
+        Session.commit()
     except:
         logging.exception("Database had to do a rollback.")
         Session.rollback()
         raise
     finally:
-        Session.commit()
         Session.remove()
 
 

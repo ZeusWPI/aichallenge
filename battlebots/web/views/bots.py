@@ -7,8 +7,8 @@ from flask.ext import login
 from werkzeug import secure_filename
 
 from battlebots import config
-from battlebots.database import scoped_session
-from battlebots.database import access as db
+from battlebots.database import session
+#from battlebots.database import access as db
 from battlebots.database.models import Bot, Match, User
 from battlebots.web import app
 from battlebots.web.forms.bots import NewBotForm, UpdateBotForm
@@ -34,36 +34,36 @@ def update_bot(username, botname):
         abort(400)  # Should not happen
 
     form = UpdateBotForm()
-    with scoped_session() as db:
-        user = db.query(User).filter_by(nickname=username).one_or_none()
-        bot = db.query(Bot).filter_by(user=user, name=botname).one_or_none()
 
-        if user is None:
-            flash('User {} does not exist.')
-            redirect(url_for('users'))
+    user = session.query(User).filter_by(nickname=username).one_or_none()
+    bot = Session.query(Bot).filter_by(user=user, name=botname).one_or_none()
 
-        if bot is None:
-            flash('{} does not exist or does not belong to {}'
-                .format(botname, username))
-            return redirect(url_for('profile'))
+    if user is None:
+        flash('User {} does not exist.')
+        redirect(url_for('users'))
 
-        if not form.compile_cmd.data and not form.run_cmd.data:
-            form.compile_cmd.data = bot.compile_cmd
-            form.run_cmd.data = bot.run_cmd
+    if bot is None:
+        flash('{} does not exist or does not belong to {}'
+            .format(botname, username))
+        return redirect(url_for('profile'))
 
-        if form.validate_on_submit():
-            bot.compile_cmd = form.compile_cmd.data
-            bot.run_cmd = form.run_cmd.data
-            bot.compiled = False if bot.compile_cmd else bot.compiled
+    if not form.compile_cmd.data and not form.run_cmd.data:
+        form.compile_cmd.data = bot.compile_cmd
+        form.run_cmd.data = bot.run_cmd
 
-            files = request.files.getlist('files')
-            parent = p.join(config.BOT_CODE_DIR, user.nickname, bot.name)
-            make_files(files, parent)
+    if form.validate_on_submit():
+        bot.compile_cmd = form.compile_cmd.data
+        bot.run_cmd = form.run_cmd.data
+        bot.compiled = False if bot.compile_cmd else bot.compiled
 
-            flash('Update bot "%s" succesfully!' % bot.name)
-            return redirect(url_for('profile'))
+        files = request.files.getlist('files')
+        parent = p.join(config.BOT_CODE_DIR, user.nickname, bot.name)
+        make_files(files, parent)
 
-        return render_template('bots/update.html', form=form)
+        flash('Update bot "%s" succesfully!' % bot.name)
+        return redirect(url_for('profile'))
+
+    return render_template('bots/update.html', form=form)
 
 
 @app.route('/bots/<username>/<botname>', methods=('POST',))
@@ -72,7 +72,7 @@ def remove_bot(username, botname):
     if username != login.current_user.nickname:
         abort(400)  # Should not happen
 
-    db.remove_bot(login.current_user, botname)
+    #db.remove_bot(login.current_user, botname)
     flash('Removed bot "%s" succesfully!' % botname)
     return redirect(url_for('profile'))
 
@@ -80,25 +80,23 @@ def remove_bot(username, botname):
 @app.route('/bots/<username>/<botname>', methods=('GET',))
 def bot_page(username, botname):
 
-    with scoped_session() as db:
-        user = db.query(User).filter_by(nickname=username).one_or_none()
-        if user is None:
-            flash('User {} does not exist.')
-            return redirect(url_for('users'))
+    user = session.query(User).filter_by(nickname=username).one_or_none()
+    if user is None:
+        flash('User {} does not exist.')
+        return redirect(url_for('users'))
 
-        bot = db.query(Bot).filter_by(user=user, name=botname).one_or_none()
-        if bot is None:
-            flash('{} does not exist or does not belong to {}'
-                .format(botname, username))
-            return redirect(url_for('user_page', username=username))
+    bot = session.query(Bot).filter_by(user=user, name=botname).one_or_none()
+    if bot is None:
+        flash('{} does not exist or does not belong to {}'
+            .format(botname, username))
+        return redirect(url_for('user_page', username=username))
 
-        return render_template('bots/bot.html', bot=bot)
+    return render_template('bots/bot.html', bot=bot)
 
 
 @app.route('/matches/<matchid>')
 def match_page(matchid):
-    with scoped_session() as db:
-        match = db.query(Match).filter_by(id=matchid).one_or_none()
+    match = session.query(Match).filter_by(id=matchid).one_or_none()
 
     if match is None:
         flash('Match with id {} does not exist.'.format(matchid))
@@ -126,7 +124,7 @@ def add_bot(user, form):
         compiled=False if form.compile_cmd.data else True
     )
 
-    db.add(bot)
+    #db.add(bot)
 
 
 def make_files(files, parent):

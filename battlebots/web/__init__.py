@@ -46,5 +46,18 @@ if config.PRODUCTION:
     )
 
 
+
+@app.before_request
+def before_request():
+    print("Opening session")
+    #Session()
+
+@app.teardown_request
+def teardown_request(exception):
+    print("Closing session")
+    Session.commit()
+    Session.remove()
+
+
 from battlebots.web import views  # NOQA
 from battlebots.web.views import bots  # NOQA
