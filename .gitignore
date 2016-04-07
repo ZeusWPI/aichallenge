@@ -1,3 +1,5 @@
+config.py
+
 database.db
 ranker.pid
 *.log
