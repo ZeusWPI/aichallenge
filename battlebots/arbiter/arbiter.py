@@ -154,6 +154,7 @@ class Road:
         position = 2 * (steps or self.length)
         if self.headed_to[march.destination][position]:
             self.headed_to[march.destination][position].size += march.size
+            march.die()
         else:
             self.headed_to[march.destination][position] = march
 
