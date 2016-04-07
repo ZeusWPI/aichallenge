@@ -22,3 +22,7 @@ WEB_LOG = path.join(LOGS_HOME, 'web.log')
 SECRET_KEY = 'badass'
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(DB_DIR, 'database.db')
+
+AIRBRAKE_BASE_URL = 'http://errbit.awesomepeople.tv'
+AIRBRAKE_ID = '57056f3b6b696e20df00002d'
+AIRBRAKE_KEY = '4199e1aa858bcea3022120a2848fc898'

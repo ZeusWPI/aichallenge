@@ -1,3 +1,4 @@
+from airbrake import Airbrake, AirbrakeHandler
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -26,7 +27,24 @@ if config.PRODUCTION:
     logging.getLogger().addHandler(log_file_handler)
     logging.getLogger('werkzeug').addHandler(log_file_handler)
     app.logger.addHandler(log_file_handler)
-    # TODO add airbrake
+
+    airbrakelogger = logging.getLogger('airbrake')
+
+    # Airbrake
+    airbrake = Airbrake(
+        project_id=config.AIRBRAKE_ID,
+        api_key=config.AIRBRAKE_KEY
+    )
+    # ugly hack to make this work for our errbit
+    airbrake._api_url = "{}/api/v3/projects/{}/notices".format(config.AIRBRAKE_BASE_URL, airbrake.project_id)
+
+    airbrakelogger.addHandler(
+        AirbrakeHandler(airbrake=airbrake)
+    )
+    app.logger.addHandler(
+        AirbrakeHandler(airbrake=airbrake)
+    )
+
 
 app.before_request(lambda: Session.remove())
 
