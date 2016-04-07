@@ -46,7 +46,5 @@ if config.PRODUCTION:
     )
 
 
-app.before_request(lambda: Session.remove())
-
 from battlebots.web import views  # NOQA
 from battlebots.web.views import bots  # NOQA

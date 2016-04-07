@@ -7,12 +7,11 @@ from flask.ext import login
 from werkzeug import secure_filename
 
 from battlebots import config
-from battlebots.database import session
+from battlebots.database import scoped_session
 from battlebots.database import access as db
 from battlebots.database.models import Bot, Match, User
 from battlebots.web import app
 from battlebots.web.forms.bots import NewBotForm, UpdateBotForm
-from battlebots.web.pagination_utils import paginate
 
 
 @app.route('/bots/new', methods=('GET', 'POST'))
@@ -35,35 +34,36 @@ def update_bot(username, botname):
         abort(400)  # Should not happen
 
     form = UpdateBotForm()
-    user = session.query(User).filter_by(nickname=username).one_or_none()
-    bot = session.query(Bot).filter_by(user=user, name=botname).one_or_none()
+    with scoped_session() as db:
+        user = db.query(User).filter_by(nickname=username).one_or_none()
+        bot = db.query(Bot).filter_by(user=user, name=botname).one_or_none()
 
-    if user is None:
-        flash('User {} does not exist.')
-        redirect(url_for('users'))
+        if user is None:
+            flash('User {} does not exist.')
+            redirect(url_for('users'))
 
-    if bot is None:
-        flash('{} does not exist or does not belong to {}'
-              .format(botname, username))
-        return redirect(url_for('profile'))
+        if bot is None:
+            flash('{} does not exist or does not belong to {}'
+                .format(botname, username))
+            return redirect(url_for('profile'))
 
-    if not form.compile_cmd.data and not form.run_cmd.data:
-        form.compile_cmd.data = bot.compile_cmd
-        form.run_cmd.data = bot.run_cmd
+        if not form.compile_cmd.data and not form.run_cmd.data:
+            form.compile_cmd.data = bot.compile_cmd
+            form.run_cmd.data = bot.run_cmd
 
-    if form.validate_on_submit():
-        bot.compile_cmd = form.compile_cmd.data
-        bot.run_cmd = form.run_cmd.data
-        bot.compiled = False if bot.compile_cmd else bot.compiled
+        if form.validate_on_submit():
+            bot.compile_cmd = form.compile_cmd.data
+            bot.run_cmd = form.run_cmd.data
+            bot.compiled = False if bot.compile_cmd else bot.compiled
 
-        files = request.files.getlist('files')
-        parent = p.join(config.BOT_CODE_DIR, user.nickname, bot.name)
-        make_files(files, parent)
+            files = request.files.getlist('files')
+            parent = p.join(config.BOT_CODE_DIR, user.nickname, bot.name)
+            make_files(files, parent)
 
-        flash('Update bot "%s" succesfully!' % bot.name)
-        return redirect(url_for('profile'))
+            flash('Update bot "%s" succesfully!' % bot.name)
+            return redirect(url_for('profile'))
 
-    return render_template('bots/update.html', form=form)
+        return render_template('bots/update.html', form=form)
 
 
 @app.route('/bots/<username>/<botname>', methods=('POST',))
@@ -80,24 +80,25 @@ def remove_bot(username, botname):
 @app.route('/bots/<username>/<botname>', methods=('GET',))
 def bot_page(username, botname):
 
-    user = session.query(User).filter_by(nickname=username).one_or_none()
-    if user is None:
-        flash('User {} does not exist.')
-        return redirect(url_for('users'))
+    with scoped_session() as db:
+        user = db.query(User).filter_by(nickname=username).one_or_none()
+        if user is None:
+            flash('User {} does not exist.')
+            return redirect(url_for('users'))
 
-    bot = session.query(Bot).filter_by(user=user, name=botname).one_or_none()
-    if bot is None:
-        flash('{} does not exist or does not belong to {}'
-              .format(botname, username))
-        return redirect(url_for('user_page', username=username))
-    paginated_bot_participations_ = paginate(bot.participations)
+        bot = db.query(Bot).filter_by(user=user, name=botname).one_or_none()
+        if bot is None:
+            flash('{} does not exist or does not belong to {}'
+                .format(botname, username))
+            return redirect(url_for('user_page', username=username))
 
-    return render_template('bots/bot.html', bot=bot, paginated_bot_participations=paginated_bot_participations_)
+        return render_template('bots/bot.html', bot=bot)
 
 
 @app.route('/matches/<matchid>')
 def match_page(matchid):
-    match = session.query(Match).filter_by(id=matchid).one_or_none()
+    with scoped_session() as db:
+        match = db.query(Match).filter_by(id=matchid).one_or_none()
 
     if match is None:
         flash('Match with id {} does not exist.'.format(matchid))

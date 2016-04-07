@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, NoneOf
 from battlebots.arbiter import arbiter
 from battlebots.database.models import User, PASSWORD_LENGTH, NICKNAME_LENGTH
 from battlebots.web.validators import NonDuplicate
-from battlebots.database import session
+from battlebots.database import scoped_session
 
 
 class LoginForm(Form):
@@ -19,7 +19,8 @@ class LoginForm(Form):
         if not rv:
             return rv
 
-        user = session.query(User).filter_by(nickname=self.nickname.data).one_or_none()
+        with scoped_session() as db:
+            user = db.query(User).filter_by(nickname=self.nickname.data).one_or_none()
         if user is None:
             self.nickname.errors.append('User unknown.')
             return False

@@ -3,7 +3,7 @@ from sqlalchemy import desc
 
 from battlebots.web import app
 from battlebots.web.pagination_utils import paginate
-from battlebots.database import session
+from battlebots.database import scoped_session
 from battlebots.database.models import Bot, Match
 
 
@@ -15,14 +15,16 @@ def home():
 
 @app.route('/ranking')
 def ranking():
-    bots = session.query(Bot).order_by(desc(Bot.score))
+    with scoped_session() as db:
+        bots = db.query(Bot).order_by(desc(Bot.score))
     ranked_bots = enumerate(bots)
     return render_template('ranking.html', bots=ranked_bots)
 
 
 @app.route('/matches/')
 def matches():
-    matches_ = session.query(Match).order_by(desc(Match.id))
+    with scoped_session() as db:
+        matches_ = db.query(Match).order_by(desc(Match.id))
     paginated_matches_ = paginate(matches_)
 
     return render_template('matches.html', paginated_matches=paginated_matches_)

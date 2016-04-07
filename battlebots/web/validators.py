@@ -1,6 +1,6 @@
 from wtforms.validators import ValidationError
 
-from battlebots.database import session
+from battlebots.database import scoped_session
 from battlebots.database.models import User
 
 MAX_FILE_AMOUNT = 50
@@ -13,9 +13,10 @@ class NonDuplicate(object):
 
     def __call__(self, _, field):
 
-        user = session.query(self.class_).filter(
-            getattr(self.class_, self.attribute) == field.data
-        ).first()
+        with scoped_session() as db:
+            user = db.query(self.class_).filter(
+                getattr(self.class_, self.attribute) == field.data
+            ).first()
 
         if user is not None:
             raise ValidationError("{} already in use.".format(self.attribute))
