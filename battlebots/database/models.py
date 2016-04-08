@@ -182,8 +182,12 @@ class Match(Base):
 
     @property
     def log(self):
-        with gzip.open(self.log_path, 'rb') as log_file:
-            return log_file.read().decode('utf-8')
+        try:
+            with gzip.open(self.log_path, 'rb') as log_file:
+                return log_file.read().decode('utf-8')
+        except FileNotFoundError:
+            logging.warning('File not found {}'.format(self.log_path))
+            return None
 
     def save_log(self, content):
         os.makedirs(os.path.dirname(self.log_path), exist_ok=True)

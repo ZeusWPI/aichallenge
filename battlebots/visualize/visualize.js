@@ -291,7 +291,7 @@ $(document).ready(function(){
   };
   reader.onerror = function(e){
     alert("could not open file");
-  }
+  };
   $("#file-chooser").change(function(e){
     reader.readAsText(e.target.files[0]);
   });
