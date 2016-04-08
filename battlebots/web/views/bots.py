@@ -4,12 +4,13 @@ import shutil
 
 from flask import flash, redirect, render_template, abort, request, url_for
 from flask.ext import login
+from sqlalchemy import desc
 from werkzeug import secure_filename
 
 from battlebots import config
 from battlebots.database import session
 from battlebots.database import access as db
-from battlebots.database.models import Bot, Match, User
+from battlebots.database.models import Bot, Match, MatchParticipation, User
 from battlebots.web import app
 from battlebots.web.forms.bots import NewBotForm, UpdateBotForm
 from battlebots.web.pagination_utils import paginate
@@ -99,7 +100,9 @@ def bot_page(username, botname):
         flash('{} does not exist or does not belong to {}'
               .format(botname, username))
         return redirect(url_for('user_page', username=username))
-    paginated_bot_participations_ = paginate(bot.participations)
+    paginated_bot_participations_ = paginate(bot.participations.order_by(
+        desc(MatchParticipation.match_id)
+    ))
 
     return render_template(
         'bots/bot.html', bot=bot,
