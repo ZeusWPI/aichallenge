@@ -2,13 +2,14 @@
 
 import os
 import sys
-from urllib.parse import unquote
 
 INTERP = os.path.expanduser("~/env/bin/python")
 if sys.executable != INTERP:
     os.execl(INTERP, INTERP, *sys.argv)
 
 from pathlib import Path
+from urllib.parse import unquote
+
 repo_root = Path(__file__).resolve().parents[2]
 sys.path.append(str(repo_root))
 
