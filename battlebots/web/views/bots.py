@@ -59,7 +59,7 @@ def update_bot(username, botname):
         files = request.files.getlist('files')
         parent = p.join(config.BOT_CODE_DIR, user.nickname, bot.name)
         make_files(files, parent)
-
+        db.merge(bot)
         flash('Update bot "%s" succesfully!' % bot.name)
         return redirect(url_for('profile'))
 
