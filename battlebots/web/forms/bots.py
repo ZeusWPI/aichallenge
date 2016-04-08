@@ -5,7 +5,8 @@ from wtforms.validators import DataRequired, Length, Optional, NoneOf
 
 from battlebots.arbiter import arbiter
 from battlebots.database.models import BOTNAME_LENTGH, Bot
-from battlebots.web.validators import MaxFileAmount, NonDuplicate
+from battlebots.web.validators import \
+    (MaxFileAmount, NonDuplicate, NoForwardSlashes)
 
 
 class NewBotForm(Form):
@@ -15,6 +16,7 @@ class NewBotForm(Form):
             Length(*BOTNAME_LENTGH),
             NonDuplicate(Bot, 'name'),
             NoneOf([arbiter.NO_PLAYER_NAME]),
+            NoForwardSlashes()
         ])
 
     files = FileField('Files', validators=[DataRequired(), MaxFileAmount()])

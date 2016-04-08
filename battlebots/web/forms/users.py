@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, NoneOf
 
 from battlebots.arbiter import arbiter
 from battlebots.database.models import User, PASSWORD_LENGTH, NICKNAME_LENGTH
-from battlebots.web.validators import NonDuplicate
+from battlebots.web.validators import NonDuplicate, NoForwardSlashes
 from battlebots.database import session
 
 
@@ -40,6 +40,7 @@ class RegisterForm(Form):
             Length(*NICKNAME_LENGTH),
             NonDuplicate(User, 'nickname'),
             NoneOf([arbiter.NO_PLAYER_NAME]),
+            NoForwardSlashes()
         ])
 
     email = StringField(
