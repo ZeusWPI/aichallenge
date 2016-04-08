@@ -27,10 +27,21 @@ BOTNAME_LENTGH = (1, 32)
 class User(Base, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    nickname = db.Column(db.String(NICKNAME_LENGTH[1]), index=True,
-                         unique=True, nullable=False)
+
+    nickname = db.Column(
+        db.String(NICKNAME_LENGTH[1]),
+        index=True,
+        unique=True,
+        nullable=False)
+
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     password = db.Column(db.String(120), index=True, nullable=False)
+
+    bots = relationship(
+        'Bot',
+        back_populates='user',
+        cascade='all, delete-orphan',
+        passive_deletes=True)
 
     def __repr__(self):
         return '<User {}>'.format(self.nickname)
@@ -53,10 +64,10 @@ class Bot(Base):
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('user.id'),
+        db.ForeignKey('user.id', ondelete='CASCADE'),
         nullable=False)
 
-    user = relationship(User, backref='bots')
+    user = relationship(User, back_populates='bots')
 
     name = db.Column(
         db.String(BOTNAME_LENTGH[1]),
@@ -73,9 +84,13 @@ class Bot(Base):
     matches = relationship(
         'Match',
         secondary='match_participation',
-        back_populates='bots')
+        back_populates='bots',
+        cascade='all')
 
-    matches_won = relationship('Match', back_populates='winner')
+    matches_won = relationship(
+        'Match',
+        back_populates='winner',
+        cascade='all')
 
     compile_cmd = db.Column(db.String(200))
     run_cmd = db.Column(db.String(200), nullable=False)
@@ -203,21 +218,23 @@ class MatchParticipation(Base):
 
     match_id = db.Column(
         db.Integer,
-        db.ForeignKey('match.id'),
+        db.ForeignKey('match.id', ondelete='CASCADE'),
         primary_key=True)
 
     bot_id = db.Column(
         db.Integer,
-        db.ForeignKey('bot.id'),
+        db.ForeignKey('bot.id', ondelete='CASCADE'),
         primary_key=True)
 
     match = relationship(
         Match,
-        backref=backref('participations', cascade='all, delete-orphan'))
+        backref=backref('participations', cascade='all, delete-orphan',
+                        passive_deletes=True))
 
     bot = relationship(
         Bot,
-        backref=backref('participations', cascade='all, delete-orphan', lazy='dynamic'))
+        backref=backref('participations', cascade='all, delete-orphan',
+                        passive_deletes=True, lazy='dynamic'))
 
     errors = db.Column(db.Text)
 
