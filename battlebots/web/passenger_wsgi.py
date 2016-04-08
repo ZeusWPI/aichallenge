@@ -12,9 +12,13 @@ from pathlib import Path
 repo_root = Path(__file__).resolve().parents[2]
 sys.path.append(str(repo_root))
 
-from battlebots.web import app
+from battlebots.web import app as application
+
+wsgi_app = application.wsgi_app
 
 
-def application(environ, start_response):
+def _app(environ, start_response):
     environ["PATH_INFO"] = unquote(environ["PATH_INFO"])
-    return app(environ, start_response)
+    return wsgi_app(environ, start_response)
+
+application.wsgi_app = _app
