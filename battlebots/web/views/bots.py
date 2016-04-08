@@ -40,7 +40,7 @@ def update_bot(username, botname):
 
     if user is None:
         flash('User {} does not exist.')
-        redirect(url_for('users'))
+        return redirect(url_for('users'))
 
     if bot is None:
         flash('{} does not exist or does not belong to {}'
@@ -72,7 +72,16 @@ def remove_bot(username, botname):
     if username != login.current_user.nickname:
         abort(400)  # Should not happen
 
-    db.remove_bot(login.current_user, botname)
+    bot = (session.query(Bot)
+           .filter_by(user=login.current_user, name=botname)
+           .one_or_none())
+
+    if bot is None:
+        flash('{} does not exist or does not belong to {}'
+              .format(botname, username))
+        return redirect(url_for('profile'))
+
+    db.remove_bot(bot)
     flash('Removed bot "%s" succesfully!' % botname)
     return redirect(url_for('profile'))
 
@@ -92,7 +101,9 @@ def bot_page(username, botname):
         return redirect(url_for('user_page', username=username))
     paginated_bot_participations_ = paginate(bot.participations)
 
-    return render_template('bots/bot.html', bot=bot, paginated_bot_participations=paginated_bot_participations_)
+    return render_template(
+        'bots/bot.html', bot=bot,
+        paginated_bot_participations=paginated_bot_participations_)
 
 
 @app.route('/matches/<matchid>')

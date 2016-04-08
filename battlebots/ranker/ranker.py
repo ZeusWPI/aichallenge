@@ -17,7 +17,7 @@ from sqlalchemy.sql.expression import func
 
 from battlebots import backports, config
 from battlebots.arbiter import arbiter
-from battlebots.database import access, session as db, scoped_session
+from battlebots.database import access, session as db
 from battlebots.database.models import Bot, Match, MatchParticipation
 
 GRAPH_WANDERLUST = 0
@@ -104,14 +104,19 @@ def battle(loop):
             participation = MatchParticipation(bot=bot, errors=warnings)
             match.participations.append(participation)
 
-        with scoped_session() as db:
+        try:
             # Saves match object, but also adds an ID so we know where to save
             # the log of the match to.
             db.add(match)
+            db.commit()
 
             # Store the log file to match.log_path
             tmp_logfile.seek(0)
             match.save_log(tmp_logfile.read())
+        except:
+            logging.exception("Database had to do a rollback.")
+            db.rollback()
+            raise
 
 
 def battle_loop():

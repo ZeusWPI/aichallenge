@@ -178,6 +178,9 @@ class Match(Base):
 
     @property
     def log_path(self):
+        if not self.id:
+            raise ValueError('ID was not set for this match. '
+                             'Did you commit it to the database?')
         return os.path.join(config.MATCH_LOG_DIR, str(self.id) + '.gz')
 
     @property
