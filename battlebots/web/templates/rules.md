@@ -122,7 +122,7 @@ Hieronder een voorbeeld van een spelconfiguratie.
     boyard 10 20 felix 100
     helsingor 20 10 ilion 200
     nox 30 30 neutral 0
-    0 2 roads:
+    2 roads:
     boyard helsingor
     helsingor nox
     2 marches:
