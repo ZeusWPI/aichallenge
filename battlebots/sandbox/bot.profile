@@ -13,8 +13,8 @@ tracelog
 private-dev
 private-etc hostname,alternatives
 private-tmp
-# Disable system management commands
-include /etc/firejail/disable-mgmt.inc
+# Disable system management commands & other unnecessary stuff
+include /etc/firejail/disable-common.inc
 
 # Allow restricted network access for compilation
 netfilter
