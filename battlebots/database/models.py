@@ -137,10 +137,10 @@ class Bot(Base):
             self.compiled = True
             return True
         except sp.SubprocessError as error:
-            error = '{error}\nStdout: {stdout}Stderr: {stderr}'.format(
+            error = '{error}\nStdout: {stdout}\nStderr: {stderr}'.format(
                 error=error,
-                stdout=error.stdout.decode('utf8'),
-                stderr=error.stderr.decode('utf8'))
+                stdout=error.stdout.decode('utf8').rstrip(),
+                stderr=error.stderr.decode('utf8').rstrip())
             logging.warning(error)
             self.compile_errors = error
             return False

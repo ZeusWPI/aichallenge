@@ -39,16 +39,18 @@ def sp_run(*popenargs, input=None, timeout=None, check=False, **kwargs):
         except sp.TimeoutExpired:
             process.kill()
             stdout, stderr = process.communicate()
-            raise sp.TimeoutExpired(process.args, timeout, output=stdout,
-                                    stderr=stderr)
+            err = sp.TimeoutExpired(process.args, timeout, output=stdout)
+            err.stderr = stderr
+            raise err
         except:
             process.kill()
             process.wait()
             raise
         retcode = process.poll()
         if check and retcode:
-            raise sp.CalledProcessError(retcode, process.args, output=stdout,
-                                        stderr=stderr)
+            err = sp.CalledProcessError(retcode, process.args, output=stdout)
+            err.stderr = stderr
+            raise err
     return CompletedProcess(process.args, retcode, stdout, stderr)
 
 
@@ -77,9 +79,3 @@ class CompletedProcess(object):
         if self.stderr is not None:
             args.append('stderr={!r}'.format(self.stderr))
         return "{}({})".format(type(self).__name__, ', '.join(args))
-
-    def check_returncode(self):
-        """Raise CalledProcessError if the exit code is non-zero."""
-        if self.returncode:
-            raise sp.CalledProcessError(self.returncode, self.args,
-                                        self.stdout, self.stderr)
