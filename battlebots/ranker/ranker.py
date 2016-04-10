@@ -45,8 +45,8 @@ def generate_graph(player_names):
     except sp.SubprocessError as error:
         logging.error('Graph generation failed.')
         logging.error(error)
-        logging.error('Stdout was %s', error.stdout)
-        logging.error('Stderr was %s', error.stderr)
+        logging.error('Stdout was %s', error.output.decode('utf8'))
+        logging.error('Stderr was %s', error.stderr.decode('utf8'))
         raise
 
     return [line.decode('utf8') for line in process.stdout.splitlines()]
