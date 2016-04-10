@@ -29,3 +29,11 @@ class MaxFileAmount(object):
                 'More than {} files, seriously?'
                 ' Cut that down baby.'.format(MAX_FILE_AMOUNT)
             )
+
+
+class NoForwardSlashes(object):
+    def __call__(self, _, field):
+        if '/' in field.data:
+            raise ValidationError(
+                'Forward slashes not allowed.'
+            )

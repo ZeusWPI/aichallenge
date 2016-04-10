@@ -25,10 +25,10 @@
           <td>{{ match.end_time.strftime('%d/%m %H:%M') }}</td>
 
           <td>
+            {% set comma = joiner('vs.') %}
             {% for participant in match.bots %}
-              <a href="{{ url_for('bot_page', username=participant.user.nickname, botname=participant.name) }}">
-                {{ participant.name }}
-              </a>
+              {{ comma() }}
+              <a href="{{ url_for('bot_page', username=participant.user.nickname, botname=participant.name) }}">{{ participant.name }}</a>
             {% endfor %}
           </td>
 

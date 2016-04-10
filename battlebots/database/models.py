@@ -10,8 +10,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import sqlalchemy as db
 from sqlalchemy import desc
 from sqlalchemy.orm import backref, relationship
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.declarative import declarative_base
+
 
 from battlebots import backports, config, sandbox
 from battlebots.database import session
