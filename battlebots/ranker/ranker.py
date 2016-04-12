@@ -127,6 +127,7 @@ def battle_loop():
                 battle(loop)
                 sleep(10)
             except Exception:
+                db.rollback()
                 logging.exception('Ranker encountered a fatal error')
                 # Keep trying after a while
                 sleep(300)
