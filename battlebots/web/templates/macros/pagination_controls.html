@@ -8,8 +8,8 @@
     </li>
     {%- for page in pagination.iter_pages() %}
       {% if page %}
-        <li{% if page == pagination.current_page %} class="disabled"{% endif %}>
-          <a href="{{ url_for(endpoint, page=page, **kwargs) }}">{{ page }} <span class="sr-only">(current)</span></a>
+        <li{% if page-1 == pagination.current_page %} class="disabled"{% endif %}>
+          <a href="{{ url_for(endpoint, page=page-1, **kwargs) }}">{{ page }} <span class="sr-only">(current)</span></a>
         </li>
       {% else %}
         <li class="disabled"><a href="#">…</a></li>

@@ -12,15 +12,15 @@ class Paginated(object):
         self.step = step
 
         self.total_item_count = query.count()
-        self.items = query.limit(step).offset((self.current_page - 1) * step)
+        self.items = query.limit(step).offset(self.current_page * step)
 
     @property
     def is_first_page(self):
-        return self.current_page <= 1
+        return self.current_page <= 0
 
     @property
     def is_last_page(self):
-        return self.current_page >= self.total_pages
+        return self.current_page+1 >= self.total_pages
 
     @property
     def total_pages(self):
@@ -30,7 +30,7 @@ class Paginated(object):
         last = 0
         for page in range(1, self.total_pages + 1):
             if page <= left_edge or \
-               (page > self.current_page - left_current - 1 and page < self.current_page + right_current) or \
+               (page > self.current_page - left_current and page < self.current_page + right_current + 1) or \
                page > self.total_pages - right_edge:
                 if last + 1 != page:
                     yield None
@@ -40,11 +40,11 @@ class Paginated(object):
     @staticmethod
     def get_current_page():
         try:
-            page = int(request.args.get('page', 1))
+            page = int(request.args.get('page', 0))
         except ValueError:
-            page = 1
+            page = 0
 
-        return page
+        return max(page, 0)
 
     def calculate_slice_range(self):
         return self.step*(self.current_page - 1), self.step * self.current_page
