@@ -1,7 +1,7 @@
 {
     "players": {
-        "testrobot": "../scripts/eavesdrop test.in /dev/null python3 ../testbots/destroybot.py",
-        "destroybot": "../scripts/eavesdrop test.in destroy.out python3 ../testbots/destroybot.py"
+        "bart": "../scripts/eavesdrop test.in /dev/null python3 ../testbots/destroybot.py",
+        "berd": "../scripts/eavesdrop test.in destroy.out python3 ../testbots/destroybot.py"
     },
     "mapfile": "map.input",
     "logfile": "epic.data",
