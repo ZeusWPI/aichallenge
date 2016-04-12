@@ -99,7 +99,7 @@ class Game:
 
         try:
             while True:
-                Game.players, Game.marches = {}, set()
+                Game.marches = set()
                 handle(Game.parse_fort)
                 handle(Game.parse_road)
                 handle(Game.parse_march)
