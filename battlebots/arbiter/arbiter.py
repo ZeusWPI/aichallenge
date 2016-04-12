@@ -249,7 +249,7 @@ class Fort:
         if forces:
             runner_up = largest_force()
             self.garrison -= forces[runner_up]
-        if self.garrison > 0:
+        if self.garrison > 0 and winner:
             winner.capture(self)
 
     def distance(self, neighbour):
