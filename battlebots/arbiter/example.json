@@ -3,7 +3,7 @@
         "bart": "python3 ../testbots/testrobot.py",
         "berd": "python3 ../testbots/destroybot.py"
     },
-    "mapfile": "map.input",
-    "logfile": "sample.data",
+    "mapfile": "example.input",
+    "logfile": "example.log",
     "max_steps": 500
 }

@@ -1,20 +1,49 @@
-# Example structure, do not use with the arbiter. Use map.input instead.
-6 forts:
-helsingor 0 0 bart 30
-stonefieldt 10 0 berdt 20
-boyardt 20 10 berdt 10
-rivendel 18 3 bart 50
-hogwardts 10 10 berdt 8
-knox 30 30 neutral 0
-7 roads:
-stonefieldt helsingor
-stonefieldt hogwardts
-hogwardts boyardt
-rivendel knox
-rivendel hogwardts
-boyardt rivendel
-hogwardts knox
-3 marches:
-stonefieldt helsingor berdt 10 8
-helsingor stonefieldt bart 40 6
-hogwardts rivendel berdt 18 1
+14 forts:
+highgarden 31 21 bart 100
+cair-paravel 17 2 berd 100
+duckula 24 25 neutral 0
+nightfort 38 15 neutral 0
+otranto 23 3 neutral 0
+seagard 40 9 neutral 0
+versailles 40 19 neutral 0
+dreadfort 32 13 neutral 0
+glagnorra 20 11 neutral 0
+camelot 30 18 neutral 0
+caernarfon 17 24 neutral 0
+minas-morgul 27 12 neutral 0
+eilean-donan 39 5 neutral 0
+caladan 1 8 neutral 0
+32 roads:
+caernarfon camelot
+caernarfon duckula
+caernarfon glagnorra
+caladan caernarfon
+caladan cair-paravel
+caladan glagnorra
+camelot dreadfort
+camelot duckula
+camelot glagnorra
+camelot highgarden
+dreadfort highgarden
+dreadfort nightfort
+dreadfort otranto
+dreadfort seagard
+duckula highgarden
+eilean-donan cair-paravel
+eilean-donan dreadfort
+eilean-donan otranto
+eilean-donan seagard
+glagnorra cair-paravel
+glagnorra otranto
+minas-morgul camelot
+minas-morgul dreadfort
+minas-morgul glagnorra
+minas-morgul otranto
+nightfort highgarden
+otranto cair-paravel
+seagard nightfort
+versailles duckula
+versailles highgarden
+versailles nightfort
+versailles seagard
+0 marches:
