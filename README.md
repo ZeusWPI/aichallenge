@@ -1,4 +1,4 @@
-# BattleBots
+# Badass Bottle Bats
 
 ## For participants
 
@@ -7,7 +7,7 @@ You can review
 of the kick-off event if you want.
 
 If you just want to start coding, you can read the protocols and how to test
-your bot [here](https://zeus.ugent.be/battlebots/rules).
+your bot [here](https://zeus.ugent.be/bottlebats/rules).
 
 
 ![Visualisation](battlebots/web/static/visualiser_scrot.png)
@@ -143,3 +143,9 @@ Run the following:
 ```
 python battlebots/arbiter/arbiter.py test.json
 ```
+
+## Disclaimer
+
+We have no affiliation whatsoever with BattleBots, Inc.  There is absolutely no
+reason to even consider that. For dyslexic ones amongst us, the difference with
+our name is that the "a" and "o" are switched.

@@ -4,11 +4,11 @@
 
 {% block markdown_content -%}
 
-# Badass Battle Bots
+# Badass Bottle Bats
 
 We are Zeus WPI. We like games. We like programming. So we decided to build our
-very own programming game. Now, we would like to share. Welcome to Badass Battle
-Bots.
+very own programming game. Now, we would like to share. Welcome to Badass Bottle
+Bats.
 
 The objective of the game is to write a computer program that will take on other
 competitors' programs in a grand battle for honour, glory and world domination.
