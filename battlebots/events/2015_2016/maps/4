@@ -15,11 +15,11 @@ eo 44 30 neutral 0
 fo 44 16 neutral 0
 go 30 2 neutral 0
 ho 16 2 neutral 0
-am 5 23 blue 0
+am 5 23 blue 100
 bm 11 35 neutral 0
 cm 23 41 neutral 0
 dm 35 35 neutral 0
-em 41 23 orange 0
+em 41 23 orange 100
 fm 35 11 neutral 0
 gm 23 5 neutral 0
 hm 10 11 neutral 0

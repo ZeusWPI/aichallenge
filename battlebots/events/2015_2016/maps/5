@@ -5,7 +5,7 @@ benjifort 5 0 neutral 0
 destrofort 10 0 neutral 0
 
 tlelfort 0 5 neutral 0
-dinofort 15 5 blue 0
+dinofort 15 5 blue 100
 giljfort 20 5 neutral 0
 julienfort 25 5 neutral 0
 felixfort 30 5 neutral 0
@@ -17,7 +17,7 @@ kenfort 30 10 neutral 0
 siloxfort 40 10 neutral 0
 
 ismenefort 0 15 neutral 0
-pieterfort 15 15 orange 0
+pieterfort 15 15 orange 100
 jonafort 20 15 neutral 0
 rienspyfort 25 15 neutral 0
 jensfort 30 15 neutral 0
