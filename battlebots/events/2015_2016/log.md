@@ -39,7 +39,7 @@ Participants:
 
 Winner of the 2015-2016 final event: Ignace
 
- #### Free For All
+#### Free For All
 
  - FFA4 1:
    - Ignace
