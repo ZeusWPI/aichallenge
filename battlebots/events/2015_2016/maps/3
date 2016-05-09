@@ -1,0 +1,49 @@
+# STEP: 0
+# name x y owner garrison
+16  forts:
+isengard 0 5 neutral 0
+pietland 10 0 neutral 0
+penisland 15 5 neutral 0
+schaamlip 0 10 neutral 0
+pietsap 5 10 neutral 0
+poopybuttholeland 10 10 neutral 0
+pipiland 0 15 neutral 0
+foefland 15 15 neutral 0
+markoland 10 20 neutral 0
+
+woutland 30 5 neutral 0
+stijnland 20 0 neutral 0
+relixland 30 10 neutral 0
+siloxland 25 10 neutral 0
+destroland 20 10 neutral 0
+dinoland 30 15 neutral 0
+iepoevland 20 20 neutral 0
+
+24 roads:
+isengard pietsap
+schaamlip pietsap
+pipiland pietsap
+pietsap pietland
+pietsap poopybuttholeland
+pietland poopybuttholeland
+poopybuttholeland markoland
+pietsap markoland
+pietland penisland
+markoland foefland
+poopybuttholeland foefland
+poopybuttholeland penisland
+
+foefland destroland
+foefland iepoevland
+penisland destroland
+penisland stijnland
+destroland iepoevland
+destroland stijnland
+destroland siloxland
+iepoevland siloxland
+stijnland siloxland
+siloxland relixland
+siloxland dinoland
+siloxland woutland
+
+0 marches:
