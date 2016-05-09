@@ -1,0 +1,38 @@
+15 forts:
+outer1 17 0 neutral 0
+outer2 33 12 neutral 0
+outer3 27 32 neutral 0
+outer4 6 32 neutral 0
+outer5 0 12 neutral 0
+inner1 20 7 neutral 0
+inner2 27 18 neutral 0
+inner3 20 28 neutral 0
+inner4 8 24 neutral 0
+inner5 8 11 neutral 0
+middle1 22 9 p1 100
+middle2 27 20 p2 100
+middle3 18 28 p3 100
+middle4 7 21 p4 100
+middle5 10 9 p5 100
+20 roads:
+outer1 outer2
+outer2 outer3
+outer3 outer4
+outer4 outer5
+outer5 outer1
+outer1 middle1
+outer2 middle2
+outer3 middle3
+outer4 middle4
+outer5 middle5
+middle1 inner2
+middle2 inner3
+middle3 inner4
+middle4 inner5
+middle5 inner1
+inner1 inner3
+inner2 inner4
+inner3 inner5
+inner4 inner1
+inner5 inner2
+0 marches:
