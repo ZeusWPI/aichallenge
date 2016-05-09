@@ -1,0 +1,51 @@
+# STEP: 0
+# name x y owner garrison
+11 forts:
+isengard 5 35 speler1 100
+mordor 65 35 speler2 100
+
+sexytown 35 35 neutral 0
+
+nenauto 20 25 neutral 0
+nenbus 20 45 neutral 0
+nentram 50 25 neutral 0
+nentrein 50 45 neutral 0
+
+lolpol 20 35 neutral 0
+lolfrank 50 35 neutral 0
+
+hihi 35 30 neutral 0
+haha 35 40 neutral 0
+
+24 roads:
+sexytown lolpol
+sexytown lolfrank
+isengard lolpol
+mordor lolfrank
+
+isengard nenauto
+isengard nenbus
+
+sexytown nenauto
+sexytown nenbus
+sexytown nentrein
+sexytown nentram
+
+mordor nentrein
+mordor nentram
+
+nenauto nentram
+nenbus nentrein
+
+lolpol nenauto
+lolpol nenbus
+lolfrank nentrein
+lolfrank nentram
+
+hihi sexytown
+hihi nenauto
+hihi nentram
+haha sexytown
+haha nentrein
+haha nenbus
+0 marches:1.txt
