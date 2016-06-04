@@ -3,7 +3,7 @@
 ## Intro
 
 Bottle Bats is fully functional platform that supports an AI competition hosted by Zeus WPI.
-It's goal is to provide an easy introduction to Artificial Intelligence for inexperienced coders, aswell as get more experienced programmers interested in challenging their friends and coworkers. The platform matches users (and ofcourse their bots) against each other while keeping track of their respective scores and skill-levels. It also provides a battlefield to fight on and a nice visualization to clearly demonstrate the intrigues of the ongoing battles to top it all off. 
+Its goal is to provide an easy introduction to Artificial Intelligence for inexperienced coders, as well as get more experienced programmers interested in challenging their friends and co-workers. The platform matches users (and of course their bots) against each other while keeping track of their respective scores and skill-levels. It also provides a battlefield to fight on and a nice visualization to clearly demonstrate the intrigues of the ongoing battles to top it all off. 
 
 ## For participants
 
