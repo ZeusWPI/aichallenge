@@ -2,6 +2,7 @@ database.db
 ranker.pid
 *.log
 tmp
+config.py
 
 # Where bot code of participants is saved
 battlebots/bots/
