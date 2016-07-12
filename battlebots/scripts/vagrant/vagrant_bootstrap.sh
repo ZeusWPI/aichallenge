@@ -18,9 +18,17 @@ create user bottlebats with password 'zeusisdemax';
 create database bottlebats owner bottlebats;
 EOF
 
+echo "alias python=python3" >> ~/.bashrc
+echo "cd /vagrant" >> ~/.bashrc
 
+# Install setuptools and setup python env
+wget https://bootstrap.pypa.io/ez_setup.py -O - | sudo python2
+wget https://bootstrap.pypa.io/ez_setup.py -O - | sudo python3
+sudo python2 -m easy_install pip
+sudo python3 -m easy_install pip
+
+# Server setup
 cd /vagrant
-
-easy_install pip
-pip install -r ../requirements.txt
+sudo python3 -m pip install -r requirements.txt
+cd battlebots
 cp config.sample.py config.py

@@ -11,9 +11,9 @@ Vagrant.configure(2) do |config|
     dev.vm.network :forwarded_port, guest: 5000, guest_ip: '0.0.0.0', host: 5000, host_ip: '0.0.0.0'
     # remote Python debugging
     dev.vm.network :forwarded_port, guest: 8080, guest_ip: '0.0.0.0', host: 15000, host_ip: '0.0.0.0'
-    dev.vm.provision :shell, path: "scripts/vagrant/vagrant_bootstrap.sh"
+    dev.vm.provision :shell, path: "battlebots/scripts/vagrant/vagrant_bootstrap.sh"
     dev.vm.hostname = "bottlebats-dev"
-    dev.vm.synced_folder "."
+    dev.vm.synced_folder ".", "/vagrant"
     dev.vm.provider :virtualbox do |vb|
       vb.name = "bottlebats-vagrant-host"
       vb.memory = 1024
