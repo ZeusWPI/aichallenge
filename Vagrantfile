@@ -13,11 +13,7 @@ Vagrant.configure(2) do |config|
     dev.vm.network :forwarded_port, guest: 8080, guest_ip: '0.0.0.0', host: 15000, host_ip: '0.0.0.0'
     dev.vm.provision :shell, path: "scripts/vagrant/vagrant_bootstrap.sh"
     dev.vm.hostname = "bottlebats-dev"
-    # Mount the directory containing the .git file. the standard /vagrant
-    # doesn't contain it, and as it's the root of a mounted file system the
-    # git command can't search parent folders. Instead, run any git commands
-    # in /full-repo
-    dev.vm.synced_folder "../", "/full-repo"
+    dev.vm.synced_folder "."
     dev.vm.provider :virtualbox do |vb|
       vb.name = "bottlebats-vagrant-host"
       vb.memory = 1024
