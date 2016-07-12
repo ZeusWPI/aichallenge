@@ -2,7 +2,8 @@ database.db
 ranker.pid
 *.log
 tmp
-config.py
+battlebots/config.py
+battlebots/.vagrant/
 
 # Where bot code of participants is saved
 battlebots/bots/
