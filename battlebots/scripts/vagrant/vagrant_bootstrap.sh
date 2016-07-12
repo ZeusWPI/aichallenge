@@ -19,7 +19,7 @@ create database bottlebats owner bottlebats;
 EOF
 
 echo "alias python=python3" >> ~/.bashrc
-echo "cd /vagrant" >> ~/.bashrc
+echo "cd /vagrant/" >> ~/.bashrc
 
 # Install setuptools and setup python env
 wget https://bootstrap.pypa.io/ez_setup.py -O - | sudo python2
