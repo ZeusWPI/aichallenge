@@ -1,5 +1,7 @@
 # Badass Bottle Bats
 
+If you are unsatisfied this information, be sure to check out the [wiki](https://github.com/ZeusWPI/aichallenge/wiki)!
+
 ## Index
  - [Files](#files)
  - [Rules](#rules)
