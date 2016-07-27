@@ -1,5 +1,16 @@
 # Badass Bottle Bats
 
+## Index
+ - [Files](#files)
+ - [Rules](#rules)
+ - [Internal state](#description-of-internal-state)
+ - [Bot interface](#interface-to-bots)
+ - [Protocol](#protocol)
+ - [Internal loop](#internal-loop)
+ - [How it all fits together](#how-it-all-fits-together)
+ - [Generating test files](#how-to-generate-test-files)
+ - [Disclaimer](#disclaimer)
+
 ## Intro
 
 Bottle Bats is fully functional platform that supports an AI competition hosted
