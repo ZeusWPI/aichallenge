@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>Visualize</title>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-    <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="jquery-2.2.0.min.js"></script>
+    <script type="text/javascript" src="d3.v3.min.js"></script>
     <script type="text/javascript" src="visualize.js"></script>
     <script type="text/javascript" src="controls.js"></script>
     <link rel="stylesheet" type="text/css" href="visualize.css" />
@@ -32,6 +32,8 @@
                 Step duration: <label data-bind="#speed-slider"></label> ms
               </span>
               <input type="range" id="speed-slider" min="100" max="2000" value="500" />
+            </div>
+            <div id="fog-of-war">
             </div>
             <div id="steps">
               <button data-step="-10">-10</button>

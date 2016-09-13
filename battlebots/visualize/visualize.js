@@ -103,13 +103,30 @@ var translate = function(x, y){
   return "translate("+x+","+y+")";
 };
 
+var radio = function(label, checked = false) {
+  wrapper = $('<div>');
+  $('<input>', {
+    type: "radio",
+    name: "fog-of-war-player",
+    value: label,
+    text: label,
+    checked: checked
+  }).appendTo(wrapper);
+  $('<span>', { text: label }).appendTo(wrapper);
+  return wrapper;
+}
+
 var visualize = function(game){
   $('#control-slider').on('change', function(e) {
     draw(game, parseInt(e.target.value));
   });
   $('#control-slider').attr('min', 0);
   $('#control-slider').attr('max', game.steps.length-1);
+
   draw(game, 0);
+
+  $('#fog-of-war').append(radio("all", true));
+  $('#fog-of-war').append(Object.keys(game.playerColors).filter(function(k) { return k != "neutral"; }).map(function(k) { return radio(k); }));
 };
 
 Game = function(steps) {
@@ -166,10 +183,44 @@ var draw = function(game, step){
       .duration(speed)
       .attr("viewBox", viewbox(xmin, ymin, xmax-xmin, ymax-ymin, 2));
 
+  // FOG OF WAR
+
+  var show_visible = function(player) {
+    var visible_roads = data.roads.filter(function(r) {
+      return r[0].owner == player || r[1].owner == player;
+    });
+    var visible_forts = Array.from(
+      new Set(
+        [].concat.apply([], visible_roads.map(function(r) { return [r[0], r[1]]; }))
+      )
+    );
+    var own_forts = data.forts.filter(function(r) {
+      return r.owner == player;
+    });
+    var visible_marches = data.marches.filter(function(m) {
+      return own_forts.includes(m.origin) || own_forts.includes(m.target)
+    });
+
+    return {
+      roads: visible_roads,
+      forts: visible_forts,
+      marches: visible_marches
+    }
+  }
+
+  // var visible = show_visible();
+  var visible;
+  var selected_fog = $('input[name=fog-of-war-player]:checked').val();
+  if (selected_fog == "all" || selected_fog == undefined) {
+    visible = data;
+  } else {
+    visible = show_visible(selected_fog);
+  }
+
   // ROADS
 
   var roads = fig.select("#roads").selectAll("line")
-      .data(data.roads, function(d) {return d[0].name + " " + d[1].name});
+      .data(visible.roads, function(d) {return d[0].name + " " + d[1].name});
 
   roads.enter().append("line")
       .attr("stroke-width", 0.1)
@@ -184,7 +235,7 @@ var draw = function(game, step){
   // MARCHES
 
   var marches = fig.select("#marches").selectAll(".march")
-      .data(data.marches, function(d) {return d.id});
+      .data(visible.marches, function(d) {return d.id});
 
   var newMarches = marches.enter().append("g")
     .attr("class", "march");
@@ -236,7 +287,7 @@ var draw = function(game, step){
   // FORTS
 
   var forts = fig.select("#forts").selectAll(".fort")
-      .data(data.forts);
+      .data(visible.forts);
 
   var newForts = forts.enter().append("g")
       .attr("class", "fort")
