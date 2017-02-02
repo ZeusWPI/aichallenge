@@ -40,5 +40,11 @@ $(document).ready(function() {
     togglePlaying();
   });
 
+  d3.select('#opts')
+  .on('change', function() {
+    var vis = eval(d3.select(this).property('value'));
+    VISUALIZER = vis;
+  });
+
   update_turn(0);
 });

@@ -12,7 +12,13 @@ PLAYER_COLORS = [
   "#bcbd22",
   "#17becf"
 ];
+VISUALIZER = new MosiacVisualizer();
 
+/**
+* Remove header from section and collect lines in an array
+* @param {array} lines unparsed lines, array will be modified
+* @return {array} array of lines in the section defined by the header
+*/
 var takeSection = function (lines) {
   var header = lines.shift().split(/ +/);
   var length = parseInt(header[0]);
@@ -23,6 +29,11 @@ var takeSection = function (lines) {
   return section;
 };
 
+/**
+* Remove header from section and collect lines in an array
+* @param {string} string unparsed line that defines a fort
+* @return {object} returns a fort object with no neighbours
+*/
 var parseFort = function (string) {
   var words = string.split(/ +/);
   return {
@@ -35,10 +46,21 @@ var parseFort = function (string) {
   };
 };
 
+/**
+* Parses road by splitting into words
+* @param {string} string unparsed line that defines a road
+* @return {array} returns array of strings containing words
+*/
 var parseRoad = function (string) {
   return string.split(/ +/);
 };
 
+
+/**
+* Parses road by splitting into words
+* @param {string} string unparsed line that defines a march
+* @return {object} returns a march object
+*/
 var parseMarch = function (string) {
   var words = string.split(/ +/);
   return {
@@ -51,45 +73,31 @@ var parseMarch = function (string) {
 };
 
 var parseData = function (lines, turn) {
+  // Take fort section and parse each line with respective parse function
   var forts = takeSection(lines).map(parseFort);
   var roads = takeSection(lines).map(parseRoad);
   var marches = takeSection(lines).map(parseMarch);
 
+  // Maps fortname on respective fort
   var fortmap = {};
   forts.forEach(function (fort) {
     fortmap[fort.name] = fort;
   });
 
+  // Replaces road name with actual road in road object
   roads.forEach(function (road) {
     road[0] = fortmap[road[0]];
     road[1] = fortmap[road[1]];
   });
-
-  marches.forEach(function (m) {
-    m.origin = fortmap[m.origin];
-    m.target = fortmap[m.target];
-    var dx = m.target.x - m.origin.x;
-    var dy = m.target.y - m.origin.y;
-    var alpha = Math.atan2(dy, dx);
-    var x_step = Math.cos(alpha);
-    var y_step = Math.sin(alpha);
-
-    var dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))
-    var steps = Math.ceil(dist)
-    var k = (dist-2*FORT_RADIUS)/(steps-1)
-
-    m.x = m.target.x - x_step * (FORT_RADIUS + k * (m.steps-0.5));
-    m.y = m.target.y - y_step * (FORT_RADIUS + k * (m.steps-0.5));
-    m.step_size = k;
-
-    m.id = [m.origin.name, m.target.name, turn + m.steps - dist].join(' ');
-  });
-
-  return {
-    forts:   d3.values(fortmap),
+  var game = {
+    // save forts as d3 associative array
+    forts:   forts,
     roads:   roads,
     marches: marches
   };
+  VISUALIZER.setup(game);
+
+  return game;
 };
 
 var viewbox = function(xmin, ymin, xmax, ymax, edge){
@@ -105,11 +113,11 @@ var translate = function(x, y){
 
 var visualize = function(game){
   $('#control-slider').on('change', function(e) {
-    draw(game, parseInt(e.target.value));
+    VISUALIZER.draw(game, parseInt(e.target.value));
   });
   $('#control-slider').attr('min', 0);
   $('#control-slider').attr('max', game.steps.length-1);
-  draw(game, 0);
+  VISUALIZER.draw(game, 0);
 };
 
 Game = function(steps) {
@@ -128,156 +136,19 @@ Game.prototype.getPlayerColor = function(name){
   return color;
 };
 
-var drawLegend = function(game){
-  var entryHeight = 20;
-  var fig = d3.select("#legend");
-  var newEntries = fig.selectAll(".legend-entry")
-      .data(Object.keys(game.playerColors, function(d){return d}))
-      .enter().append('g')
-      .attr('class', 'legend-entry')
-      .attr('transform', function(d, i){
-        return translate(0, i * entryHeight);
-      });
-
-  newEntries.append('circle')
-      .attr('cy', 8)
-      .attr('cx', 8)
-      .attr('r', 8)
-      .attr('fill', function(d) {return game.getPlayerColor(d)});
-
-  newEntries.append('text')
-      .attr('x', 20)
-      .attr('y', 12)
-      .text(function(d) {return d});
-};
-
-var draw = function(game, step){
-  var data = game.steps[step];
-  var xmin = d3.min(data.forts, function(f) { return f.x });
-  var ymin = d3.min(data.forts, function(f) { return f.y });
-  var xmax = d3.max(data.forts, function(f) { return f.x });
-  var ymax = d3.max(data.forts, function(f) { return f.y });
-
-  var speed = parseInt($("#speed-slider").val());
-
-  var fig = d3.select("#graph");
-
-  fig.transition()
-      .duration(speed)
-      .attr("viewBox", viewbox(xmin, ymin, xmax-xmin, ymax-ymin, 2));
-
-  // ROADS
-
-  var roads = fig.select("#roads").selectAll("line")
-      .data(data.roads, function(d) {return d[0].name + " " + d[1].name});
-
-  roads.enter().append("line")
-      .attr("stroke-width", 0.1)
-      .attr("stroke", "gray")
-      .attr("x1", function(d) {return d[0].x})
-      .attr("y1", function(d) {return d[0].y})
-      .attr("x2", function(d) {return d[1].x})
-      .attr("y2", function(d) {return d[1].y});
-
-  roads.exit().remove();
-
-  // MARCHES
-
-  var marches = fig.select("#marches").selectAll(".march")
-      .data(data.marches, function(d) {return d.id});
-
-  var newMarches = marches.enter().append("g")
-    .attr("class", "march");
-
-  // animate new marches
-  newMarches.style("opacity", 0)
-    .attr("transform", function(d) {return translate(d.origin.x, d.origin.y)})
-    .transition()
-    .duration(speed)
-    .style("opacity", 1)
-    .attr("transform", function(d) {return translate(d.x, d.y)});
-
-
-
-  newMarches.append("circle")
-      .attr("r", function(d) {return d.step_size*0.5})
-      .attr("fill", function(d) {return game.getPlayerColor(d.owner)});
-
-  newMarches.append("text")
-      .attr("font-size", function(d) {return .8*d.step_size})
-      .attr("fill", "#fff")
-      .attr("dy", function(d) {return .3*d.step_size})
-      .attr("text-anchor", "middle")
-      .text(function(d) {return d.size});
-
-  marches.select("text")
-      .text(function(d) {return d.size});
-
-  marches.data(data.marches, function(d) {return d.id})
-      .transition()
-      .duration(speed)
-      .attr("transform", function(d) {return translate(d.x, d.y)})
-      .style("opacity", 1);
-
-  marches.exit()
-      .transition()
-      .duration(speed)
-      .attr("transform", function(d) {
-        // arriving marches
-        if (d.steps == 1) {
-          return translate(d.target.x, d.target.y)
-        }
-        return translate(d.x, d.y);
-      })
-      .style("opacity", 0)
-      .remove();
-
-
-  // FORTS
-
-  var forts = fig.select("#forts").selectAll(".fort")
-      .data(data.forts);
-
-  var newForts = forts.enter().append("g")
-      .attr("class", "fort")
-      .attr("transform", function(d) {return translate(d.x, d.y)});
-
-  newForts.append("circle")
-      .attr("r", FORT_RADIUS)
-      .attr("fill", function(d) {return game.getPlayerColor(d.owner)});
-
-  newForts.append("text")
-      .attr("font-size", .9 * FORT_RADIUS)
-      .attr("fill", "#fff")
-      .attr("dy","0.3em")
-      .attr("text-anchor", "middle");
-
-  forts.select("circle")
-      .transition()
-      .duration(speed)
-      .attr("fill", function(d) {return game.getPlayerColor(d.owner)});
-
-  forts.select("text")
-      .text(function(d) {return d.garrison});
-
-  forts.exit().remove();
-
-  forts.attr("transform", function(d) {return translate(d.x, d.y)});
-
-
-  drawLegend(game);
-};
-
-
 
 var visualizeLog = function(log){
-  var raw = log.split('\n'), lines = [];
+  var raw = log.split('\n');
+  lines = [];
   raw.forEach(function(val){
+    // If line is not a comment or an invalid operation add to lines
     if(! /^(#.*)?$/.test(val)){
       lines.push(val);
     }
   });
+
   var steps = [];
+  // Shift line frome lines and parse until all lines are parsed
   while (lines.length > 0) {
     steps.push(parseData(lines, steps.length));
   }
@@ -292,7 +163,9 @@ $(document).ready(function(){
   reader.onerror = function(e){
     alert("could not open file");
   };
+  // When file is chosen
   $("#file-chooser").change(function(e){
+    // Read file "e.target.files[0]" as text
     reader.readAsText(e.target.files[0]);
   });
 });
