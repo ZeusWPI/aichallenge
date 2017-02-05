@@ -16,6 +16,30 @@ var MosiacVisualizer = function() {
         return [edge[0][0] + dx / 2, edge[0][1] + dy / 2];
     }
 
+    var distSq = function(point1, point2) {
+        return Math.pow(point1[0] - point2[0], 2) + Math.pow(point1[1] - point2[1], 2);
+    };
+
+    var getCyclic = function(array, index) {
+        while (index < 0) index += array.length;
+        return index % array.length;
+    };
+
+    var getAngleDiff = function(a1, a2) {
+        return (a2 - a1 + Math.PI) % (Math.PI * 2) - Math.PI;
+    };
+
+    var clamp = function(min, max, val) {
+        return Math.min(Math.max(val, min), max);
+    };
+
+    var pointDiff = function(p1, p2){
+      for(var i =0; i < p1.length; i++){
+        p1[i] -= p2[i];
+      }
+    };
+
+
     this.setup = function(game) {
         var roads = game.roads;
         var forts = game.forts;
@@ -24,19 +48,58 @@ var MosiacVisualizer = function() {
             road[0].neighbours.push(road[1]);
             road[1].neighbours.push(road[0]);
         });
-        var size = FORT_RADIUS*1.2;
+        var size = FORT_RADIUS;
         forts.forEach(function(fort) {
-            var maxOff = size * 0.5;
-            var nrPoints = fort.neighbours.length;
-            if (nrPoints < 3) nrPoints += 3 - nrPoints;
+            mapping = [];
+            fort.neighbours.forEach(function(neighbour) {
+                // flip y caus 0,0 is top left corner
+                var a = getAngle([fort.x, -fort.y], [neighbour.x, -neighbour.y]);
+                mapping.push({
+                    angle: a,
+                    fort: neighbour
+                });
+            });
+
+            if (mapping.length == 1) {
+                mapping.push({
+                    angle: getAngleDiff(mapping[0].angle, Math.PI),
+                    fort: undefined
+                });
+            }
+
+            mapping.sort(function(val1, val2) {
+                return val2.angle - val1.angle;
+            });
+
+            mapping.reverse();
+
             fort.points = [];
-            for (var i = 0; i < nrPoints; i++) {
-                var offset = Math.random() * maxOff - maxOff;
-                var angleOffset = Math.random() * Math.PI / 2;
-                var theta = angleOffset + (i / nrPoints) * (Math.PI * 2);
-                var x = Math.cos(theta) * (size + offset);
-                var y = Math.sin(theta) * (size + offset);
-                fort.points.push([x, y]);
+            fort.mapping = {};
+            //TODO fix bug: edge not shown
+            for (var i = 0; i < mapping.length; i++) {
+                var diff1 = Math.abs(getAngleDiff(mapping[i].angle, mapping[getCyclic(mapping, i + 1)].angle));
+                var diff2 = Math.abs(getAngleDiff(mapping[i].angle, mapping[getCyclic(mapping, i - 1)].angle));
+                var smallestDiff = diff1;
+                if (diff2 < smallestDiff) {
+                    smallestDiff = diff2;
+                }
+                smallestDiff /= 2;
+                // Make max diff between points 90 so max new point dist is 45degrees
+                if (smallestDiff > Math.PI / 4 || smallestDiff < 0) smallestDiff = Math.PI / 4;
+
+                var nPointAngle1 = getAngleDiff(mapping[i].angle, -smallestDiff);
+                var nPointAngle2 = getAngleDiff(mapping[i].angle, smallestDiff);
+                var nPoint1 = [Math.cos(nPointAngle1) * size, Math.sin(nPointAngle1) * size];
+                var nPoint2 = [Math.cos(nPointAngle2) * size, Math.sin(nPointAngle2) * size];
+                // TODO Only add one point if smaller then 45 and not first
+                if (!fort.points.includes(nPoint2)) fort.points.push(nPoint2);
+                if (!fort.points.includes(nPoint1)) fort.points.push(nPoint1);
+                if(mapping[i].fort){
+                  fort.mapping[mapping[i].fort.name] = [
+                    [nPoint1[0] + fort.x, nPoint1[1] + fort.y],
+                    [nPoint2[0] + fort.x, nPoint2[1] + fort.y]
+                  ];
+                }
             }
 
             fort.freeEdges = fort.neighbours.slice().map(function(n) {
@@ -44,26 +107,19 @@ var MosiacVisualizer = function() {
             });
         });
 
-        var distSq = function(point1, point2) {
-            return Math.pow(point1[0] - point2[0], 2) + Math.pow(point1[1] - point2[1], 2);
-        };
-        var maxRec = 1000;
-        var currRec = 0;
+        // TODO check target normal
         var connectEdges = function(startEdge, targetEdge, path) {
-            if (currRec > maxRec) return;
-            currRec++;
             var targetPoint = targetEdge[0];
             var distance = distSq(startEdge[0], targetPoint);
             var smallestDist = distSq(startEdge[1], targetPoint);
             if (smallestDist > distance) smallestDist = distance;
             // We are close enough to other edge to connect with one polygon
             if (parseFloat(smallestDist).toFixed() <= 2) {
-                //TODO Fix stitching errors
-                var x1 = targetEdge[0];
-                var x2 = startEdge[0];
-                var y1 = targetEdge[1];
-                var y2 = startEdge[1];
-                path.push([x1, x2, y2, y1]);
+                var x1 = targetEdge[0].slice();
+                var x2 = startEdge[0].slice();
+                var y1 = targetEdge[1].slice();
+                var y2 = startEdge[1].slice();
+                path.push({points : [x1, x2, y2, y1], x: 0, y: 0});
             } else {
                 // Else calculate next step
                 // Calculate the edge's normal
@@ -73,7 +129,6 @@ var MosiacVisualizer = function() {
 
                 // Calculate our target direction
                 var targetDir = getAngle(startEdge[0], targetPoint);
-                //console.log(targetDir * (180 / Math.PI));
                 var diff = (targetDir - normal);
                 diff = (diff + Math.PI) % (Math.PI * 2) - Math.PI;
                 // Calculate the direction our new extrution will follow
@@ -89,6 +144,13 @@ var MosiacVisualizer = function() {
             }
 
         };
+        var getEdge = function(fort, edgeNumber) {
+            var point2 = fort.points[0];
+            if (edgeNumber + 1 != fort.points.length) {
+                point2 = fort.points[edgeNumber + 1];
+            }
+            return [fort.points[edgeNumber].slice(), point2.slice()];
+        }
 
         var getNextFreeEdge = function(fort) {
             var edge = 0;
@@ -99,45 +161,29 @@ var MosiacVisualizer = function() {
                 }
             }
             fort.freeEdges[edge] = false;
-            var point2 = fort.points[0];
-            if (edge + 1 != fort.points.length) {
-                var point2 = fort.points[edge + 1];
-            }
-            return [fort.points[edge].slice(), point2.slice()];
+            return getEdge(fort, edge);
         }
-        var getBestFreeEdge = function(fort, other) {
-            // TODO
-        }
-        var road = roads[0];
+
         roads.forEach(function(road) {
             var originFort = road[0];
             var targetFort = road[1];
 
-            var startEdge = getNextFreeEdge(originFort, targetFort);
-            var targetEdge = getNextFreeEdge(targetFort, originFort);
-            // Convert target edge in global coordinates
-            targetEdge.forEach(function(edge) {
-                edge[0] += targetFort.x;
-                edge[1] += targetFort.y;
-            });
-            startEdge.forEach(function(edge) {
-                edge[0] += originFort.x;
-                edge[1] += originFort.y;
-            });
+            var startEdge = originFort.mapping[targetFort.name].slice();
+            var targetEdge = targetFort.mapping[originFort.name].slice();
 
             // Calc middle edge
-            var middleDir = getAngle(startEdge[0], targetEdge[0]) - Math.PI/2;
+            var middleDir = getAngle(startEdge[0], targetEdge[0]) - Math.PI / 2;
             var p1 = findMiddle([startEdge[0], targetEdge[0]]);
             var middleEdge = [p1, [p1[0] + Math.cos(middleDir), p1[1] + Math.sin(middleDir)]];
 
             var path = [];
-            connectEdges(startEdge, [middleEdge[1], middleEdge[0]], path);
-            connectEdges(targetEdge, middleEdge, path);
+            //connectEdges(startEdge, [middleEdge[1], middleEdge[0]], path);
+            connectEdges(startEdge, [targetEdge[1], targetEdge[0]], path);
             path.forEach(function(polygon) {
                 game.path.push({
-                    edges: polygon,
-                    x: 0,
-                    y: 0
+                    edges: polygon.points,
+                    x: polygon.x,
+                    y: polygon.y
                 });
             });
         });
